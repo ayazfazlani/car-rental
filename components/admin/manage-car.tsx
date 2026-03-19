@@ -28,15 +28,9 @@ import { Checkbox } from "../ui/checkbox";
 import { toast } from "sonner";
 import { cn, parseFloatFromString, getImageUrl } from "@/lib/utils";
 import CarImagesComponent from "./car-image";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "../ui/textarea";
+import { RTE } from "./RTE";
 
 const initalValues: TCreateCar = {
     brandId: "",
@@ -1010,12 +1004,9 @@ export default function ManageCarComponent({ car, id }: ManageCarComponentProps)
                                                     <FormItem>
                                                         <FormLabel>{t("admin.descriptionInEnglish")}</FormLabel>
                                                         <FormControl>
-                                                            <Textarea
-                                                                {...field}
+                                                            <RTE
                                                                 value={field?.value || ""}
-                                                                placeholder="Detailed explanation for the tooltip"
-                                                                className="text-sm"
-                                                                rows={2}
+                                                                onChange={field.onChange}
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -1029,12 +1020,9 @@ export default function ManageCarComponent({ car, id }: ManageCarComponentProps)
                                                     <FormItem>
                                                         <FormLabel>{t("admin.descriptionInArabic")}</FormLabel>
                                                         <FormControl>
-                                                            <Textarea
-                                                                {...field}
+                                                            <RTE
                                                                 value={field?.value || ""}
-                                                                placeholder="Detailed explanation for the tooltip"
-                                                                className="text-sm"
-                                                                rows={2}
+                                                                onChange={field.onChange}
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -1063,11 +1051,10 @@ export default function ManageCarComponent({ car, id }: ManageCarComponentProps)
                                         <FormItem>
                                             <FormLabel>{t("admin.description")}</FormLabel>
                                             <FormControl>
-                                                <textarea
-                                                    {...field}
-                                                    rows={4}
-                                                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                                    placeholder="Describe the car..."
+                                                <RTE
+                                                    value={field?.value || ""}
+                                                    onChange={field.onChange}
+                                                    minHeight="400px"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -1346,10 +1333,10 @@ export default function ManageCarComponent({ car, id }: ManageCarComponentProps)
                                                 <FormItem>
                                                     <FormLabel>{t("admin.answer")}</FormLabel>
                                                     <FormControl>
-                                                        <Textarea
-                                                            {...field}
-                                                            className="bg-background"
-                                                            placeholder="Enter answer"
+                                                        <RTE
+                                                            value={field?.value || ""}
+                                                            onChange={field.onChange}
+                                                            minHeight="150px"
                                                         />
                                                     </FormControl>
                                                     <FormMessage />

@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CarCategory } from '@prisma/client';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 
 export function CategoriesComponent({
     categories,
@@ -22,7 +22,7 @@ export function CategoriesComponent({
             </DropdownMenuTrigger>
             <DropdownMenuContent className='min-w-40' align='start'>
                 {cateGory.map((cat) => (
-                    <Link href={`/cars?categoryId=${cat.id}`} key={cat.id}>
+                    <Link href={{ pathname: "/categories/[slug]", params: { slug: cat.slug } }} key={cat.id}>
                         <DropdownMenuItem key={cat.id}>{cat.name}</DropdownMenuItem>
                     </Link>
                 ))}

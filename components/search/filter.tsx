@@ -27,6 +27,7 @@ type Props = {
     setFilters: SetValues<TSearchQuery>
     brands: CarBrand[]
     categories: CarCategory[]
+    hideBrand?: boolean
 }
 
 export default function Filter(props: Props) {
@@ -34,7 +35,7 @@ export default function Filter(props: Props) {
     return <FilterMain {...props} />
 }
 
-const FilterMain = ({ filters, setFilters, brands, categories }: Props) => {
+const FilterMain = ({ filters, setFilters, brands, categories, hideBrand }: Props) => {
     const t = useTranslations()
 
     const extras: [string, string][] = [
@@ -111,29 +112,31 @@ const FilterMain = ({ filters, setFilters, brands, categories }: Props) => {
                 </div>
             </div>
 
-            <div className='md:space-y-1'>
-                <Label className='text-xs md:text-sm'>{t("search.brand")}</Label>
-                <Select value={filters?.brandId ?? ''} onValueChange={(v) => {
-                    const brand = brands.find(b => b.id === v)
-                    if (brand && document) {
-                        document.title = brand.name + " | Luxus Car Rental"
-                    }
-                    setFilters({ brandId: v as any })
-                }}>
-                    <SelectTrigger className='w-24 md:w-44 h-6 md:h-10'>
-                        <SelectValue placeholder={t("search.selectBrand")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            {brands.map((brand) => (
-                                <SelectItem key={brand.id} value={brand.id}>
-                                    {brand.name}
-                                </SelectItem>
-                            ))}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
-            </div>
+            {!hideBrand && (
+                <div className='md:space-y-1'>
+                    <Label className='text-xs md:text-sm'>{t("search.brand")}</Label>
+                    <Select value={filters?.brandId ?? ''} onValueChange={(v) => {
+                        const brand = brands.find(b => b.id === v)
+                        if (brand && document) {
+                            document.title = brand.name + " | Luxus Car Rental"
+                        }
+                        setFilters({ brandId: v as any })
+                    }}>
+                        <SelectTrigger className='w-24 md:w-44 h-6 md:h-10'>
+                            <SelectValue placeholder={t("search.selectBrand")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                {brands.map((brand) => (
+                                    <SelectItem key={brand.id} value={brand.id}>
+                                        {brand.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
 
             <div className='md:space-y-1'>
                 <Label className='text-xs md:text-sm'>{t("search.category")}</Label>

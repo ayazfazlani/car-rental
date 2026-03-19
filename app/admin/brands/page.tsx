@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { createSlug } from "@/lib/utils";
 import { useAdminTranslation } from "@/lib/admin-translations";
+import { RTE } from "@/components/admin/RTE";
 
 interface Brand {
   id: string;
@@ -242,12 +243,9 @@ export default function AdminBrands() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">{t("common.description")}</Label>
-                <Input
-                  id="description"
+                <RTE
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
+                  onChange={(v: string) => setFormData({ ...formData, description: v })}
                 />
               </div>
               <div className="space-y-2">

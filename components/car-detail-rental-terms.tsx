@@ -44,7 +44,7 @@ export function CarDetailRentalTerms({ rentalTerms }: CarDetailRentalTermsProps)
                     </span>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
-                    <p className="text-sm">{isAr ? term.description_ar : term.description}</p>
+                    <div className="text-sm prose prose-sm prose-invert" dangerouslySetInnerHTML={{ __html: isAr ? term.description_ar || '' : term.description || '' }} />
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

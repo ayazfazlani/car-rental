@@ -44,6 +44,14 @@ export const routing = defineRouting({
       en: "/blog",
       ar: "/blog",
     },
+    "/brands/[slug]": {
+      en: "/brands/[slug]",
+      ar: "/brands/[slug]",
+    },
+    "/categories/[slug]": {
+      en: "/categories/[slug]",
+      ar: "/categories/[slug]",
+    },
   },
 });
 

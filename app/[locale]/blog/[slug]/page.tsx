@@ -10,6 +10,7 @@ import { formatDate, getImageUrl, } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
 import { JSONContent } from '@tiptap/react';
 import { Metadata } from 'next';
+import BlogSchema from '@/components/seo/BlogSchema';
 
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -39,16 +40,19 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 type Params = {
     slug: string;
+    locale: string;
 }
 
 export default async function page({ params }: { params: Params }) {
-    const blog = await getBlog(params.slug)
+    const { slug, locale } = await params;
+    const blog = await getBlog(slug)
     if (!blog) {
         return notFound();
     }
     const tags = blog.tags || [];
     return (
         <div className='w-full'>
+            <BlogSchema blog={blog} locale={locale} />
             <div className='py-16 max-w-[1288px] mx-auto px-5 mob:px-10 xl:px-0'>
                 {blog &&
                     <>

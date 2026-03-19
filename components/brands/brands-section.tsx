@@ -5,7 +5,7 @@ import { CarFrontIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { CarBrand } from "@prisma/client";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 
 export function BrandsCardSection({ brands: brandsPromise }: { brands: Promise<(CarBrand & { _count?: { cars: number } })[]> }) {
   const t = useTranslations();
@@ -78,7 +78,7 @@ export function BrandsCardSection({ brands: brandsPromise }: { brands: Promise<(
           >
             {brands.map((brand) => (
               <Link
-                href={`/cars?brandId=${brand.id}`}
+                href={{ pathname: "/brands/[slug]", params: { slug: brand.slug } }}
                 key={brand.id}
                 className="flex-shrink-0 flex flex-col items-center justify-center py-8 px-10 bg-card rounded-xl border border-border hover:border-primary/50 transition-colors min-w-[160px] cursor-pointer"
               >

@@ -12,6 +12,7 @@ export async function CarCategoriesMap() {
             {carsByCategory.map((category) => (<CarCategoriesSection
                 key={category.id}
                 id={category.id}
+                slug={category.slug}
                 title={category.name}
                 subtitle={category.description || ""}
                 cars={category.cars}

@@ -2,11 +2,12 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Car, Contact } from "@prisma/client";
 import Translated from "../translated";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import HorizontalListing from "./horizontal-listing";
 
 interface CarSectionProps {
   id: string;
+  slug?: string;
   title: string;
   subtitle: string;
   cars: Car[];
@@ -15,6 +16,7 @@ interface CarSectionProps {
 
 export function CarCategoriesSection({
   id,
+  slug,
   title,
   subtitle,
   cars,
@@ -33,7 +35,7 @@ export function CarCategoriesSection({
             {/* <p className="text-muted-foreground mt-1 text-sm">{subtitle}</p> */}
           </div>
           <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg hidden md:flex text-sm px-5 h-10">
-            <Link href={'/cars?categoryId=' + id}>
+            <Link href={slug ? { pathname: "/categories/[slug]", params: { slug } } : ('/cars?categoryId=' + id) as any}>
               <Translated key="carSection.viewAll" fallback="View All" />{" "}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>

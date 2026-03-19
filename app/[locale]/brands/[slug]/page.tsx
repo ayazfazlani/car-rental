@@ -1,77 +1,67 @@
-import { redirect } from 'next/navigation';
-import { getBrandBySlug } from '@/lib/data/brands';
-import { Metadata } from 'next';
-import Link from 'next/link';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
-import { prisma } from '@/lib/prisma';
+import { Header } from '@/components/Header'
+import SearchComponent from '@/components/search/search'
+import { getBrandBySlug, getBrands } from '@/lib/data/brands'
+import { stripHtml } from '@/lib/utils'
+import { getCategory } from '@/lib/data/category'
+import { getActiveContacts } from '@/lib/data/contact'
+import { Footer } from '@/components/Footer'
+import Translated from '@/components/translated'
+import { notFound } from 'next/navigation'
+import { Metadata } from 'next'
 
 type Props = {
-    params: Promise<{ locale: string; slug: string }>;
-};
+    params: Promise<{ locale: string; slug: string }>
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
-    const brand = await prisma.carBrand.findFirst({ where: { slug, deletedAt: null } })
-
-    if (!brand) {
-        return {
-            title: 'Brand Not Found',
-        };
-    }
+    const brand = await getBrandBySlug(slug);
+    
+    if (!brand) return {};
 
     return {
-        title: `${brand.seo_title || brand.name} | Luxus Car Rental`,
-        description: brand.seo_description || `Explore our ${brand.name} rental vehicles`,
-        keywords: brand.seo_keywords || brand.name,
+        title: `${brand.name} | Luxus Car Rental`,
+        description: stripHtml(brand.description || '') || `Rent premium ${brand.name} cars in Dubai.`,
         openGraph: {
-            title: `${brand.name} | Luxus Car Rental`,
-            description: brand.description || `Explore our ${brand.name} rental vehicles`,
-        },
-    };
+            title: brand.name,
+            description: stripHtml(brand.description || '') || `Rent premium ${brand.name} cars in Dubai.`,
+            images: brand.logoUrl ? [brand.logoUrl] : [],
+        }
+    }
 }
 
-export default async function BrandPage({ params }: Props) {
-    const { locale, slug } = await params;
-    const brand = await await prisma.carBrand.findFirst({ where: { slug, deletedAt: null } })
+export default async function BrandSlugPage({ params }: Props) {
+    const { slug } = await params;
+    const brand = await getBrandBySlug(slug);
 
     if (!brand) {
-        return redirect(`/${locale}/cars`);
+        notFound();
     }
 
+    const brands = getBrands();
+    const categories = getCategory();
+    const contacts = getActiveContacts();
+
     return (
-        <>
+        <div className='bg-background'>
             <Header />
-            <main className="container mx-auto px-6 lg:px-12 py-12">
-                <Link
-                    key={brand.id}
-                    href={`/${locale}/cars?brandId=${brand.id}`}
-                    className="group flex items-center justify-center"
-                >
-                    <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 h-full flex flex-col justify-between cursor-pointer">
-                        {brand.logoUrl && (
-                            <div className="mb-4 h-20 flex items-center justify-center">
-                                <img
-                                    src={brand.logoUrl}
-                                    alt={brand.name}
-                                    className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform"
-                                />
-                            </div>
-                        )}
-                        <div>
-                            <h3 className="text-lg font-semibold group-hover:text-blue-600 transition-colors">
-                                {brand.name}
-                            </h3>
-                            {brand.description && (
-                                <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                                    {brand.description}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                </Link>
-            </main>
+            <div className="mx-auto px-4 md:pb-8 pt-2">
+                <div className="md:mb-1">
+                    <h1 className="text-base md:text-2xl font-bold text-foreground capitalize">
+                        {brand.name}
+                    </h1>
+                    <p className="text-muted-foreground text-base hidden sm:block">
+                        <Translated key="search.browseSelection" fallback="Browse our premium selection of rental vehicles" />
+                    </p>
+                </div>
+                <SearchComponent
+                    brands={brands}
+                    categories={categories}
+                    contacts={contacts}
+                    defaultFilters={{ brandId: brand.id }}
+                />
+            </div>
             <Footer />
-        </>
+        </div>
     )
 }

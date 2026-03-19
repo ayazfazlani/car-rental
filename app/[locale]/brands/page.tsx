@@ -1,29 +1,33 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { getTranslations } from "next-intl/server";
-import { Metadata } from 'next';
-import Link from 'next/link';
+import BrandsSchema from "@/components/seo/BrandsSchema";
+import { Link } from "@/i18n/routing";
 import { getBrands } from '@/lib/data/brands';
+import Image from "next/image";
+import { ChevronRight, Home } from "lucide-react";
+import { getImageUrl, stripHtml } from "@/lib/utils";
+
 import { getMetaData } from '@/lib/data/meta-data';
 import { formatMetadata } from '@/lib/utils';
 import { PAGE_METATAGS } from "@/lib/constants";
-
-type Props = {
-    params: Promise<{ locale: string }>;
-};
+import { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {
     const meta = await getMetaData(PAGE_METATAGS.BRANDS)
     return formatMetadata(meta)
 }
 
-export default async function BrandsPage({ params }: Props) {
+export default async function BrandsPage({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}) {
     const { locale } = await params;
-    const t = await getTranslations('common');
     const brands = await getBrands();
 
     return (
-        <>
+        <div className="bg-background">
+            <BrandsSchema brands={brands} locale={locale} />
             <Header />
             <main className="container mx-auto px-6 lg:px-12 py-12">
                 <div className="mb-12">
@@ -44,7 +48,7 @@ export default async function BrandsPage({ params }: Props) {
                         {brands.map((brand) => (
                             <Link
                                 key={brand.id}
-                                href={`/${locale}/cars?brandId=${brand.id}`}
+                                href={{ pathname: "/brands/[slug]", params: { slug: brand.slug } }}
                                 className="group"
                             >
                                 <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 h-full flex flex-col justify-between cursor-pointer">
@@ -61,11 +65,9 @@ export default async function BrandsPage({ params }: Props) {
                                         <h3 className="text-lg font-semibold group-hover:text-blue-600 transition-colors">
                                             {brand.name}
                                         </h3>
-                                        {brand.description && (
-                                            <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                                                {brand.description}
-                                            </p>
-                                        )}
+                                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                                            {stripHtml(brand.description || '')}
+                                        </p>
                                         <p className="text-sm text-blue-600 mt-3 font-medium">
                                             {brand._count.cars} {brand._count.cars === 1 ? 'car' : 'cars'} available
                                         </p>
@@ -77,6 +79,6 @@ export default async function BrandsPage({ params }: Props) {
                 )}
             </main>
             <Footer />
-        </>
+        </div>
     );
 }

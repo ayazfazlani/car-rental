@@ -46,6 +46,14 @@ export function createSlug(text: string): string {
 }
 
 /**
+ * Strip HTML tags from string
+ */
+export function stripHtml(html: string): string {
+  if (!html) return "";
+  return html.replace(/<[^>]*>?/gm, "");
+}
+
+/**
  * Pagination helper
  */
 export interface PaginationParams {

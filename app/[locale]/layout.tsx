@@ -7,6 +7,7 @@ import { Cairo } from "next/font/google";
 import { Manrope } from "next/font/google";
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { ScrollToTopButton } from "@/components/scroll-to-top";
+import OrganizationSchema from "@/components/seo/OrganizationSchema";
 
 import "../globals.css";
 
@@ -53,7 +54,10 @@ export default async function LocaleLayout({
       suppressHydrationWarning>
       <body className={locale === "ar" ? cairo.className : manrope.className}>
         <NextIntlClientProvider messages={messages}>
-          <CurrencyProvider>{children}</CurrencyProvider>
+          <CurrencyProvider>
+            <OrganizationSchema />
+            {children}
+          </CurrencyProvider>
         </NextIntlClientProvider>
         <ScrollToTopButton />
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />

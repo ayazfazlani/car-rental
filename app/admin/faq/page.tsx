@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useAdminTranslation } from '@/lib/admin-translations'
+import { RTE } from '@/components/admin/RTE'
 
 const initalValues: TFaq = {
     question: "",
@@ -146,10 +147,9 @@ export default function AdminFaqPage() {
                                     <FormItem>
                                         <FormLabel>{t('admin.faq.answerEn') || 'Answer (EN)'}</FormLabel>
                                         <FormControl>
-                                            <Textarea
-                                                {...field}
+                                            <RTE
                                                 value={field?.value || ''}
-                                                className="mt-1 block w-full"
+                                                onChange={field.onChange}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -163,10 +163,9 @@ export default function AdminFaqPage() {
                                     <FormItem>
                                         <FormLabel>{t('admin.faq.answerAr') || 'Answer (AR)'}</FormLabel>
                                         <FormControl>
-                                            <Textarea
-                                                {...field}
+                                            <RTE
                                                 value={field?.value || ''}
-                                                className="mt-1 block w-full"
+                                                onChange={field.onChange}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -212,15 +211,11 @@ export default function AdminFaqPage() {
 
                         <div>
                             <label className='tex-bold font-medium mb-2'>{t('admin.faq.answerEn') || 'Answer (EN)'}</label>
-                            <div>
-                                {item.answer}
-                            </div>
+                            <div className='prose prose-sm max-w-none' dangerouslySetInnerHTML={{ __html: item.answer }} />
                         </div>
                         <div>
                             <label className='tex-bold font-medium mb-2'>{t('admin.faq.answerAr') || 'Answer (AR)'}</label>
-                            <div>
-                                {item.answer_ar}
-                            </div>
+                            <div className='prose prose-sm max-w-none' dangerouslySetInnerHTML={{ __html: item.answer_ar }} />
                         </div>
                         <div className='flex items-center justify-end gap-4'>
                             <label className='tex-bold flex items-center gap-2'>

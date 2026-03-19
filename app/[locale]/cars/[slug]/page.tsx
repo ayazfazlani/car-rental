@@ -1,10 +1,9 @@
+import { getCarDetails } from "@/lib/data/cars";
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import { getImageUrl } from "@/lib/utils";
-import Logo from "@/public/images/luxuslogo.png";
-import { Link } from "@/i18n/routing";
+import { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import CarSchema from "@/components/seo/CarSchema";
 import { CarDetailGallery } from "@/components/car-detail-gallery";
 import { CarDetailPricing } from "@/components/car-detail-pricing";
 import { CarDetailOverview } from "@/components/car-detail-overview";
@@ -16,9 +15,10 @@ import {
   ChevronDown,
   Dot,
   Phone,
+  Home,
+  Globe
 } from "lucide-react";
 import { CarFilterdSection } from "@/components/listing/cars-filtered-section";
-import { getCarDetails } from "@/lib/data/cars";
 import Translated from "@/components/translated";
 import {
   Collapsible,
@@ -29,8 +29,11 @@ import { CarDetailFeatures } from "@/components/car-detail-features";
 import { Button } from "@/components/ui/button";
 import TrackViewCar from "@/components/tracking/view-car";
 import { getActiveContacts } from "@/lib/data/contact";
-import { toNumberSafe, whatsAppMessage } from "@/lib/utils";
+import { toNumberSafe, whatsAppMessage, getImageUrl } from "@/lib/utils";
 import { ContactType } from "@prisma/client";
+import { Link } from "@/i18n/routing";
+import Image from "next/image";
+import Logo from "@/public/images/luxuslogo.png";
 
 
 export async function generateMetadata({ params }: PageProps) {
@@ -65,7 +68,7 @@ interface PageProps {
 }
 
 export default async function CarDetailPage({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const car = await getCarDetails(slug);
   const contacts = await getActiveContacts();
   if (!car) {
@@ -76,7 +79,9 @@ export default async function CarDetailPage({ params }: PageProps) {
   const whatsapp = contacts?.find(c => c.type === ContactType.WHATSAPP)?.value || "+971561234567";
 
   return (
-    <>
+    <div className="bg-background">
+      <CarSchema car={car} locale={locale} />
+      <Header />
       <TrackViewCar car={{
         id: car.id,
         name: car.name,
@@ -84,34 +89,33 @@ export default async function CarDetailPage({ params }: PageProps) {
         categoryId: car.categoryId,
         model: car.model,
       }} />
-      <Header />
-
-      <main className="bg-background">
-        {/* Breadcrumb */}
-        <nav
-          className="container mx-auto px-6 lg:px-12 py-8 overflow-x-auto"
-          aria-label="Breadcrumb"
-        >
-          <ol className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
-            <li>
-              <Link href="/" className="hover:text-primary transition-colors">
-                <Translated key="details.cars" fallback="Cars" />
+      
+      {/* Breadcrumbs */}
+      <nav className="border-b border-border bg-card">
+        <div className="container mx-auto px-6 lg:px-12 py-3">
+          <ul className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground overflow-x-auto whitespace-nowrap scrollbar-hide">
+            <li className="flex items-center gap-2">
+              <Link href="/" className="hover:text-primary transition-colors flex items-center gap-1">
+                <Home className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Home</span>
               </Link>
             </li>
-            <ChevronRight className="h-4 w-4 flex-shrink-0" />
+            <ChevronRight className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
             <li>
               <Link
-                // @ts-expect-error query not in type
-                href={`/cars?brandId=${car.brand?.id}`}
+                href={{ pathname: "/brands/[slug]", params: { slug: car.brand?.slug || '' } }}
                 className="hover:text-primary transition-colors"
               >
                 {car.brand?.name || "Brand"}
               </Link>
             </li>
-            <ChevronRight className="h-4 w-4 flex-shrink-0" />
-            <li className="text-foreground">{car.model}</li>
-          </ol>
-        </nav>
+            <ChevronRight className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+            <li className="text-foreground font-medium truncate">
+              {car.name} {car.model}
+            </li>
+          </ul>
+        </div>
+      </nav>
 
         {/* Title Section */}
         <section className="container mx-auto px-6 lg:px-12 pb-8">
@@ -285,8 +289,10 @@ export default async function CarDetailPage({ params }: PageProps) {
               <CarDetailOverview
                 bodyType={car.category?.name}
                 bodyId={car.category?.id}
+                bodySlug={car.category?.slug}
                 make={car.brand?.name}
                 makeId={car.brand?.id}
+                makeSlug={car.brand?.slug}
                 model={car.model}
                 gearbox={car.transmission}
                 seats={car.seats}
@@ -310,9 +316,10 @@ export default async function CarDetailPage({ params }: PageProps) {
                       fallback="Description & Highlights"
                     />
                   </h2>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {car.description}
-                  </p>
+                  <div 
+                    className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: car.description }}
+                  />
                   {car.highlights && (
                     <div className="text-sm text-muted-foreground mt-4">
                       {car.highlights.map((highlight, index) => (
@@ -385,9 +392,10 @@ export default async function CarDetailPage({ params }: PageProps) {
                         className="text-sm text-muted-foreground space-y-1"
                       >
                         <p className="font-bold">{faq.question}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {faq.answer}
-                        </p>
+                        <div 
+                          className="text-sm text-muted-foreground prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: faq.answer }}
+                        />
                       </div>
                     ))}
                   </CollapsibleContent>
@@ -457,8 +465,7 @@ export default async function CarDetailPage({ params }: PageProps) {
             },
           }}
         />
-      </main>
       <Footer />
-    </>
+    </div>
   );
 }

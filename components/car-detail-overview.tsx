@@ -9,11 +9,13 @@ import {
   LucideIcon,
 } from "lucide-react";
 import Translated from "./translated";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 
 interface CarDetailOverviewProps {
   bodyId?: string;
+  bodySlug?: string;
   makeId?: string;
+  makeSlug?: string;
   bodyType?: string;
   make?: string;
   model?: string;
@@ -28,9 +30,11 @@ interface CarDetailOverviewProps {
 export function CarDetailOverview({
   bodyType,
   bodyId,
+  bodySlug,
   make,
   model,
   makeId,
+  makeSlug,
   gearbox,
   seats,
   doors,
@@ -39,9 +43,9 @@ export function CarDetailOverview({
   color,
 }: CarDetailOverviewProps) {
   const specs = [
-    { label: "Body Type", value: bodyType || "-", icon: CarIcon, t: 'bodyType', link: '/cars?categoryId=' + bodyId },
+    { label: "Body Type", value: bodyType || "-", icon: CarIcon, t: 'bodyType', link: bodySlug ? '/categories/' + bodySlug : '/cars?categoryId=' + bodyId },
     { label: "Transmission", value: gearbox || "-", icon: Settings, t: 'transmission' },
-    { label: "Make", value: make || "-", icon: CarIcon, t: 'make', link: '/cars?brandId=' + makeId },
+    { label: "Make", value: make || "-", icon: CarIcon, t: 'make', link: makeSlug ? '/brands/' + makeSlug : '/cars?brandId=' + makeId },
     { label: "Model", value: model || "-", icon: CarIcon, t: 'model' },
     { label: "Gearbox", value: gearbox || "-", icon: Settings, t: 'gearbox' },
     {
@@ -87,7 +91,7 @@ export function CarDetailOverview({
 
 const WithLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   return (
-    <Link href={href}>
+    <Link href={href as any}>
       {children}
     </Link>
   );

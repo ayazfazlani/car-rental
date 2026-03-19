@@ -11,6 +11,7 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import { useAdminTranslation } from "@/lib/admin-translations";
 import { toast } from "sonner";
 import { slugify } from "@/lib/utils";
+import { RTE } from "@/components/admin/RTE";
 
 interface Category {
   id: string;
@@ -170,14 +171,10 @@ export default function AdminCategories() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">{t("common.description")}</Label>
-                <Input
-                  id="description"
+                <Label htmlFor="description">{t("common.description")}</Label>
+                <RTE
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  required
+                  onChange={(v: string) => setFormData({ ...formData, description: v })}
                 />
               </div>
               <div className="space-y-2">

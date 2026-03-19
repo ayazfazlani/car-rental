@@ -6,6 +6,7 @@ import { API } from '@/lib/api'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { sentanceCase } from '@/lib/utils'
+import { RTE } from '@/components/admin/RTE'
 
 export default function AdminSettingsPage() {
     const queryClient = useQueryClient()
@@ -51,11 +52,9 @@ export default function AdminSettingsPage() {
                         <div className='flex justify-between items-center mb-2'>
                             <strong>{sentanceCase(k)}</strong>
                         </div>
-                        <textarea
-                            className='w-full p-2 border rounded'
-                            rows={4}
+                        <RTE
                             value={local[k] ?? ''}
-                            onChange={(e) => setLocal(prev => ({ ...prev, [k]: e.target.value }))}
+                            onChange={(v) => setLocal(prev => ({ ...prev, [k]: v }))}
                         />
                     </div>
                 ))}

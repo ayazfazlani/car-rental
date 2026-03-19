@@ -11,6 +11,7 @@ import { CarFilterdSection } from './listing/cars-filtered-section';
 import { CarSectionSkeleton } from './listing/cars-skeleton';
 import { getFaqItems } from '@/lib/data/faq';
 import { BlogSection } from './blog/BlogSection';
+import FaqSchema from './seo/FaqSchema';
 
 interface SectionRendererProps {
     section: HomePageSection;
@@ -76,7 +77,12 @@ export async function SectionRenderer({ section, locale }: SectionRendererProps)
 
             case HomePageSectionType.FAQ:
                 const faqItems = await getFaqItems();
-                return <FaqSection items={faqItems} />;
+                return (
+                    <>
+                        <FaqSchema items={faqItems} />
+                        <FaqSection items={faqItems} />
+                    </>
+                );
 
             case HomePageSectionType.TESTIMONIALS:
                 return <TestimonialsSection />;

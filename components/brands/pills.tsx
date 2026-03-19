@@ -783,12 +783,12 @@
 //             )}
 //         </div>
 //     )
-// }
+
 "use client"
 
 import { CarBrand } from '@prisma/client'
 import { CarFrontIcon, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import { use, useEffect, useRef, useState } from 'react'
 
 export default function BrandPills({ brands: brandsPromise }: { brands: Promise<CarBrand[]> }) {
@@ -832,7 +832,7 @@ export default function BrandPills({ brands: brandsPromise }: { brands: Promise<
     const scrollToIndex = (index: number) => {
         if (scrollContainerRef.current) {
             const container = scrollContainerRef.current;
-            const itemWidth = container.scrollWidth / brands.length;
+            const itemWidth = container.scrollWidth / (brands.length || 1);
             const targetScroll = itemWidth * index;
 
             container.scrollTo({
@@ -851,20 +851,21 @@ export default function BrandPills({ brands: brandsPromise }: { brands: Promise<
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
             const container = scrollContainerRef.current;
-            const scrollAmount = container.clientWidth;
+            const scrollAmount = container.clientWidth * 0.8;
             container.scrollBy({
                 left: direction === 'left' ? -scrollAmount : scrollAmount,
                 behavior: 'smooth'
             });
 
+            // Update index based on scroll position - using a longer timeout to ensure scroll finished
             setTimeout(() => {
                 if (scrollContainerRef.current) {
                     const scrollPos = scrollContainerRef.current.scrollLeft;
-                    const itemWidth = scrollContainerRef.current.scrollWidth / brands.length;
+                    const itemWidth = scrollContainerRef.current.scrollWidth / (brands.length || 1);
                     const newIndex = Math.round(scrollPos / itemWidth);
                     setCurrentIndex(Math.min(Math.max(newIndex, 0), brands.length - 1));
                 }
-            }, 300);
+            }, 500);
         }
     };
 
@@ -872,14 +873,15 @@ export default function BrandPills({ brands: brandsPromise }: { brands: Promise<
         setIsAutoPlaying(!isAutoPlaying);
     };
 
+    // Auto-play functionality
     useEffect(() => {
         if (isAutoPlaying && brands.length > itemsPerView) {
             autoPlayRef.current = setInterval(() => {
-                const totalSlides = Math.ceil(brands.length / itemsPerView);
+                const totalSlidesCount = Math.ceil(brands.length / itemsPerView);
                 const currentSlide = Math.floor(currentIndex / itemsPerView);
-                const nextSlide = (currentSlide + 1) % totalSlides;
+                const nextSlide = (currentSlide + 1) % totalSlidesCount;
                 scrollToSlide(nextSlide);
-            }, 3000);
+            }, 4000); // 4 seconds for better reading
         }
 
         return () => {
@@ -892,88 +894,74 @@ export default function BrandPills({ brands: brandsPromise }: { brands: Promise<
     const handleScroll = () => {
         if (scrollContainerRef.current) {
             const scrollPos = scrollContainerRef.current.scrollLeft;
-            const itemWidth = scrollContainerRef.current.scrollWidth / brands.length;
+            const itemWidth = scrollContainerRef.current.scrollWidth / (brands.length || 1);
             const newIndex = Math.round(scrollPos / itemWidth);
-            setCurrentIndex(newIndex);
+            // Only update if index actually changed to avoid excessive re-renders
+            if (newIndex !== currentIndex) {
+                setCurrentIndex(newIndex);
+            }
         }
     };
 
+    // Calculate total number of slides
     const totalSlides = Math.ceil(brands.length / itemsPerView);
 
     return (
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-            {/* Navigation Controls - Desktop */}
+        <div className="relative px-2 sm:px-6 md:px-10">
+            {/* Brands Carousel */}
+            <div
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="flex gap-2 sm:gap-4 overflow-x-auto scrollbar-hide pb-2 sm:pb-4"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+                <style jsx>{`
+                    .scrollbar-hide::-webkit-scrollbar {
+                        display: none;
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0.5; transform: translateY(5px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                `}</style>
 
-            {/* Slider Container */}
-            <div className="relative overflow-hidden">
-                {/* Brands Carousel */}
-                <div
-                    ref={scrollContainerRef}
-                    onScroll={handleScroll}
-                    className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-4"
-                    style={{
-                        scrollbarWidth: 'none',
-                        msOverflowStyle: 'none',
-                        scrollPadding: '0 1rem'
-                    }}
-                >
-                    <style jsx>{`
-                        .scrollbar-hide::-webkit-scrollbar {
-                            display: none;
-                        }
-                        @keyframes fadeIn {
-                            from { opacity: 0.5; transform: translateY(5px); }
-                            to { opacity: 1; transform: translateY(0); }
-                        }
-                    `}</style>
-
-                    {brands.map((brand, index) => (
-                        <Link
-                            href={`/cars?brandId=${brand.id}`}
-                            key={brand.id}
-                            className="flex-shrink-0 flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-2 sm:py-3 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl text-xs sm:text-sm text-foreground hover:border-primary hover:shadow-md sm:hover:shadow-lg hover:scale-[1.02] transition-all duration-300 font-medium whitespace-nowrap group"
-                            style={{
-                                animation: `fadeIn 0.3s ease-out ${index * 0.05}s both`,
-                                // Responsive width that fits within container
-                                minWidth: `calc((100% - ${(itemsPerView - 1) * 0.5}rem) / ${itemsPerView})`
-                            }}
-                        >
-                            <span className="text-muted-foreground group-hover:text-primary transition-colors">
-                                {getBrandLogo(brand)}
-                            </span>
-                            <span className="font-semibold truncate">{brand.name}</span>
-                            <span className="hidden xs:inline text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
-                                {Math.floor(Math.random() * 50) + 1}
-                            </span>
-                        </Link>
-                    ))}
-                </div>
-
-                {/* Gradient overlays for visual indication of scroll */}
-                <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-r from-background to-transparent pointer-events-none" />
-                <div className="absolute right-0 top-0 bottom-0 w-4 sm:w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+                {brands.map((brand, index) => (
+                    <Link
+                        href={{ pathname: "/brands/[slug]", params: { slug: brand.slug } }}
+                        key={brand.id}
+                        className="flex-shrink-0 flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-2 sm:py-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl sm:rounded-2xl text-xs sm:text-sm text-foreground hover:border-primary hover:shadow-md transition-all duration-300 font-medium whitespace-nowrap group min-w-[120px] sm:min-w-[150px]"
+                        style={{ 
+                            animation: `fadeIn 0.3s ease-out ${index * 0.05}s both`,
+                            // Responsive width based on itemsPerView
+                            minWidth: `calc((100% - ${(itemsPerView - 1) * 0.5}rem) / ${itemsPerView})`
+                        }}
+                    >
+                        <span className="text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0">
+                            {getBrandLogo(brand)}
+                        </span>
+                        <span className="font-semibold truncate">{brand.name}</span>
+                        <span className="hidden xs:inline text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                            {Math.floor(Math.random() * 50) + 1}
+                        </span>
+                    </Link>
+                ))}
             </div>
 
             {/* Dots Indicator */}
             {brands.length > itemsPerView && (
-                <div className="flex flex-col items-center gap-4 mt-4">
-                    <div className="flex justify-center gap-2">
-                        {Array.from({ length: totalSlides }).map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => scrollToSlide(index)}
-                                className={`w-2 h-2 rounded-full transition-all ${Math.floor(currentIndex / itemsPerView) === index
-                                    ? 'w-4 sm:w-6 bg-primary'
+                <div className="flex justify-center gap-1.5 mt-2">
+                    {Array.from({ length: totalSlides }).map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => scrollToSlide(index)}
+                            className={`w-1.5 h-1.5 rounded-full transition-all ${
+                                Math.floor(currentIndex / itemsPerView) === index
+                                    ? 'w-4 bg-primary'
                                     : 'bg-gray-300 dark:bg-gray-700'
-                                    }`}
-                                aria-label={`Go to slide ${index + 1}`}
-                            />
-                        ))}
-                    </div>
-
-                    <div className="text-xs text-gray-500 dark:text-gray-400 text-center md:hidden">
-                        Slide {Math.floor(currentIndex / itemsPerView) + 1} of {totalSlides}
-                    </div>
+                            }`}
+                            aria-label={`Go to slide ${index + 1}`}
+                        />
+                    ))}
                 </div>
             )}
         </div>

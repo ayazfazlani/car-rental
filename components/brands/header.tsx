@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CarBrand } from '@prisma/client';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 
 export default function HeaderBrands({
     brands,
@@ -22,7 +22,7 @@ export default function HeaderBrands({
             </DropdownMenuTrigger>
             <DropdownMenuContent className='min-w-40' align='start'>
                 {allBrands.map((brand) => (
-                    <Link href={`/cars?brandId=${brand.id}`} key={brand.id}>
+                    <Link href={{ pathname: "/brands/[slug]", params: { slug: brand.slug } }} key={brand.id}>
                         <DropdownMenuItem key={brand.id}>{brand.name}</DropdownMenuItem>
                     </Link>
                 ))}

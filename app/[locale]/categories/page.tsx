@@ -2,11 +2,13 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { getTranslations } from "next-intl/server";
 import { Metadata } from 'next';
-import Link from 'next/link';
+import { Link } from "@/i18n/routing";
 import { getCategoriesWithCount } from '@/lib/data/category';
 import { getMetaData } from '@/lib/data/meta-data';
-import { formatMetadata } from '@/lib/utils';
+import { formatMetadata, stripHtml } from '@/lib/utils';
 import { PAGE_METATAGS } from "@/lib/constants";
+
+import CategoriesSchema from "@/components/seo/CategoriesSchema";
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -19,11 +21,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CategoriesPage({ params }: Props) {
     const { locale } = await params;
-    const t = await getTranslations('common');
     const categories = await getCategoriesWithCount();
 
     return (
-        <>
+        <div className="bg-background">
+            <CategoriesSchema categories={categories} locale={locale} />
             <Header />
             <main className="container mx-auto px-6 lg:px-12 py-12">
                 <div className="mb-12">
@@ -44,7 +46,7 @@ export default async function CategoriesPage({ params }: Props) {
                         {categories.map((category) => (
                             <Link
                                 key={category.id}
-                                href={`/${locale}/cars?categoryId=${category.id}`}
+                                href={{ pathname: "/categories/[slug]", params: { slug: category.slug } }}
                                 className="group"
                             >
                                 <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 h-full flex flex-col justify-between cursor-pointer">
@@ -61,11 +63,9 @@ export default async function CategoriesPage({ params }: Props) {
                                         <h3 className="text-lg font-semibold group-hover:text-blue-600 transition-colors">
                                             {category.name}
                                         </h3>
-                                        {category.description && (
-                                            <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                                                {category.description}
-                                            </p>
-                                        )}
+                                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                                            {stripHtml(category.description || '')}
+                                        </p>
                                         <p className="text-sm text-blue-600 mt-3 font-medium">
                                             {category._count.cars} {category._count.cars === 1 ? 'car' : 'cars'} available
                                         </p>
@@ -77,6 +77,6 @@ export default async function CategoriesPage({ params }: Props) {
                 )}
             </main>
             <Footer />
-        </>
+        </div>
     );
 }

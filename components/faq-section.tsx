@@ -124,9 +124,10 @@ export function FaqSection({ items = [] }: FaqSectionProps) {
                   </button>
                   {openIndex === faq.id && (
                     <div className="px-4 pb-4 pl-8">
-                      <p className="text-sm text-muted-foreground">
-                        {isAr ? faq.answer_ar : faq.answer}
-                      </p>
+                      <div 
+                        className="text-sm text-muted-foreground prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: isAr ? faq.answer_ar || '' : faq.answer || '' }}
+                      />
                     </div>
                   )}
                 </div>
@@ -177,9 +178,10 @@ export function FaqSection({ items = [] }: FaqSectionProps) {
                   </button>
                   {openIndex === faq.id && (
                     <div className="px-4 pb-4 pl-8">
-                      <p className="text-sm text-muted-foreground">
-                        {isAr ? faq.answer_ar : faq.answer}
-                      </p>
+                      <div 
+                        className="text-sm text-muted-foreground prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: isAr ? faq.answer_ar || '' : faq.answer || '' }}
+                      />
                     </div>
                   )}
                 </div>

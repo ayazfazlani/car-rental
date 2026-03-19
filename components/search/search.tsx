@@ -64,13 +64,18 @@ export default function SearchComponent({ brands: brandsPromise, categories: cat
     const categories = use(categoriesPromise)
     const contacts = use(contactsPromise)
 
-    const [filters, setFilters] = useQueryStates(Query, { default: defaultFilters })
+    const [filters, setFilters] = useQueryStates(Query)
 
     // Merge default filters with URL filters for the query
-    const activeFilters = useMemo(() => ({
-        ...defaultFilters,
-        ...filters
-    }), [filters, defaultFilters])
+    const activeFilters = useMemo(() => {
+        const merged = { ...defaultFilters }
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+                merged[key as keyof Values<TSearchQuery>] = value as any
+            }
+        })
+        return merged
+    }, [filters, defaultFilters])
 
     const queryKey = useMemo(() => ['public/cars', activeFilters], [activeFilters])
 
@@ -122,7 +127,7 @@ export default function SearchComponent({ brands: brandsPromise, categories: cat
             <div className="space-y-2 md:space-y-6 relative">
                 <div className="md:sticky md:top-[82px] z-40 border-b bg-card border-border backdrop-blur supports-[backdrop-filter]:bg-card/95">
                     <Filter
-                        filters={activeFilters}
+                        filters={activeFilters as any}
                         setFilters={setFilters}
                         brands={brands}
                         categories={categories}
