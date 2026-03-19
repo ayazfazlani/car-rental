@@ -1,0 +1,23 @@
+export const CONSTANTS = {
+    REVALIDATE: 60
+}
+
+export const APP: 'luxus' | 'oneclick' = 'luxus'
+
+export enum KEY_VALUE_TYPES {
+    FOOTER_DESCRIPTION_EN = 'FOOTER_DESCRIPTION_EN',
+    FOOTER_DESCRIPTION_AR = 'FOOTER_DESCRIPTION_AR',
+}
+
+export enum PAGE_METATAGS {
+    HOME = 'HOME',
+    CARS = 'CARS',
+    BLOGS = 'BLOGS',
+    CONTACT = 'CONTACT',
+    ABOUT = 'ABOUT',
+    PRIVACY_POLICY = 'PRIVACY_POLICY',
+    TERMS_CONDITIONS = 'TERMS_CONDITIONS',
+    TERMS_OF_USE = 'TERMS_OF_USE',
+    BRANDS = 'BRANDS',
+    CATEGORIES = 'CATEGORIES',
+}

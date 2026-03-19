@@ -1,0 +1,98 @@
+.scroll-hidden2::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.scroll-hidden2::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 1px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+.scroll-hidden2::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.scroll-hidden2::-webkit-scrollbar-thumb:hover {
+  background: #e0e0e0;
+}
+
+.editor {
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+  ul,
+  ol {
+    padding: 0 1rem;
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  blockquote {
+    padding: 55px 70px 55px 70px;
+    text-align: center;
+    font-size: 1.25rem;
+    color: #121212;
+    border-radius: 12px;
+    background: #fafafb;
+  }
+
+  p {
+    font-size: 1.25rem;
+    color: #121212;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #121212;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #121212;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #121212;
+  }
+
+  @media screen and (max-width: 768px) {
+    blockquote {
+      padding: 55px 20px 55px 20px;
+    }
+
+    ul,
+    ol {
+      padding: 0 0.5rem;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    h2 {
+      font-size: 20px;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+}

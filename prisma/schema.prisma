@@ -1,0 +1,641 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+    SUPER_ADMIN
+    ADMIN
+    CUSTOMER
+}
+
+enum CarCategoryType {
+    SEDAN
+    SUV
+    SPORTS
+    LUXURY
+    COUPE
+    CONVERTIBLE
+}
+
+enum TransmissionType {
+    AUTOMATIC
+    MANUAL
+}
+
+enum FuelType {
+    PETROL
+    DIESEL
+    HYBRID
+    ELECTRIC
+}
+
+enum CarStatus {
+    ACTIVE
+    HIDDEN
+    MAINTENANCE
+    DELETED
+}
+
+enum RentalPeriod {
+    DAILY
+    WEEKLY
+    MONTHLY
+}
+
+enum AuditAction {
+    CREATE
+    UPDATE
+    DELETE
+    SOFT_DELETE
+    RESTORE
+    LOGIN
+    LOGOUT
+    PERMISSION_CHANGE
+}
+
+enum ContactType {
+    PHONE
+    EMAIL
+    WHATSAPP
+}
+
+enum HomePageSectionType {
+    HERO
+    AFFORDABLE_CARS
+    RECOMMENDED_CARS
+    BRANDS
+    CATEGORIES
+    FAQ
+    TESTIMONIALS
+    BLOGS
+    CUSTOM
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+    id              String   @id @default(cuid())
+    email           String   @unique
+    phone           String?  @unique
+    passwordHash    String
+    firstName       String?
+    lastName        String?
+    role            UserRole @default(CUSTOMER)
+    isEmailVerified Boolean  @default(false)
+    isPhoneVerified Boolean  @default(false)
+    isActive        Boolean  @default(true)
+
+    // Relations
+    adminProfile AdminProfile?
+    reviews      Review[]
+    auditLogs    AdminAuditLog[] @relation("UserAuditLogs")
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([email])
+    @@index([phone])
+    @@index([role])
+    @@index([isActive])
+    @@index([deletedAt])
+    @@map("users")
+}
+
+model AdminProfile {
+    id          String    @id @default(cuid())
+    userId      String    @unique
+    employeeId  String?   @unique
+    department  String?
+    permissions Json? // Flexible permissions structure
+    lastLoginAt DateTime?
+    lastLoginIp String?
+
+    // Relations
+    user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+    auditLogs AdminAuditLog[] @relation("AdminAuditLogs")
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([userId])
+    @@index([employeeId])
+    @@index([deletedAt])
+    @@map("admin_profiles")
+}
+
+// ============================================
+// CAR CATALOG
+// ============================================
+
+model CarBrand {
+    id          String  @id @default(cuid())
+    name        String  @unique
+    slug        String  @unique
+    logoUrl     String?
+    description String?
+
+    seo_title       String @default("")
+    seo_description String @default("")
+    seo_keywords    String @default("")
+
+    isActive Boolean @default(true)
+
+    // Relations
+    cars Car[]
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([slug])
+    @@index([isActive])
+    @@index([deletedAt])
+    @@map("car_brands")
+}
+
+model CarCategory {
+    id          String          @id @default(cuid())
+    type        CarCategoryType
+    name        String          @unique
+    slug        String          @unique
+    description String?
+    iconUrl     String?
+    isActive    Boolean         @default(true)
+    showOnHome  Boolean         @default(false)
+
+    seo_title       String @default("")
+    seo_description String @default("")
+    seo_keywords    String @default("")
+
+    // Relations
+    cars Car[]
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([type])
+    @@index([slug])
+    @@index([isActive])
+    @@index([deletedAt])
+    @@map("car_categories")
+}
+
+model Dealer {
+    id       String  @id @default(cuid())
+    name     String
+    slug     String  @unique
+    logoUrl  String?
+    phone    String?
+    whatsapp String?
+    location String?
+    hours    String? // e.g., "Today Open 24hrs"
+    note     String? @db.Text
+    isActive Boolean @default(true)
+
+    // Relations
+    cars Car[]
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([slug])
+    @@index([isActive])
+    @@index([deletedAt])
+    @@map("dealers")
+}
+
+model Car {
+    id         String  @id @default(cuid())
+    brandId    String
+    categoryId String
+    dealerId   String?
+    name       String
+    model      String
+    year       Int
+    slug       String  @unique
+
+    // Seo
+    seo_title       String @default("")
+    seo_description String @default("")
+    seo_keywords    String @default("")
+
+    // Specifications
+    transmission      TransmissionType
+    fuelType          FuelType
+    seats             Int
+    doors             Int              @default(4)
+    bags              Int              @default(2)
+    mileageLimit      Decimal          @default(250)
+    additionalMileage Decimal          @default(10)
+    engineSize        String? // e.g., "3.0L V6"
+    horsepower        Int?
+    topSpeed          Int? // km/h
+    acceleration      Float? // 0-100 km/h in seconds
+
+    // Feature flags
+    oneDayRental    Boolean @default(false)
+    insurance       Boolean @default(false)
+    hasChauffeur    Boolean @default(false)
+    hasSelfDrive    Boolean @default(true)
+    hasGPS          Boolean @default(true)
+    hasBluetooth    Boolean @default(true)
+    hasSunroof      Boolean @default(false)
+    hasLeatherSeats Boolean @default(true)
+    hasBackupCamera Boolean @default(true)
+
+    // Pricing & availability
+    baseDailyPrice      Decimal  @db.Decimal(10, 2)
+    baseWeeklyPrice     Decimal? @db.Decimal(10, 2)
+    baseMonthlyPrice    Decimal? @db.Decimal(10, 2)
+    chauffeurDailyPrice Decimal? @db.Decimal(10, 2)
+
+    // Status & metadata
+    status       CarStatus @default(ACTIVE)
+    description  String?   @db.Text
+    highlights   String[]
+    requirments  String[]
+    color        String?
+    licensePlate String?
+    vin          String?
+
+    affordable  Boolean @default(false)
+    recommended Boolean @default(false)
+
+    // Relations
+    brand        CarBrand          @relation(fields: [brandId], references: [id])
+    dealer       Dealer?           @relation(fields: [dealerId], references: [id])
+    category     CarCategory       @relation(fields: [categoryId], references: [id])
+    images       CarImage[]
+    pricing      RentalPricing[]
+    availability CarAvailability[]
+    reviews      Review[]
+    carFeatures  CarFeature[]
+    carFaqs      CarFaq[]
+    rentalTerms  RentalTerm[]
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([brandId])
+    @@index([categoryId])
+    @@index([dealerId])
+    @@index([model])
+    @@index([transmission])
+    @@index([fuelType])
+    @@index([seats])
+    @@index([hasChauffeur])
+    @@index([hasSelfDrive])
+    @@index([status])
+    @@index([baseDailyPrice])
+    @@index([baseWeeklyPrice])
+    @@index([baseMonthlyPrice])
+    @@index([slug])
+    @@index([deletedAt])
+    @@index([brandId, categoryId, status])
+    @@index([hasChauffeur, hasSelfDrive, status])
+    @@index([transmission, fuelType, seats, status])
+    @@map("cars")
+}
+
+model CarFeature {
+    id    String @id @default(cuid())
+    carId String
+
+    title String
+    tags  String[]
+
+    // Relations
+    car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+    // Soft delete & timestamps
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model CarFaq {
+    id    String @id @default(cuid())
+    carId String
+
+    question String
+    answer   String
+
+    // Relations
+    car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+    // Soft delete & timestamps
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model RentalTerm {
+    id    String @id @default(cuid())
+    carId String
+
+    title          String
+    title_ar       String
+    description    String @db.Text // Tooltip text for the "!" icon
+    description_ar String @db.Text // Tooltip text for the "!" icon
+
+    // Relations
+    car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+    // Soft delete & timestamps
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([carId])
+    @@map("rental_terms")
+}
+
+model CarImage {
+    id           String  @id @default(cuid())
+    carId        String
+    url          String
+    altText      String?
+    displayOrder Int     @default(0)
+    isPrimary    Boolean @default(false)
+
+    // Relations
+    car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([carId])
+    @@index([carId, isPrimary])
+    @@index([carId, displayOrder])
+    @@index([deletedAt])
+    @@map("car_images")
+}
+
+model RentalPricing {
+    id          String       @id @default(cuid())
+    carId       String
+    period      RentalPeriod
+    price       Decimal      @db.Decimal(10, 2)
+    isChauffeur Boolean      @default(false)
+    minDays     Int? // Minimum rental days for this pricing
+    maxDays     Int? // Maximum rental days for this pricing
+    validFrom   DateTime?
+    validUntil  DateTime?
+    isActive    Boolean      @default(true)
+
+    // Relations
+    car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([carId])
+    @@index([period])
+    @@index([isChauffeur])
+    @@index([isActive])
+    @@index([validFrom, validUntil])
+    @@index([carId, period, isChauffeur, isActive])
+    @@index([deletedAt])
+    @@map("rental_pricing")
+}
+
+model CarAvailability {
+    id          String   @id @default(cuid())
+    carId       String
+    date        DateTime @db.Date
+    isAvailable Boolean  @default(true)
+    reason      String? // e.g., "Maintenance", "Booked", "Holiday"
+
+    // Relations
+    car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@unique([carId, date])
+    @@index([carId])
+    @@index([date])
+    @@index([isAvailable])
+    @@index([carId, date, isAvailable])
+    @@index([date, isAvailable])
+    @@index([deletedAt])
+    @@map("car_availability")
+}
+
+// ============================================
+// REVIEWS & RATINGS
+// ============================================
+
+model Review {
+    id     String @id @default(cuid())
+    userId String
+    carId  String
+
+    rating      Int // 1-5
+    title       String?
+    comment     String? @db.Text
+    isVerified  Boolean @default(false) // Verified purchase
+    isPublished Boolean @default(true)
+
+    // Relations
+    user User @relation(fields: [userId], references: [id])
+    car  Car  @relation(fields: [carId], references: [id])
+
+    // Soft delete & timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([userId])
+    @@index([carId])
+    @@index([rating])
+    @@index([isPublished])
+    @@index([carId, isPublished])
+    @@index([deletedAt])
+    @@map("reviews")
+}
+
+// ============================================
+// ADMIN & AUDIT LOGGING
+// ============================================
+
+model AdminAuditLog {
+    id          String      @id @default(cuid())
+    adminId     String? // Admin who performed the action
+    userId      String? // User affected by the action (if applicable)
+    action      AuditAction
+    entityType  String // e.g., "Car", "Booking", "User"
+    entityId    String? // ID of the affected entity
+    changes     Json? // Before/after changes
+    ipAddress   String?
+    userAgent   String?
+    description String?     @db.Text
+
+    // Relations
+    admin AdminProfile? @relation("AdminAuditLogs", fields: [adminId], references: [id])
+    user  User?         @relation("UserAuditLogs", fields: [userId], references: [id])
+
+    // Timestamps
+    createdAt DateTime @default(now())
+
+    @@index([adminId])
+    @@index([userId])
+    @@index([action])
+    @@index([entityType])
+    @@index([entityId])
+    @@index([createdAt])
+    @@index([adminId, createdAt])
+    @@index([entityType, entityId])
+    @@map("admin_audit_logs")
+}
+
+model HomeHero {
+    id             String  @id @default(cuid())
+    tagline        String?
+    tagline_ar     String?
+    heading        String?
+    heading_ar     String?
+    description    String? @db.Text
+    description_ar String? @db.Text
+    imageUrl       String?
+    imageSrc       String?
+
+    // Timestamps
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("home_hero")
+}
+
+model Contact {
+    id      String      @id @default(cuid())
+    title   String
+    value   String
+    type    ContactType @default(PHONE)
+    enabled Boolean     @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+// ============================================
+// HOME PAGE MANAGEMENT
+// ============================================
+
+model HomePageSection {
+    id        String              @id @default(cuid())
+    type      HomePageSectionType @unique
+    name      String
+    name_ar   String?
+    order     Int
+    isVisible Boolean             @default(true)
+    config    Json? // Section-specific configuration
+    config_ar Json? // Arabic configuration
+
+    // Timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([order])
+    @@index([isVisible])
+    @@index([deletedAt])
+    @@map("home_page_sections")
+}
+
+model KeyValuePair {
+    id Int @id @default(autoincrement())
+
+    // Fields
+    key   String @unique
+    value String
+
+    // Timestamps
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+
+    @@index([key])
+}
+
+model Faq {
+    id          String  @id @default(cuid())
+    question    String
+    question_ar String
+    answer      String
+    answer_ar   String
+    isEnabled   Boolean @default(true)
+
+    // Timestamps
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("faq")
+}
+
+model Blog {
+    id        String   @id @default(cuid())
+    title     String
+    slug      String   @unique
+    keywords  String[]
+    content   Json
+    draft     Boolean  @default(false)
+    tags      String[]
+    cover     String
+    info      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("blogs")
+}
+
+model Asset {
+    id        String   @id @default(cuid())
+    name      String
+    url       String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("assets")
+}
+
+model Metadata {
+    id          String   @id @default(cuid())
+    page        String
+    title       String
+    description String
+    keywords    String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@map("metadata")
+}

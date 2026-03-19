@@ -1,0 +1,10 @@
+# This is the OpenAPI specification file
+# Access it at /api/swagger when the server is running
+# Or import into Swagger UI / Postman
+
+# The actual spec is generated dynamically from code comments
+# See app/api/swagger/route.ts for implementation
+
+# For a complete static spec, see the OpenAPI spec provided in the earlier documentation
+# This file serves as a reference
+
