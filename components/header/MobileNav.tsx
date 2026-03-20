@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, ChevronRight, Home, Globe, DollarSign } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
@@ -18,10 +18,23 @@ interface MobileNavProps {
 export function MobileNav({ brandsPromise, categoriesPromise }: MobileNavProps) {
     const t = useTranslations();
     const [open, setOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
     
     // Use the promises
     const brands = use(brandsPromise);
     const categories = use(categoriesPromise);
+
+    if (!mounted) {
+        return (
+            <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
+            </Button>
+        );
+    }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

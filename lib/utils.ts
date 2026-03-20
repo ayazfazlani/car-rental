@@ -278,7 +278,7 @@ export function whatsAppMessage(
 export const METADATA_BASE_URL = MAP[APP].url
 
 export const getImageUrl = (image: string | null | undefined) => {
-  if (!image) return ''
+  if (!image) return null
   if (image.includes('http')) return image
   const hostInfo = MAP[APP]
   if (process.env.NODE_ENV === 'development') {

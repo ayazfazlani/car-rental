@@ -13,8 +13,8 @@ export default function BlogSchema({ blog, locale }: { blog: Blog, locale: strin
     "image": [
       getImageUrl(blog.cover)
     ],
-    "datePublished": blog.createdAt.toISOString(),
-    "dateModified": blog.updatedAt.toISOString(),
+    "datePublished": new Date(blog.createdAt).toISOString(),
+    "dateModified": new Date(blog.updatedAt).toISOString(),
     "author": [{
         "@type": "Organization",
         "name": "Luxus Car Rental",

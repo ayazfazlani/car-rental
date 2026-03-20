@@ -134,7 +134,7 @@ export async function Footer() {
           <div>
             <div className="space-y-3">
               {contacts.length > 0 && contacts.map((contact) => (
-                <div className="pt-3">
+                <div key={contact.id} className="pt-3">
                   <p className="text-xs text-muted-foreground mb-1.5 italic">
                     {contact.title}
                   </p>

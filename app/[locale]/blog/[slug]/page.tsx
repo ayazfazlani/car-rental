@@ -68,14 +68,16 @@ export default async function page({ params }: { params: Params }) {
                                 <p className='text-gray-500 text-lg'>{formatDate(blog.createdAt)}</p>
                             </div>
                         </div>
-                        <div className='relative h-[400px] md:h-[500px] lg:h-[600px] border'>
-                            <Image
-                                src={getImageUrl(blog.cover)}
-                                alt='cover'
-                                fill
-                                objectFit='cover'
-                            />
-                        </div>
+                        {getImageUrl(blog.cover) && (
+                            <div className='relative h-[400px] md:h-[500px] lg:h-[600px] border'>
+                                <Image
+                                    src={getImageUrl(blog.cover)!}
+                                    alt='cover'
+                                    fill
+                                    objectFit='cover'
+                                />
+                            </div>
+                        )}
                         {blog.content && <div className='editor max-w-[920px] flex flex-col mx-auto px-0 mob:px-8  md:px-16 py-24 lg:px-0 md:py-32'
                             dangerouslySetInnerHTML={{
                                 __html:

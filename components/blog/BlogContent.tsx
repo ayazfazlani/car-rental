@@ -12,15 +12,13 @@ export function SmallBlog({ blog }: { blog: Blog }) {
     return (
         <Link href={`blog/${blog.slug}`} className='flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
             <div className='h-[300px] relative'>
-                <Link href={`blog/${blog.slug}`}>
-                    <Image
-                        src={getImageUrl(blog?.cover || '')}
-                        alt={blog?.title || ''}
-                        fill={true}
-                        className='rounded-xl overflow-hidden'
-                        style={{ objectFit: "cover" }}
-                    />
-                </Link>
+                <Image
+                    src={getImageUrl(blog?.cover)}
+                    alt={blog?.title || ''}
+                    fill={true}
+                    className='rounded-xl overflow-hidden'
+                    style={{ objectFit: "cover" }}
+                />
             </div>
             <div className='flex flex-col gap-2 p-4'>
                 <div className='flex flex-col gap-4'>
