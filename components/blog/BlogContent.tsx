@@ -11,14 +11,20 @@ type BlogContentProps = {
 export function SmallBlog({ blog }: { blog: Blog }) {
     return (
         <Link href={`blog/${blog.slug}`} className='flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
-            <div className='h-[300px] relative'>
-                <Image
-                    src={getImageUrl(blog?.cover)}
-                    alt={blog?.title || ''}
-                    fill={true}
-                    className='rounded-xl overflow-hidden'
-                    style={{ objectFit: "cover" }}
-                />
+            <div className='h-[300px] relative bg-muted'>
+                {getImageUrl(blog?.cover) ? (
+                    <Image
+                        src={getImageUrl(blog?.cover)!}
+                        alt={blog?.title || ''}
+                        fill={true}
+                        className='rounded-xl overflow-hidden'
+                        style={{ objectFit: "cover" }}
+                    />
+                ) : (
+                    <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                        No image available
+                    </div>
+                )}
             </div>
             <div className='flex flex-col gap-2 p-4'>
                 <div className='flex flex-col gap-4'>
