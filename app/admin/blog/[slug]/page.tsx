@@ -388,7 +388,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                                                 ) : (
                                                     <div className='relative w-full h-full'>
                                                         <Image
-                                                            src={getImageUrl(form.getValues('cover'))}
+                                                            src={getImageUrl(form.getValues('cover')) || ''}
                                                             alt='cover'
                                                             fill
                                                             objectFit='cover'

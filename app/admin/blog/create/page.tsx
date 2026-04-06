@@ -358,7 +358,7 @@ export default function Page() {
                                                 ) : (
                                                     <div className='relative w-full h-full'>
                                                         <Image
-                                                            src={getImageUrl(form.getValues('cover'))}
+                                                            src={getImageUrl(form.getValues('cover')) || ''}
                                                             alt='cover'
                                                             fill
                                                             objectFit='cover'
