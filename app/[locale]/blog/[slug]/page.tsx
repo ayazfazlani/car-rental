@@ -13,8 +13,14 @@ import { Metadata } from 'next';
 import BlogSchema from '@/components/seo/BlogSchema';
 
 
+type Params = Promise<{
+    slug: string;
+    locale: string;
+}>
+
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-    const blog = await getBlog(params.slug)
+    const { slug } = await params;
+    const blog = await getBlog(slug)
     if (!blog) return {
         title: 'Blog Not Found',
     }
@@ -26,21 +32,16 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         },
         description: blog.info,
         keywords: blog.keywords,
-        assets: [getImageUrl(blog.cover)],
+        assets: [getImageUrl(blog.cover) || ""],
         openGraph: {
             title: blog.title,
             description: blog.info,
             siteName: "Luxus Car Rental",
             locale: 'en_US, ar',
-            images: [getImageUrl(blog.cover)],
+            images: [getImageUrl(blog.cover) || ""],
             type: 'article'
         },
     }
-}
-
-type Params = {
-    slug: string;
-    locale: string;
 }
 
 export default async function page({ params }: { params: Params }) {
