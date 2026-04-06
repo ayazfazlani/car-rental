@@ -280,8 +280,8 @@ export function whatsAppMessage(
 
 export const METADATA_BASE_URL = MAP[APP].url
 
-export const getImageUrl = (image: string | null | undefined) => {
-  if (!image) return null
+export const getImageUrl = (image: string | null | undefined): string => {
+  if (!image) return ""
   if (image.includes('http')) return image
   
   // Always return relative path for local images to fix next/image 403 errors

@@ -27,7 +27,7 @@ function BlogItem({ blog, onDelete }: { blog: Blog, onDelete: (id: string) => vo
         <div className='flex flex-col items-center md:items-start md:flex-row w-full justify-between p-4 gap-10 border rounded-3xl'>
             <div className='h-[250px] w-[300px] relative'>
                 <Image
-                    src={getImageUrl(blog?.cover)}
+                    src={getImageUrl(blog?.cover) || '/placeholder.svg'}
                     alt={blog?.title}
                     className='rounded-2xl overflow-hidden'
                     fill
