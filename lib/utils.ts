@@ -131,8 +131,13 @@ export const removeAllDecimal = <T>(value: any): T => {
     return value
   }
 
+  // Handle Date objects -> convert to ISO string for JSON safety
+  if (value instanceof Date) {
+    return value.toISOString() as unknown as T
+  }
+
   // Prisma Decimal → number
-  if (value instanceof Prisma.Decimal) {
+  if (value && typeof value === 'object' && 'toNumber' in value && typeof value.toNumber === 'function') {
     return value.toNumber() as unknown as T
   }
 
@@ -144,11 +149,9 @@ export const removeAllDecimal = <T>(value: any): T => {
   // Object
   if (typeof value === 'object') {
     const result: Record<string, unknown> = {}
-
     for (const [key, val] of Object.entries(value)) {
       result[key] = removeAllDecimal(val)
     }
-
     return result as T
   }
 
@@ -280,12 +283,17 @@ export const METADATA_BASE_URL = MAP[APP].url
 export const getImageUrl = (image: string | null | undefined) => {
   if (!image) return null
   if (image.includes('http')) return image
-  const hostInfo = MAP[APP]
-  if (process.env.NODE_ENV === 'development') {
-    return `${image}`
-  }
+  
+  // Always return relative path for local images to fix next/image 403 errors
+  return image.startsWith('/') ? image : `/${image}`
+}
 
-  return `${hostInfo.url}${image}`
+export const getAbsoluteImageUrl = (image: string | null | undefined) => {
+  if (!image) return null
+  if (image.includes('http')) return image
+  const hostInfo = MAP[APP]
+  const rel = image.startsWith('/') ? image : `/${image}`
+  return `${hostInfo.url}${rel}`
 }
 
 

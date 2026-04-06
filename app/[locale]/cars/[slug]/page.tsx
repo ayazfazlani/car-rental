@@ -29,7 +29,7 @@ import { CarDetailFeatures } from "@/components/car-detail-features";
 import { Button } from "@/components/ui/button";
 import TrackViewCar from "@/components/tracking/view-car";
 import { getActiveContacts } from "@/lib/data/contact";
-import { toNumberSafe, whatsAppMessage, getImageUrl } from "@/lib/utils";
+import { toNumberSafe, whatsAppMessage, getImageUrl, getAbsoluteImageUrl } from "@/lib/utils";
 import { ContactType } from "@prisma/client";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
@@ -52,13 +52,13 @@ export async function generateMetadata({ params }: PageProps) {
     },
     description: car.seo_description || car.description,
     keywords: car.seo_keywords || car.brand?.name + ", " + car.model,
-    assets: [getImageUrl(primaryImage)],
+    assets: [getAbsoluteImageUrl(primaryImage)],
     openGraph: {
       title: car.brand?.name + " " + car.model,
       description: car.description,
       siteName: "Luxus Car Rental",
       locale: 'en_US, ar',
-      images: [getImageUrl(primaryImage)],
+      images: [getAbsoluteImageUrl(primaryImage)],
       type: 'article'
     },
   }
@@ -123,7 +123,7 @@ export default async function CarDetailPage({ params }: PageProps) {
             {car.brand?.logoUrl && (
               <div className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 rounded-lg bg-secondary flex items-center justify-center">
                 <Image
-                  src={getImageUrl(car.brand.logoUrl)}
+                  src={getImageUrl(car.brand.logoUrl) || "/placeholder.svg"}
                   alt={car.brand.name}
                   width={40}
                   height={40}

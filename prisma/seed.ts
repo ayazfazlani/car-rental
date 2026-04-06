@@ -8,6 +8,7 @@ import { hashPassword } from "../lib/auth";
 import { createBrands } from "./seed/brands";
 import { createCategories } from "./seed/category";
 import { createCars } from "./seed/cars";
+import 'dotenv/config';
 
 const prisma = new PrismaClient();
 
@@ -243,6 +244,9 @@ async function main() {
   // await createBrands(prisma)
   // await createCategories(prisma)
   // await createCars(prisma)
+  await createBrands(prisma);
+  await createCategories(prisma);
+  await createCars(prisma);
   await createDefaultHomeSections()
   await createContacts()
   await createHomeHero()

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Prisma } from "@prisma/client";
 import { getActiveContacts } from "@/lib/data/contact";
 import HorizontalListing from "./horizontal-listing";
+import { removeAllDecimal } from "@/lib/utils";
 
 interface CarSectionProps {
   titleKey?: string;
@@ -28,6 +29,9 @@ export async function CarFilterdSection({
   const cars = await getFilterdCars(query, 0, 12)
   const contacts = await getActiveContacts();
 
+  // Clean data for JSON serialization (convert Decimal/Date)
+  const cleanCars = removeAllDecimal(cars) as any[]
+
   if (!cars.length) return <></>
 
   return (
@@ -45,7 +49,7 @@ export async function CarFilterdSection({
             </Link>
           </Button>
         </div>
-        <HorizontalListing cars={cars} contacts={contacts} />
+        <HorizontalListing cars={cleanCars} contacts={contacts} />
       </div>
     </section>
   );
