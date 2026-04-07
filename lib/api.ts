@@ -40,17 +40,29 @@ type DeleteProps = QueryProps & {
 
 class Api {
 
-    async apiError(res: any): Promise<{ logout: false, success: false, message: string }> {
-        const data = await res.json();
-        const message = data?.data?.message || data?.message
-        if (message && message === "Invalid or expired token") {
-            localStorage.removeItem("token");
-            window.location.href = "/admin/login"
-            // @ts-expect-error forcing logout
-            return { logout: true, success: false, message: data.data.message }
+    async apiError(res: Response): Promise<{ logout: false, success: false, message: string }> {
+        const contentType = res.headers.get("content-type") || "";
+        
+        if (contentType.includes("application/json")) {
+            const data = await res.json();
+            const message = data?.data?.message || data?.message
+            if (message && (message === "Invalid or expired token" || message === "Authentication required")) {
+                localStorage.removeItem("token");
+                window.location.href = "/admin/login"
+                // @ts-expect-error forcing logout
+                return { logout: true, success: false, message: data.data.message || message }
+            }
+            return { logout: false, success: false, message: message || `Error ${res.status}: ${res.statusText}` }
+        } else {
+            // Not JSON - probably HTML or other content type
+            const text = await res.text();
+            console.error(`API Error (${res.url}): Non-JSON response received. Status: ${res.status}`, text.substring(0, 200));
+            return { 
+                logout: false, 
+                success: false, 
+                message: `Server Error ${res.status}: ${res.statusText}. Please check logs.` 
+            };
         }
-
-        return { logout: false, success: false, message: message || "Network Error" }
     }
 
     async get<T>({ url, auth = false, headers = {} }: GetProps): Promise<ApiResponse<T>> {
@@ -70,13 +82,20 @@ class Api {
             if (!res.ok)
                 return this.apiError(res)
 
+            const contentType = res.headers.get("content-type") || "";
+            if (!contentType.includes("application/json")) {
+                console.error(`API Error (${url}): Expected JSON but received ${contentType}`);
+                return { logout: false, success: false, message: `Server Error: Expected JSON but received ${contentType}` };
+            }
+
             const data = await res.json();
             if (data?.data)
                 return { data: data.data, success: true };
             else
                 return { data, success: true };
-        } catch (error) {
-            return { logout: false, success: false, message: "Error fetching data" };
+        } catch (error: any) {
+            console.error(`Fetch error (${url}):`, error);
+            return { logout: false, success: false, message: error.message || "Error fetching data" };
         }
     }
 
@@ -100,13 +119,19 @@ class Api {
             if (!res.ok)
                 return this.apiError(res)
 
+            const contentType = res.headers.get("content-type") || "";
+            if (!contentType.includes("application/json")) {
+                return { logout: false, success: false, message: "Response was not JSON" };
+            }
+
             const data = await res.json();
             if (data?.data)
                 return { data: data.data, success: true };
             else
                 return { data, success: true };
-        } catch (error) {
-            return { logout: false, success: false, message: "Error fetching data" };
+        } catch (error: any) {
+            console.error(`Fetch error (${url}):`, error);
+            return { logout: false, success: false, message: error.message || "Error fetching data" };
         }
     }
 
@@ -130,13 +155,19 @@ class Api {
             if (!res.ok)
                 return this.apiError(res)
 
+            const contentType = res.headers.get("content-type") || "";
+            if (!contentType.includes("application/json")) {
+                return { logout: false, success: false, message: "Response was not JSON" };
+            }
+
             const data = await res.json();
             if (data?.data)
                 return { data: data.data, success: true };
             else
                 return { data, success: true };
-        } catch (error) {
-            return { logout: false, success: false, message: "Error fetching data" };
+        } catch (error: any) {
+            console.error(`Fetch error (${url}):`, error);
+            return { logout: false, success: false, message: error.message || "Error fetching data" };
         }
     }
 
@@ -159,13 +190,19 @@ class Api {
             if (!res.ok)
                 return this.apiError(res)
 
+            const contentType = res.headers.get("content-type") || "";
+            if (!contentType.includes("application/json")) {
+                return { logout: false, success: false, message: "Response was not JSON" };
+            }
+
             const data = await res.json();
             if (data?.data)
                 return { data: data.data, success: true };
             else
                 return { data, success: true };
-        } catch (error) {
-            return { logout: false, success: false, message: "Error fetching data" };
+        } catch (error: any) {
+            console.error(`Fetch error (${url}):`, error);
+            return { logout: false, success: false, message: error.message || "Error fetching data" };
         }
     }
 
@@ -186,13 +223,19 @@ class Api {
             if (!res.ok)
                 return this.apiError(res)
 
+            const contentType = res.headers.get("content-type") || "";
+            if (!contentType.includes("application/json")) {
+                return { logout: false, success: false, message: "Response was not JSON" };
+            }
+
             const data = await res.json();
             if (data?.data)
                 return { data: data.data, success: true };
             else
                 return { data, success: true };
-        } catch (error) {
-            return { logout: false, success: false, message: "Error fetching data" };
+        } catch (error: any) {
+            console.error(`Fetch error (${url}):`, error);
+            return { logout: false, success: false, message: error.message || "Error fetching data" };
         }
     }
 

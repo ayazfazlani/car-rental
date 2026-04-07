@@ -2,31 +2,38 @@
 
 import React from 'react'
 import ListItem from '@tiptap/extension-list-item'
-import { Content, EditorEvents, EditorProvider, useCurrentEditor } from '@tiptap/react'
+import {
+    useEditor,
+    EditorContent,
+    Content,
+    EditorEvents,
+    // BubbleMenu
+} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
-import { 
-    BetweenHorizontalStart, 
-    Bold, 
-    Heading1, 
-    Heading2, 
-    Heading3, 
-    ImageIcon, 
-    Italic, 
-    List, 
-    ListOrdered, 
-    MessageSquareQuote, 
-    Minus, 
-    Pilcrow, 
-    Redo, 
-    Strikethrough, 
-    Type, 
-    Undo 
+import {
+    BetweenHorizontalStart,
+    Bold,
+    Heading1,
+    Heading2,
+    Heading3,
+    ImageIcon,
+    Italic,
+    List,
+    ListOrdered,
+    MessageSquareQuote,
+    Minus,
+    Pilcrow,
+    Redo,
+    Strikethrough,
+    Type,
+    Undo
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Editor } from '@tiptap/react'
 
 const toolbarButtonStyles = 'h-9 w-9 p-0'
 
@@ -64,9 +71,7 @@ const ToolbarButton = ({
     </Tooltip>
 )
 
-const MenuBar = ({ onImageTap }: { onImageTap?: () => void }) => {
-    const { editor } = useCurrentEditor()
-
+const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: () => void }) => {
     if (!editor) {
         return null
     }
@@ -228,36 +233,39 @@ const extensions = [
 ]
 
 interface RteProps {
-    value: string;
+    initialValue: string;
     onChange: (value: string) => void;
     placeholder?: string;
     minHeight?: string;
     onImageTap?: () => void;
 }
 
-export const RTE = ({ value, onChange, placeholder, minHeight = '300px', onImageTap }: RteProps) => {
+export const RTE = ({ initialValue, onChange, placeholder, minHeight = '300px', onImageTap }: RteProps) => {
+    const editor = useEditor({
+        immediatelyRender: false,
+        extensions: extensions,
+        content: initialValue,
+        editorProps: {
+            attributes: {
+                class: cn(
+                    'prose prose-sm max-w-none overflow-x-hidden overflow-y-auto w-full focus:outline-none p-4 focus:ring-2 focus:ring-blue-500 focus:ring-inset',
+                    'min-h-[' + minHeight + ']'
+                ),
+                placeholder: placeholder || ''
+            }
+        },
+        onUpdate: ({ editor }) => {
+            const html = editor.getHTML()
+            onChange(html)
+        },
+    })
+
     return (
         <div className='border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow'>
-            <EditorProvider
-                immediatelyRender={false}
-                slotBefore={<MenuBar onImageTap={onImageTap} />}
-                extensions={extensions}
-                content={value}
-                editorProps={{
-                    attributes: {
-                        class: cn(
-                            'prose prose-sm max-w-none overflow-x-hidden overflow-y-auto w-full focus:outline-none p-4 focus:ring-2 focus:ring-blue-500 focus:ring-inset',
-                            'min-h-[' + minHeight + ']'
-                        ),
-                        placeholder: placeholder || ''
-                    }
-                }}
-                onUpdate={(event: EditorEvents['update']) => {
-                    onChange(event.editor.getHTML())
-                }}
-            >
-                {/* Image picker can be passed externally or integrated if needed */}
-            </EditorProvider>
+            <MenuBar editor={editor} onImageTap={onImageTap} />
+            <EditorContent editor={editor} />
         </div>
     )
 }
+
+

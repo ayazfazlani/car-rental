@@ -24,8 +24,14 @@ const ALLOWED_MIME_TYPES = [
  * Ensure upload directory exists
  */
 export async function ensureUploadDir(): Promise<void> {
-  if (!existsSync(UPLOAD_DIR)) {
-    await mkdir(UPLOAD_DIR, { recursive: true });
+  try {
+    if (!existsSync(UPLOAD_DIR)) {
+      console.log(`Creating upload directory: ${UPLOAD_DIR}`);
+      await mkdir(UPLOAD_DIR, { recursive: true });
+    }
+  } catch (error) {
+    console.error(`FAILED to create upload directory ${UPLOAD_DIR}:`, error);
+    throw new Error(`Upload directory creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -88,7 +94,12 @@ export async function saveFile(
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  await writeFile(filePath, buffer);
+  try {
+    await writeFile(filePath, buffer);
+  } catch (error) {
+    console.error(`FAILED to write file ${filePath}:`, error);
+    throw new Error(`File system write failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 
   // Generate public URL
   const url = `/uploads/cars/${carId}/${fileName}`;
