@@ -49,7 +49,7 @@ const SettingItem = ({
                 </button>
             </div>
             <RTE
-                initialValue={initialValue}
+                value={initialValue}
                 onChange={setCurrent}
             />
         </div>

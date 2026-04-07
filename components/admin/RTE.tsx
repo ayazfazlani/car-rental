@@ -233,18 +233,18 @@ const extensions = [
 ]
 
 interface RteProps {
-    initialValue: string;
+    value: string;
     onChange: (value: string) => void;
     placeholder?: string;
     minHeight?: string;
     onImageTap?: () => void;
 }
 
-export const RTE = ({ initialValue, onChange, placeholder, minHeight = '300px', onImageTap }: RteProps) => {
+export const RTE = ({ value, onChange, placeholder, minHeight = '300px', onImageTap }: RteProps) => {
     const editor = useEditor({
         immediatelyRender: false,
         extensions: extensions,
-        content: initialValue,
+        content: value,
         editorProps: {
             attributes: {
                 class: cn(
@@ -259,6 +259,16 @@ export const RTE = ({ initialValue, onChange, placeholder, minHeight = '300px', 
             onChange(html)
         },
     })
+
+    // Carefully synchronize value prop ONLY when not focused
+    React.useEffect(() => {
+        if (!editor || editor.isFocused) return
+        
+        const currentHTML = editor.getHTML()
+        if (value !== currentHTML) {
+            editor.commands.setContent(value)
+        }
+    }, [value, editor])
 
     return (
         <div className='border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow'>
