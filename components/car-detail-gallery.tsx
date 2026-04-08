@@ -73,6 +73,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                 className="object-cover hover:opacity-90 transition-opacity"
                 sizes="100vw"
                 priority={index === 0}
+                unoptimized
               />
               {/* Image counter */}
               <div className="absolute top-3 right-3 bg-black/70 text-white text-xs font-medium px-2.5 py-1 rounded-full">
@@ -102,6 +103,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                 className="object-cover hover:opacity-90 transition-opacity"
                 sizes="100vw"
                 priority
+                unoptimized
               />
             </div>
           )}
@@ -120,6 +122,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                   className="object-cover hover:opacity-90 transition-opacity"
                   sizes="50vw"
                   priority
+                  unoptimized
                 />
               </div>
               <div
@@ -132,6 +135,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                   fill
                   className="object-cover hover:opacity-90 transition-opacity"
                   sizes="50vw"
+                  unoptimized
                 />
               </div>
             </>
@@ -154,6 +158,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                   className="object-cover hover:opacity-90 transition-opacity"
                   sizes="50vw"
                   priority
+                  unoptimized
                 />
               </div>
               <div
@@ -169,6 +174,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                   fill
                   className="object-cover hover:opacity-90 transition-opacity"
                   sizes="25vw"
+                  unoptimized
                 />
               </div>
               <div
@@ -184,6 +190,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                   fill
                   className="object-cover hover:opacity-90 transition-opacity"
                   sizes="25vw"
+                  unoptimized
                 />
               </div>
             </>
@@ -206,6 +213,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                   className="object-cover hover:opacity-90 transition-opacity"
                   sizes="50vw"
                   priority
+                  unoptimized
                 />
               </div>
 
@@ -224,6 +232,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                     fill
                     className="object-cover hover:opacity-90 transition-opacity"
                     sizes="25vw"
+                    unoptimized
                   />
                   {index === 3 && images.length > 4 && (
                     <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -260,6 +269,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
               className="object-contain"
               sizes="100vw"
               priority
+              unoptimized
             />
 
             {/* Previous button */}
@@ -301,6 +311,7 @@ export function CarDetailGallery({ images, name }: CarDetailGalleryProps) {
                     fill
                     className="object-cover"
                     sizes="64px"
+                    unoptimized
                   />
                 </button>
               ))}

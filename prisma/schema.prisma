@@ -156,6 +156,7 @@ model CarBrand {
     seo_title       String @default("")
     seo_description String @default("")
     seo_keywords    String @default("")
+    canonical       String @default("")
 
     isActive Boolean @default(true)
 
@@ -186,6 +187,7 @@ model CarCategory {
     seo_title       String @default("")
     seo_description String @default("")
     seo_keywords    String @default("")
+    canonical       String @default("")
 
     // Relations
     cars Car[]
@@ -242,6 +244,7 @@ model Car {
     seo_title       String @default("")
     seo_description String @default("")
     seo_keywords    String @default("")
+    canonical       String @default("")
 
     // Specifications
     transmission      TransmissionType
@@ -612,6 +615,7 @@ model Blog {
     tags      String[]
     cover     String
     info      String
+    canonical String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -634,6 +638,7 @@ model Metadata {
     title       String
     description String
     keywords    String
+    canonical   String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 

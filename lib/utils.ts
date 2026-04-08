@@ -364,7 +364,7 @@ export const sentanceCase = (str: string) => {
   return sanatized.charAt(0).toUpperCase() + sanatized.slice(1);
 }
 
-export const formatMetadata = (meta?: Metadata | null) => {
+export const formatMetadata = (meta?: any) => {
   if (!meta) {
     return {
       title: "luxus Car Rental",
@@ -372,6 +372,13 @@ export const formatMetadata = (meta?: Metadata | null) => {
       applicationName: "Luxus Car Rental",
       keywords: 'Car Rental, Luxury Car Rental, Luxus Car Rental, Luxus Car Rental',
       assets: ['/images/luxuslogo.png'],
+      alternates: {
+        canonical: METADATA_BASE_URL
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
       openGraph: {
         title: 'luxus Car Rental - Luxury Car Rental',
         description: 'Luxus Car Rental is the ultimate car rental platform for luxury cars.',
@@ -389,6 +396,13 @@ export const formatMetadata = (meta?: Metadata | null) => {
     keywords: meta.keywords,
     assets: ['/images/luxuslogo.png'],
     applicationName: "Luxus Car Rental",
+    alternates: {
+      canonical: meta.canonical || METADATA_BASE_URL
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
     openGraph: {
       title: meta.title,
       description: meta.description,

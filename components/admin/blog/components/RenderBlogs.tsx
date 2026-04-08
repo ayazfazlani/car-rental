@@ -32,6 +32,7 @@ function BlogItem({ blog, onDelete }: { blog: Blog, onDelete: (id: string) => vo
                     className='rounded-2xl overflow-hidden'
                     fill
                     style={{ objectFit: "cover" }}
+                    unoptimized
                 />
             </div>
             <div className='flex flex-1 flex-col xl:flex-row gap-3 mt-4'>

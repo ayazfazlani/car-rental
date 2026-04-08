@@ -31,6 +31,7 @@ export function DealerCard({ dealer }: DealerCardProps) {
             width={120}
             height={60}
             className="h-12 sm:h-16 w-auto object-contain"
+            unoptimized
           />
         </div>
       )}

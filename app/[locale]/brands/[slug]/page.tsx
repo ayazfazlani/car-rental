@@ -19,12 +19,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     
     if (!brand) return {};
 
+    const title = `${brand.seo_title || brand.name} | Luxus Car Rental`;
+    const description = brand.seo_description || stripHtml(brand.description || '') || `Rent premium ${brand.name} cars in Dubai.`;
+
     return {
-        title: `${brand.name} | Luxus Car Rental`,
-        description: stripHtml(brand.description || '') || `Rent premium ${brand.name} cars in Dubai.`,
+        title,
+        description,
+        keywords: brand.seo_keywords || brand.name,
+        alternates: {
+            canonical: brand.canonical || `https://luxuscarrental.com/brands/${brand.slug}`,
+        },
+        robots: {
+            index: true,
+            follow: true,
+        },
         openGraph: {
-            title: brand.name,
-            description: stripHtml(brand.description || '') || `Rent premium ${brand.name} cars in Dubai.`,
+            title: brand.seo_title || brand.name,
+            description,
             images: brand.logoUrl ? [brand.logoUrl] : [],
         }
     }

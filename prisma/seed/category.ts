@@ -2,7 +2,7 @@ import { CarCategory, CarCategoryType, Prisma, PrismaClient } from "@prisma/clie
 import { DefaultArgs } from "@prisma/client/runtime/library";
 
 const CATEGORIES: (Omit<CarCategory,
-    'createdAt' | 'updatedAt' | 'deletedAt' | 'seo_title' | 'seo_description' | 'seo_keywords'>)[] = [
+    'createdAt' | 'updatedAt' | 'deletedAt' | 'seo_title' | 'seo_description' | 'seo_keywords' | 'canonical'>)[] = [
         {
             id: "cmk2p11gj000g830qyjyv0j6x",
             type: "CONVERTIBLE",

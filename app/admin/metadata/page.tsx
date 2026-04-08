@@ -37,6 +37,7 @@ const defaultValues: TMetaData = {
     keywords: "",
     page: PAGE_METATAGS.HOME,
     title: "",
+    canonical: "",
 }
 
 export default function AdminCategories() {
@@ -168,6 +169,23 @@ export default function AdminCategories() {
                                             <FormLabel>Description</FormLabel>
                                             <FormControl>
                                                 <Textarea
+                                                    {...field}
+                                                    value={field?.value || ''}
+                                                    className="mt-1 block w-full"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="canonical"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Canonical URL (optional)</FormLabel>
+                                            <FormControl>
+                                                <Input
                                                     {...field}
                                                     value={field?.value || ''}
                                                     className="mt-1 block w-full"

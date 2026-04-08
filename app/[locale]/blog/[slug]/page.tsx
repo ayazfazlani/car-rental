@@ -32,6 +32,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         },
         description: blog.info,
         keywords: blog.keywords,
+        alternates: {
+            canonical: blog.canonical || `https://luxuscarrental.com/blog/${blog.slug}`,
+        },
+        robots: {
+            index: true,
+            follow: true,
+        },
         assets: [getImageUrl(blog.cover) || ""],
         openGraph: {
             title: blog.title,

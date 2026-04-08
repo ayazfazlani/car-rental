@@ -3,7 +3,7 @@ import { DefaultArgs } from "@prisma/client/runtime/library";
 
 const CARS: (Omit<Car,
     'baseDailyPrice' | 'baseWeeklyPrice' | 'baseMonthlyPrice' | 'chauffeurDailyPrice' | 'mileageLimit' | 'additionalMileage'
-    | 'createdAt' | 'updatedAt' | 'deletedAt' | 'dealerId' | 'seo_title' | 'seo_description' | 'seo_keywords'> & {
+    | 'createdAt' | 'updatedAt' | 'deletedAt' | 'dealerId' | 'seo_title' | 'seo_description' | 'seo_keywords' | 'canonical'> & {
         baseDailyPrice: number,
         baseWeeklyPrice?: number,
         baseMonthlyPrice?: number

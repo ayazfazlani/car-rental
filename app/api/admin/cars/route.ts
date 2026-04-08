@@ -93,6 +93,28 @@ async function createCar(req: AuthenticatedRequest) {
   try {
     const body = await req.json();
     const validatedData = createCarSchema.parse(body);
+ 
+    // Check for duplicate creation in last 60 seconds
+    const existingDuplicate = await prisma.car.findFirst({
+      where: {
+        name: validatedData.name,
+        model: validatedData.model,
+        year: validatedData.year,
+        brandId: validatedData.brandId,
+        categoryId: validatedData.categoryId,
+        color: validatedData.color,
+        createdAt: {
+          gt: new Date(Date.now() - 60000), // Created in the last 60 seconds
+        },
+      },
+    });
+ 
+    if (existingDuplicate) {
+      return NextResponse.json(
+        successResponse(existingDuplicate, "Car already created recently"),
+        { status: 200 } // Return 200 instead of 409 to be idempotent for slow/double clicks
+      );
+    }
 
     // Generate slug and ensure uniqueness
     const baseSlug = createSlug(

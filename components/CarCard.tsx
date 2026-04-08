@@ -52,6 +52,7 @@ export function CarCard({
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover"
+              unoptimized
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = "none";

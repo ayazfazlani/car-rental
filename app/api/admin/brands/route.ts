@@ -47,6 +47,7 @@ async function createBrand(req: AuthenticatedRequest) {
       const seo_title = formData.get("seo_title") as string | null;
       const seo_description = formData.get("seo_description") as string | null;
       const seo_keywords = formData.get("seo_keywords") as string | null;
+      const canonical = formData.get("canonical") as string | null;
 
       // Validate basic fields
       validatedData = createBrandSchema.parse({
@@ -56,6 +57,7 @@ async function createBrand(req: AuthenticatedRequest) {
         seo_title: seo_title || undefined,
         seo_description: seo_description || undefined,
         seo_keywords: seo_keywords || undefined,
+        canonical: canonical || undefined,
       });
 
       // Handle logo file upload

@@ -146,6 +146,7 @@ export const createCarSchema = z.object({
   seo_title: z.string().optional(),
   seo_description: z.string().optional(),
   seo_keywords: z.string().optional(),
+  canonical: z.string().optional(),
 });
 
 export type TCreateCar = z.infer<typeof createCarSchema>
@@ -219,6 +220,7 @@ export const createBrandSchema = z.object({
   seo_title: optionalString.optional(),
   seo_description: optionalString.optional(),
   seo_keywords: optionalString.optional(),
+  canonical: optionalString.optional(),
 });
 
 export const updateBrandSchema = createBrandSchema.partial().extend({
@@ -239,6 +241,7 @@ export const createCategorySchema = z.object({
   seo_title: z.string().optional(),
   seo_description: z.string().optional(),
   seo_keywords: z.string().optional(),
+  canonical: z.string().optional(),
 });
 
 /**
@@ -322,6 +325,7 @@ export const CreateBlogSchema = z.object({
   keywords: z.array(z.string()).min(1, "At least one keyword is required"),
   content: z.any(),
   draft: z.boolean(),
+  canonical: z.string().optional(),
 });
 
 export type TCreateBlog = z.infer<typeof CreateBlogSchema>
@@ -368,6 +372,7 @@ export const metaDataSchema = z.object({
       PAGE_METATAGS.CATEGORIES,
     ]
   ),
+  canonical: z.string().optional(),
 })
 
 export type TMetaData = z.infer<typeof metaDataSchema>;

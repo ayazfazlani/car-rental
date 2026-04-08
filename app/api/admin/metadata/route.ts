@@ -33,6 +33,7 @@ async function createOrUpdateMetadata(req: AuthenticatedRequest) {
                     title: validatedData.title,
                     description: validatedData.description,
                     keywords: validatedData.keywords,
+                    canonical: validatedData.canonical,
                 },
             });
             return NextResponse.json(successResponse(metadata));
@@ -43,6 +44,7 @@ async function createOrUpdateMetadata(req: AuthenticatedRequest) {
                 description: validatedData.description,
                 keywords: validatedData.keywords,
                 page: validatedData.page,
+                canonical: validatedData.canonical,
             },
         });
 

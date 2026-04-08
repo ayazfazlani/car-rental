@@ -52,6 +52,13 @@ export async function generateMetadata({ params }: PageProps) {
     },
     description: car.seo_description || car.description,
     keywords: car.seo_keywords || car.brand?.name + ", " + car.model,
+    alternates: {
+      canonical: car.canonical || `https://luxuscarrental.com/cars/${car.slug}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
     assets: [getAbsoluteImageUrl(primaryImage)],
     openGraph: {
       title: car.brand?.name + " " + car.model,

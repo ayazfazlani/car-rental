@@ -73,6 +73,7 @@ const initalValues: TCreateCar = {
     mileageLimit: 250,
     additionalMileage: 10,
     rentalTerms: [],
+    canonical: "",
 }
 
 type ManageCarComponentProps = {
@@ -422,6 +423,19 @@ export default function ManageCarComponent({ car, id }: ManageCarComponentProps)
                                             <FormLabel>Keywords (optional)</FormLabel>
                                             <FormControl>
                                                 <Textarea {...field} placeholder="e.g., Mercedes, Benz, S-Class, Luxury, Car, Rental" />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="canonical"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Canonical URL (optional)</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} placeholder="e.g., https://luxuscarrental.com/cars/mercedes-benz-s-class" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

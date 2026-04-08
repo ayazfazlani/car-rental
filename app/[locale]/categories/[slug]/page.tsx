@@ -29,6 +29,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: `${category.seo_title || category.name} | Luxus Car Rental`,
         description: category.seo_description || stripHtml(category.description || '') || `Browse our ${category.name} rental vehicles`,
         keywords: category.seo_keywords || category.name,
+        alternates: {
+            canonical: category.canonical || `https://luxuscarrental.com/categories/${category.slug}`,
+        },
+        robots: {
+            index: true,
+            follow: true,
+        },
         openGraph: {
             title: `${category.seo_title || category.name} | Luxus Car Rental`,
             description: category.seo_description || stripHtml(category.description || '') || `Browse our ${category.name} rental vehicles`,

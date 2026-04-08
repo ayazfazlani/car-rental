@@ -2,7 +2,7 @@ import { CarBrand, Prisma, PrismaClient } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 
 const BRANDS: (Omit<CarBrand,
-    'createdAt' | 'updatedAt' | 'deletedAt' | 'seo_title' | 'seo_description' | 'seo_keywords'>)[] = [
+    'createdAt' | 'updatedAt' | 'deletedAt' | 'seo_title' | 'seo_description' | 'seo_keywords' | 'canonical'>)[] = [
         {
             "id": "cmk2p11d60006830q451msqu9",
             "name": "Audi",

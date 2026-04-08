@@ -941,7 +941,7 @@ export default function BrandPills({ brands: brandsPromise }: { brands: Promise<
                         </span>
                         <span className="font-semibold truncate">{brand.name}</span>
                         <span className="hidden xs:inline text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
-                            {Math.floor(Math.random() * 50) + 1}
+                            {(brand as any)._count?.cars || 0}
                         </span>
                     </Link>
                 ))}

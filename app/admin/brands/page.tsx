@@ -21,6 +21,7 @@ interface Brand {
   seo_title?: string | null;
   seo_description?: string | null;
   seo_keywords?: string | null;
+  canonical?: string | null;
 }
 
 const defaultValues = {
@@ -31,6 +32,7 @@ const defaultValues = {
   seo_title: "",
   seo_description: "",
   seo_keywords: "",
+  canonical: "",
 };
 
 export default function AdminBrands() {
@@ -111,6 +113,9 @@ export default function AdminBrands() {
       }
       if (formData.seo_keywords) {
         formDataToSend.append("seo_keywords", formData.seo_keywords);
+      }
+      if (formData.canonical) {
+        formDataToSend.append("canonical", formData.canonical);
       }
 
       const res = await fetch(url, {
@@ -281,6 +286,16 @@ export default function AdminBrands() {
                   }
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="canonical">Canonical URL</Label>
+                <Input
+                  id="canonical"
+                  value={formData.canonical}
+                  onChange={(e) =>
+                    setFormData({ ...formData, canonical: e.target.value })
+                  }
+                />
+              </div>
               <div className="flex gap-2">
                 <Button type="submit">{t("admin.save")}</Button>
                 <Button
@@ -337,6 +352,7 @@ export default function AdminBrands() {
                         seo_title: brand.seo_title || "",
                         seo_description: brand.seo_description || "",
                         seo_keywords: brand.seo_keywords || "",
+                        canonical: brand.canonical || "",
                       });
                       setLogoFile(null);
                       setLogoPreview(null);

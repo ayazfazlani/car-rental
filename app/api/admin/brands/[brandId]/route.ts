@@ -85,6 +85,7 @@ async function updateBrand(
       const seo_title = formData.get("seo_title") as string | null;
       const seo_description = formData.get("seo_description") as string | null;
       const seo_keywords = formData.get("seo_keywords") as string | null;
+      const canonical = formData.get("canonical") as string | null;
 
       // Build update data
       const updateData: any = {};
@@ -97,6 +98,8 @@ async function updateBrand(
         updateData.seo_description = seo_description || undefined;
       if (seo_keywords !== null)
         updateData.seo_keywords = seo_keywords || undefined;
+      if (canonical !== null)
+        updateData.canonical = canonical || undefined;
 
       validatedData = updateBrandSchema.parse(updateData);
 

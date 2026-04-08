@@ -24,6 +24,7 @@ interface Category {
   seo_title?: string;
   seo_description?: string;
   seo_keywords?: string;
+  canonical?: string;
 }
 
 const categoryTypes = [
@@ -45,6 +46,7 @@ const defaultValues = {
   seo_title: "",
   seo_description: "",
   seo_keywords: "",
+  canonical: "",
 };
 
 export default function AdminCategories() {
@@ -241,6 +243,16 @@ export default function AdminCategories() {
                   }
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="canonical">Canonical URL</Label>
+                <Input
+                  id="canonical"
+                  value={formData.canonical}
+                  onChange={(e) =>
+                    setFormData({ ...formData, canonical: e.target.value })
+                  }
+                />
+              </div>
               <div className="flex gap-2">
                 <Button type="submit">{t("admin.save")}</Button>
                 <Button
@@ -285,6 +297,7 @@ export default function AdminCategories() {
                         seo_title: category.seo_title || "",
                         seo_description: category.seo_description || "",
                         seo_keywords: category.seo_keywords || "",
+                        canonical: category.canonical || "",
                       });
                       setShowForm(true);
                     }}>
