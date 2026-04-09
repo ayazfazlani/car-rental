@@ -61,9 +61,9 @@ export default async function BrandSlugPage({ params }: Props) {
                     <h1 className="text-base md:text-2xl font-bold text-foreground capitalize">
                         {brand.name}
                     </h1>
-                    <p className="text-muted-foreground text-base hidden sm:block">
+                    <div className="text-muted-foreground text-base hidden sm:block">
                         <Translated key="search.browseSelection" fallback="Browse our premium selection of rental vehicles" />
-                    </p>
+                    </div>
                 </div>
                 <SearchComponent
                     brands={brands}

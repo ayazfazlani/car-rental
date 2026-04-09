@@ -18,8 +18,8 @@ export default function Translated({
     }
 
     return (
-        <div className={className}>
+        <p className={className}>
             {key ? t(key) : fallback}
-        </div>
+        </p>
     )
 }

@@ -103,7 +103,7 @@ export async function Hero({ locale }: { locale?: string }) {
             />
           </Link>
         </div>
-        <div className="container mx-auto relative md:-mt-[90px] z-50 bg-white p-8 rounded-2xl shadow-lg w-full max-w-[1200px] mb-4">
+        <div className="container mx-auto relative md:-mt-[90px] z-20 bg-white p-8 rounded-2xl shadow-lg w-full max-w-[1200px] mb-4">
           <div className="flex flex-col items-center px-4 sm:px-0">
             <SearchSection />
             <HomeBrands view="pills" />
