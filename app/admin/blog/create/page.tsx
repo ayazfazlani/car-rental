@@ -227,6 +227,57 @@ export default function Page() {
                                         </FormItem>
                                     )}
                                 />
+                                <FormField
+                                    control={form.control}
+                                    name="canonical"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-slate-700 font-semibold'>Canonical URL (Optional)</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    placeholder="https://example.com/blog/..."
+                                                    className='border-slate-300 focus:border-blue-500'
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="seo_title"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-slate-700 font-semibold'>SEO Title (Optional)</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    placeholder="Custom SEO Title"
+                                                    className='border-slate-300 focus:border-blue-500'
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="seo_description"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-slate-700 font-semibold'>SEO Description (Optional)</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    placeholder="Custom SEO Description"
+                                                    className='border-slate-300 focus:border-blue-500'
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             </CardContent>
                         </Card>
 

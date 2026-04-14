@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: category.seo_description || stripHtml(category.description || '') || `Browse our ${category.name} rental vehicles`,
         keywords: category.seo_keywords || category.name,
         alternates: {
-            canonical: category.canonical || `https://luxuscarrental.com/categories/${category.slug}`,
+            canonical: category.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/categories/${category.slug}`,
         },
         robots: {
             index: true,

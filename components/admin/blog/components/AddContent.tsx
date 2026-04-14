@@ -6,11 +6,16 @@ import { Content, EditorEvents, EditorProvider, useCurrentEditor } from '@tiptap
 import StarterKit from '@tiptap/starter-kit'
 import { ImagePicker } from './ImagePicker';
 import Image from '@tiptap/extension-image'
+import { Link } from '@tiptap/extension-link'
+import { Table } from '@tiptap/extension-table'
+import { TableCell } from '@tiptap/extension-table-cell'
+import { TableHeader } from '@tiptap/extension-table-header'
+import { TableRow } from '@tiptap/extension-table-row'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
 import './content.css'
-import { BetweenHorizontalStart, Bold, Heading1, Heading2, Heading3, ImageIcon, Italic, List, ListOrdered, MessageSquareQuote, Minus, Pilcrow, Redo, Strikethrough, Type, Undo } from 'lucide-react'
+import { BetweenHorizontalStart, Bold, Heading1, Heading2, Heading3, ImageIcon, Italic, List, ListOrdered, MessageSquareQuote, Minus, Pilcrow, Redo, Strikethrough, Type, Undo, Link2, Table as TableIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const toolbarButtonStyles = 'h-9 w-9 p-0'
@@ -185,6 +190,30 @@ const MenuBar = ({ onImageTap }: { onImageTap: () => void }) => {
                         ariaLabel="Redo last action"
                     />
                     <ToolbarButton
+                        isActive={editor.isActive('link')}
+                        onClick={() => {
+                            const previousUrl = editor.getAttributes('link').href;
+                            const url = window.prompt('URL', previousUrl);
+                            if (url === null) {
+                                return;
+                            }
+                            if (url === '') {
+                                editor.chain().focus().extendMarkRange('link').unsetLink().run();
+                                return;
+                            }
+                            editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+                        }}
+                        icon={Link2}
+                        title="Link"
+                        ariaLabel="Insert link"
+                    />
+                    <ToolbarButton
+                        onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+                        icon={TableIcon}
+                        title="Insert Table"
+                        ariaLabel="Insert Table"
+                    />
+                    <ToolbarButton
                         onClick={onImageTap}
                         icon={ImageIcon}
                         title="Insert Image"
@@ -207,6 +236,17 @@ const extensions = [
             class: 'rounded-lg my-2 mx-auto',
         },
     }),
+    Link.configure({
+        openOnClick: false,
+        autolink: true,
+        defaultProtocol: 'https',
+    }),
+    Table.configure({
+        resizable: true,
+    }),
+    TableRow,
+    TableHeader,
+    TableCell,
     StarterKit.configure(),
 ]
 

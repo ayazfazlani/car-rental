@@ -3,7 +3,7 @@ import JsonLd from "./JsonLd";
 import { getImageUrl } from "@/lib/utils";
 
 export default function BrandsSchema({ brands, locale }: { brands: CarBrand[], locale: string }) {
-  const baseUrl = "https://luxuscarrental.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com";
   
   const itemListSchema = {
     "@context": "https://schema.org",

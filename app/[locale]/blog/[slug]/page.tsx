@@ -26,14 +26,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     }
 
     return {
-        title: {
-            template: '%s | Luxus Car Rental',
-            default: blog.title
-        },
+        title: blog.title,
         description: blog.info,
         keywords: blog.keywords,
         alternates: {
-            canonical: blog.canonical || `https://luxuscarrental.com/blog/${blog.slug}`,
+            canonical: blog.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/blog/${blog.slug}`,
         },
         robots: {
             index: true,

@@ -2,7 +2,7 @@ import { CarCategory } from "@prisma/client";
 import JsonLd from "./JsonLd";
 
 export default function CategoriesSchema({ categories, locale }: { categories: CarCategory[], locale: string }) {
-  const baseUrl = "https://luxuscarrental.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com";
   
   const itemListSchema = {
     "@context": "https://schema.org",

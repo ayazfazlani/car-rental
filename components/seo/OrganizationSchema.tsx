@@ -12,8 +12,8 @@ export default async function OrganizationSchema() {
     "@type": "Organization",
     "name": "Luxus Car Rental",
     "alternateName": "Luxus Car Rental Dubai",
-    "url": "https://luxuscarrental.com",
-    "logo": "https://luxuscarrental.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fluxuslogo.39867c4d.png&w=128&q=75",
+    "url": process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com",
+    "logo": `${process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com"}/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fluxuslogo.39867c4d.png&w=128&q=75`,
     "contactPoint": [
       {
         "@type": "ContactPoint",
@@ -33,12 +33,12 @@ export default async function OrganizationSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Luxus Car Rental",
-    "url": "https://luxuscarrental.com",
+    "url": process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com",
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://luxuscarrental.com/en/cars?search={search_term_string}"
+        "urlTemplate": `${process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com"}/en/cars?search={search_term_string}`
       },
       "query-input": "required name=search_term_string"
     }

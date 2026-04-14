@@ -238,7 +238,7 @@ export function trackWhatsapp(car: { id: string, name: string }) {
 const MAP: Record<'luxus' | 'oneclick', { name: string, url: string }> = {
   luxus: {
     name: 'Luxus Car Rental',
-    url: 'https://luxuscarrental.com'
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'
   },
   oneclick: {
     name: 'One Click Car Rental',

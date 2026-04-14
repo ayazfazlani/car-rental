@@ -12,7 +12,7 @@ type TCar = Car & {
 export default function CarSchema({ car, locale }: { car: TCar, locale: string }) {
   const primaryImage = car.images?.find((img) => img.isPrimary)?.url || car.images?.[0]?.url;
   const logo = car.brand?.logoUrl || "/logo.png";
-  const baseUrl = "https://luxuscarrental.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com";
   const carUrl = `${baseUrl}/${locale}/cars/${car.slug}`;
 
   const productSchema = {

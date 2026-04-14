@@ -326,6 +326,8 @@ export const CreateBlogSchema = z.object({
   content: z.any(),
   draft: z.boolean(),
   canonical: z.string().optional(),
+  seo_title: z.string().optional(),
+  seo_description: z.string().optional(),
 });
 
 export type TCreateBlog = z.infer<typeof CreateBlogSchema>

@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description,
         keywords: brand.seo_keywords || brand.name,
         alternates: {
-            canonical: brand.canonical || `https://luxuscarrental.com/brands/${brand.slug}`,
+            canonical: brand.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/brands/${brand.slug}`,
         },
         robots: {
             index: true,

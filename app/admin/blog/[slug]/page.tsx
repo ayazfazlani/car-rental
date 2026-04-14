@@ -109,6 +109,9 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
             form.setValue('info', data.info)
             form.setValue('keywords', data.keywords)
             form.setValue('draft', data.draft)
+            if (data.canonical) form.setValue('canonical', data.canonical)
+            if (data.seo_title) form.setValue('seo_title', data.seo_title)
+            if (data.seo_description) form.setValue('seo_description', data.seo_description)
             setBlogToEdit(data)
         }
     }
@@ -253,6 +256,57 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                                                 />
                                             </FormControl>
                                             <p className='text-xs text-slate-500 mt-2'>Auto-generated from title</p>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="canonical"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-slate-700 font-semibold'>Canonical URL (Optional)</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    placeholder="https://example.com/blog/..."
+                                                    className='border-slate-300 focus:border-blue-500'
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="seo_title"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-slate-700 font-semibold'>SEO Title (Optional)</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    placeholder="Custom SEO Title"
+                                                    className='border-slate-300 focus:border-blue-500'
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="seo_description"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className='text-slate-700 font-semibold'>SEO Description (Optional)</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    placeholder="Custom SEO Description"
+                                                    className='border-slate-300 focus:border-blue-500'
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}

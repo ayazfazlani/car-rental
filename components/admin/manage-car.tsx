@@ -435,7 +435,7 @@ export default function ManageCarComponent({ car, id }: ManageCarComponentProps)
                                         <FormItem>
                                             <FormLabel>Canonical URL (optional)</FormLabel>
                                             <FormControl>
-                                                <Input {...field} placeholder="e.g., https://luxuscarrental.com/cars/mercedes-benz-s-class" />
+                                                <Input {...field} placeholder="e.g., https://yourdomain.com/cars/mercedes-benz-s-class" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
