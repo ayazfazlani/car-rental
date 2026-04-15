@@ -1,6 +1,8 @@
 import { Car, CarBrand, CarCategory, CarImage, CarFaq } from "@prisma/client";
 import JsonLd from "./JsonLd";
 import { getImageUrl } from "@/lib/utils";
+import { getSettingsMap } from "@/lib/data/settings";
+import { KEY_VALUE_TYPES } from "@/lib/constants";
 
 type TCar = Car & {
   brand?: CarBrand | null;
@@ -9,10 +11,18 @@ type TCar = Car & {
   carFaqs?: CarFaq[];
 };
 
-export default function CarSchema({ car, locale }: { car: TCar, locale: string }) {
+export default async function CarSchema({ car, locale }: { car: TCar, locale: string }) {
   const primaryImage = car.images?.find((img) => img.isPrimary)?.url || car.images?.[0]?.url;
-  const logo = car.brand?.logoUrl || "/logo.png";
+  
+  const settingsMap = await getSettingsMap();
+  const siteLogo = settingsMap[KEY_VALUE_TYPES.SITE_LOGO];
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com";
+
+  const fallbackLogo = siteLogo 
+    ? (siteLogo.startsWith('http') ? siteLogo : `${baseUrl}${siteLogo}`)
+    : `${baseUrl}/images/luxuslogo.png`;
+
+  const logo = car.brand?.logoUrl || fallbackLogo;
   const carUrl = `${baseUrl}/${locale}/cars/${car.slug}`;
 
   const productSchema = {

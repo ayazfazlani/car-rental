@@ -1,19 +1,29 @@
 import { getActiveContacts } from "@/lib/data/contact";
 import { ContactType } from "@prisma/client";
 import JsonLd from "./JsonLd";
+import { getSettingsMap } from "@/lib/data/settings";
+import { KEY_VALUE_TYPES } from "@/lib/constants";
 
 export default async function OrganizationSchema() {
   const contacts = await getActiveContacts();
+  const settingsMap = await getSettingsMap();
+  const siteLogo = settingsMap[KEY_VALUE_TYPES.SITE_LOGO];
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com";
+  
   const phone = contacts?.find(c => c.type === ContactType.PHONE)?.value || "+971561234567";
   const whatsapp = contacts?.find(c => c.type === ContactType.WHATSAPP)?.value || "+971561234567";
+
+  const logoUrl = siteLogo 
+    ? (siteLogo.startsWith('http') ? siteLogo : `${baseUrl}${siteLogo}`)
+    : `${baseUrl}/images/luxuslogo.png`;
 
   const schema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": process.env.NEXT_PUBLIC_SITE_NAME as string,
     "alternateName": `${process.env.NEXT_PUBLIC_SITE_NAME} Dubai`,
-    "url": process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com",
-    "logo": `${process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com"}/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fluxuslogo.39867c4d.png&w=128&q=75`,
+    "url": baseUrl,
+    "logo": logoUrl,
     "contactPoint": [
       {
         "@type": "ContactPoint",

@@ -7,6 +7,7 @@ export const APP: 'luxus' | 'oneclick' = 'luxus'
 export enum KEY_VALUE_TYPES {
     FOOTER_DESCRIPTION_EN = 'FOOTER_DESCRIPTION_EN',
     FOOTER_DESCRIPTION_AR = 'FOOTER_DESCRIPTION_AR',
+    SITE_LOGO = 'SITE_LOGO',
 }
 
 export enum PAGE_METATAGS {

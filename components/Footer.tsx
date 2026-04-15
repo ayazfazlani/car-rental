@@ -13,6 +13,7 @@ export async function Footer() {
   const t = await getTranslations("footer");
   const contacts = await getActiveContacts()
   const settingsMap = await getSettingsMap()
+  const siteLogo = settingsMap[KEY_VALUE_TYPES.SITE_LOGO]
 
   const footerKey = locale === 'ar' ? KEY_VALUE_TYPES.FOOTER_DESCRIPTION_AR : KEY_VALUE_TYPES.FOOTER_DESCRIPTION_EN
   const footerDescription = settingsMap[footerKey]
@@ -27,8 +28,8 @@ export async function Footer() {
             <div className="mb-4">
               <Link href="/" className="flex items-center gap-2">
                 <Image
-                  src={Logo}
-                  alt="Lux Car Rental"
+                  src={siteLogo || Logo}
+                  alt={process.env.NEXT_PUBLIC_SITE_NAME || "Car Rental"}
                   width={120}
                   height={40}
                   className=" w-auto"

@@ -1,10 +1,18 @@
 import { Blog } from "@prisma/client";
 import JsonLd from "./JsonLd";
 import { getImageUrl } from "@/lib/utils";
+import { getSettingsMap } from "@/lib/data/settings";
+import { KEY_VALUE_TYPES } from "@/lib/constants";
 
-export default function BlogSchema({ blog, locale }: { blog: Blog, locale: string }) {
+export default async function BlogSchema({ blog, locale }: { blog: Blog, locale: string }) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://luxuscarrental.com";
   const blogUrl = `${baseUrl}/${locale}/blog/${blog.slug}`;
+  const settingsMap = await getSettingsMap();
+  const siteLogo = settingsMap[KEY_VALUE_TYPES.SITE_LOGO];
+
+  const logoUrl = siteLogo 
+    ? (siteLogo.startsWith('http') ? siteLogo : `${baseUrl}${siteLogo}`)
+    : `${baseUrl}/images/luxuslogo.png`;
 
   const schema = {
     "@context": "https://schema.org",
@@ -25,7 +33,7 @@ export default function BlogSchema({ blog, locale }: { blog: Blog, locale: strin
       "name": process.env.NEXT_PUBLIC_SITE_NAME,
       "logo": {
         "@type": "ImageObject",
-        "url": `${baseUrl}/logo.png`
+        "url": logoUrl
       }
     },
     "description": blog.info,
