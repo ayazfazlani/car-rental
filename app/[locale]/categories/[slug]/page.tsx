@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     return {
-        title: `${category.seo_title || category.name} | Luxus Car Rental`,
+        title: `${category.seo_title || category.name}`,
         description: category.seo_description || stripHtml(category.description || '') || `Browse our ${category.name} rental vehicles`,
         keywords: category.seo_keywords || category.name,
         alternates: {
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             follow: true,
         },
         openGraph: {
-            title: `${category.seo_title || category.name} | Luxus Car Rental`,
+            title: `${category.seo_title || category.name}`,
             description: category.seo_description || stripHtml(category.description || '') || `Browse our ${category.name} rental vehicles`,
         },
     };
@@ -73,6 +73,11 @@ export default async function CategoryPage({ params }: Props) {
                     contacts={contacts}
                     defaultFilters={{ categoryId: category.id }}
                 />
+                {category.description && (
+                    <div className="mt-8 prose prose-sm sm:prose max-w-none text-muted-foreground">
+                        <div dangerouslySetInnerHTML={{ __html: category.description }} />
+                    </div>
+                )}
             </div>
             <Footer />
         </div>

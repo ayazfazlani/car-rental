@@ -237,7 +237,7 @@ export function trackWhatsapp(car: { id: string, name: string }) {
 
 const MAP: Record<'luxus' | 'oneclick', { name: string, url: string }> = {
   luxus: {
-    name: 'Luxus Car Rental',
+    name: process.env.NEXT_PUBLIC_SITE_NAME!,
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'
   },
   oneclick: {
@@ -283,7 +283,7 @@ export const METADATA_BASE_URL = MAP[APP].url
 export const getImageUrl = (image: string | null | undefined): string => {
   if (!image) return ""
   if (image.includes('http')) return image
-  
+
   // Always return relative path for local images to fix next/image 403 errors
   return image.startsWith('/') ? image : `/${image}`
 }
@@ -367,10 +367,10 @@ export const sentanceCase = (str: string) => {
 export const formatMetadata = (meta?: any) => {
   if (!meta) {
     return {
-      title: "luxus Car Rental",
-      description: 'Luxus Car Rental is the ultimate car rental platform for luxury cars.',
-      applicationName: "Luxus Car Rental",
-      keywords: 'Car Rental, Luxury Car Rental, Luxus Car Rental, Luxus Car Rental',
+      title: process.env.NEXT_PUBLIC_SITE_NAME,
+      description: process.env.NEXT_PUBLIC_SITE_NAME + ' is the ultimate car rental platform for luxury cars.',
+      applicationName: process.env.NEXT_PUBLIC_SITE_NAME,
+      keywords: 'Car Rental, Luxury Car Rental, ' + process.env.NEXT_PUBLIC_SITE_NAME + ', ' + process.env.NEXT_PUBLIC_SITE_NAME,
       assets: ['/images/luxuslogo.png'],
       alternates: {
         canonical: METADATA_BASE_URL
@@ -380,9 +380,9 @@ export const formatMetadata = (meta?: any) => {
         follow: true,
       },
       openGraph: {
-        title: 'luxus Car Rental - Luxury Car Rental',
-        description: 'Luxus Car Rental is the ultimate car rental platform for luxury cars.',
-        siteName: "Luxus Car Rental",
+        title: process.env.NEXT_PUBLIC_SITE_NAME + '- Luxury Car Rental',
+        description: process.env.NEXT_PUBLIC_SITE_NAME + ' is the ultimate car rental platform for luxury cars.',
+        siteName: process.env.NEXT_PUBLIC_SITE_NAME,
         locale: 'en_US, ar',
         images: ['/images/luxuslogo.png'],
         type: 'website'
@@ -391,11 +391,11 @@ export const formatMetadata = (meta?: any) => {
   }
 
   return {
-    title: meta.title + ' | Luxus Car Rental',
+    title: meta.title,
     description: meta.description,
     keywords: meta.keywords,
     assets: ['/images/luxuslogo.png'],
-    applicationName: "Luxus Car Rental",
+    applicationName: process.env.NEXT_PUBLIC_SITE_NAME,
     alternates: {
       canonical: meta.canonical || METADATA_BASE_URL
     },
@@ -406,7 +406,7 @@ export const formatMetadata = (meta?: any) => {
     openGraph: {
       title: meta.title,
       description: meta.description,
-      siteName: "Luxus Car Rental",
+      siteName: process.env.NEXT_PUBLIC_SITE_NAME,
       locale: 'en_US, ar',
       images: ['/images/luxuslogo.png'],
       type: 'website'

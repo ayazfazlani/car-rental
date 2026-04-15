@@ -118,7 +118,7 @@ const FilterMain = ({ filters, setFilters, brands, categories, hideBrand }: Prop
                     <Select value={filters?.brandId ?? ''} onValueChange={(v) => {
                         const brand = brands.find(b => b.id === v)
                         if (brand && document) {
-                            document.title = brand.name + " | Luxus Car Rental"
+                            document.title = brand.name
                         }
                         setFilters({ brandId: v as any })
                     }}>

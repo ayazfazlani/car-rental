@@ -16,13 +16,13 @@ export default function BlogSchema({ blog, locale }: { blog: Blog, locale: strin
     "datePublished": new Date(blog.createdAt).toISOString(),
     "dateModified": new Date(blog.updatedAt).toISOString(),
     "author": [{
-        "@type": "Organization",
-        "name": "Luxus Car Rental",
-        "url": baseUrl
-      }],
+      "@type": "Organization",
+      "name": process.env.NEXT_PUBLIC_SITE_NAME,
+      "url": baseUrl
+    }],
     "publisher": {
       "@type": "Organization",
-      "name": "Luxus Car Rental",
+      "name": process.env.NEXT_PUBLIC_SITE_NAME,
       "logo": {
         "@type": "ImageObject",
         "url": `${baseUrl}/logo.png`

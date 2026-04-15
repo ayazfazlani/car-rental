@@ -4,8 +4,8 @@ import { Header } from '@/components/Header'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Luxus Car Rental',
-  description: 'Luxus Car Rental',
+  title: process.env.NEXT_PUBLIC_SITE_NAME as string,
+  description: process.env.NEXT_PUBLIC_SITE_NAME as string,
 }
 
 export default function RootLayout({

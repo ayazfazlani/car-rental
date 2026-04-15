@@ -35,10 +35,10 @@ export async function Footer() {
                 />
               </Link>
             </div>
-            <div 
+            <div
               className="text-sm text-muted-foreground leading-relaxed prose prose-sm prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ 
-                __html: footerDescription ?? t("description") ?? "Find the best deals on budget and luxury car rentals with professional chauffeur services. Based in Dubai, we serve customers across select cities worldwide." 
+              dangerouslySetInnerHTML={{
+                __html: footerDescription ?? t("description") ?? "Find the best deals on budget and luxury car rentals with professional chauffeur services. Based in Dubai, we serve customers across select cities worldwide."
               }}
             />
           </div>
@@ -153,7 +153,7 @@ export async function Footer() {
         {/* Copyright */}
         <div className="mt-12 pt-8 border-t border-border">
           <p className="text-center text-sm text-muted-foreground">
-            ©Luxus Car Rental 2026.{" "}
+            ©{process.env.NEXT_PUBLIC_SITE_NAME} 2026.{" "}
             {t("allRightsReserved") || "All rights reserved"}
           </p>
         </div>

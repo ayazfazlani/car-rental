@@ -20,7 +20,7 @@ export default function CarSchema({ car, locale }: { car: TCar, locale: string }
     "@type": "Product",
     "name": `${car.brand?.name} ${car.model} Rental`,
     "image": getImageUrl(primaryImage),
-    "description": car.description || `Rent ${car.brand?.name} ${car.model} in Dubai with Luxus Car Rental. Best rates for daily, weekly, and monthly rentals.`,
+    "description": car.description || `Rent ${car.brand?.name} ${car.model} in Dubai with ${process.env.NEXT_PUBLIC_SITE_NAME}. Best rates for daily, weekly, and monthly rentals.`,
     "brand": {
       "@type": "Brand",
       "name": car.brand?.name,
@@ -35,25 +35,25 @@ export default function CarSchema({ car, locale }: { car: TCar, locale: string }
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
-        "name": "Luxus Car Rental"
+        "name": process.env.NEXT_PUBLIC_SITE_NAME as string
       }
     }
   };
 
   const carSchema = {
-      "@context": "https://schema.org",
-      "@type": "Car",
-      "name": `${car.brand?.name} ${car.model}`,
-      "image": getImageUrl(primaryImage),
-      "model": car.model,
-      "brand": car.brand?.name,
-      "color": car.color,
-      "manufacturer": car.brand?.name,
-      "vehicleConfiguration": `${car.transmission}, ${car.fuelType}, ${car.seats} seats`,
-      "bodyType": car.category?.name,
-      "seatingCapacity": car.seats,
-      "numberOfDoors": car.doors,
-      "url": carUrl
+    "@context": "https://schema.org",
+    "@type": "Car",
+    "name": `${car.brand?.name} ${car.model}`,
+    "image": getImageUrl(primaryImage),
+    "model": car.model,
+    "brand": car.brand?.name,
+    "color": car.color,
+    "manufacturer": car.brand?.name,
+    "vehicleConfiguration": `${car.transmission}, ${car.fuelType}, ${car.seats} seats`,
+    "bodyType": car.category?.name,
+    "seatingCapacity": car.seats,
+    "numberOfDoors": car.doors,
+    "url": carUrl
   };
 
   const breadcrumbSchema = {

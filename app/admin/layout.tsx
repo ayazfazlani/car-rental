@@ -18,8 +18,8 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Admin Panel - Luxus Car Rental",
-  description: "Admin panel for managing Luxus Car Rental",
+  title: `Admin Panel - ${process.env.NEXT_PUBLIC_SITE_NAME}`,
+  description: `Admin panel for managing ${process.env.NEXT_PUBLIC_SITE_NAME}`,
   icons: {
     icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>",
   },

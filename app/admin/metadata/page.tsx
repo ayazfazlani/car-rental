@@ -30,6 +30,7 @@ const categoryTypes = [
     PAGE_METATAGS.TERMS_OF_USE,
     PAGE_METATAGS.BRANDS,
     PAGE_METATAGS.CATEGORIES,
+    PAGE_METATAGS.RENT_WITH_DRIVER,
 ];
 
 const defaultValues: TMetaData = {

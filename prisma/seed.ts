@@ -205,8 +205,8 @@ async function createMetadata() {
     data: [
       {
         page: "home",
-        title: "Luxus Car Rental | Premium Service in Dubai",
-        description: "Rent luxury cars in Dubai with Luxus Car Rental. Premium fleet, easy booking, Best prices.",
+        title: process.env.NEXT_PUBLIC_SITE_NAME + " | Premium Service in Dubai",
+        description: "Rent luxury cars in Dubai with " + process.env.NEXT_PUBLIC_SITE_NAME + ". Premium fleet, easy booking, Best prices.",
         keywords: "luxury car rental, dubai cars, rent lamborghini, rent ferrari",
       },
     ],

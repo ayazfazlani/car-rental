@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     
     if (!brand) return {};
 
-    const title = `${brand.seo_title || brand.name} | Luxus Car Rental`;
+    const title = `${brand.seo_title || brand.name}`;
     const description = brand.seo_description || stripHtml(brand.description || '') || `Rent premium ${brand.name} cars in Dubai.`;
 
     return {
@@ -71,6 +71,11 @@ export default async function BrandSlugPage({ params }: Props) {
                     contacts={contacts}
                     defaultFilters={{ brandId: brand.id }}
                 />
+                {brand.description && (
+                    <div className="mt-8 prose prose-sm sm:prose max-w-none text-muted-foreground">
+                        <div dangerouslySetInnerHTML={{ __html: brand.description }} />
+                    </div>
+                )}
             </div>
             <Footer />
         </div>

@@ -10,7 +10,7 @@ const testimonials = [
     name: "Nikko Jake Angelo Jarlan",
     date: "13 December 2025",
     rating: 5,
-    title: "Luxus car rental is always my on the go rental company.",
+    title: process.env.NEXT_PUBLIC_SITE_NAME + " is always my on the go rental company.",
     review:
       "It is fast, reliable, friendly staff and easy to deal with. Specially Gulzar who look after my entire experience from handing over to returning back. Thank you and will always come back!",
     avatar: "https://lh3.googleusercontent.com/a/ACg8ocIEqt0ZACqJ_NsG6RDOd2RATZxHYYgRNZOhbvY5oy3i5LM4BQ=w48-h48-p-rp-mo-br100",
@@ -32,7 +32,7 @@ const testimonials = [
     rating: 5,
     title: "Highly Recommended",
     review:
-      "We had an amazing experience with Luxus Car Rental. Gulzar was extremely polite, punctual, and professional from start to finish. He personally picked us up from the airport and made sure everything went smoothly with the car — a beautiful green Mustang, perfectly clean and in excellent condition. The whole rental process was seamless, and his communication was clear and helpful at every step. Highly recommended for anyone looking for a premium and reliable car rental service in Dubai!",
+      "We had an amazing experience with " + process.env.NEXT_PUBLIC_SITE_NAME + ". Gulzar was extremely polite, punctual, and professional from start to finish. He personally picked us up from the airport and made sure everything went smoothly with the car — a beautiful green Mustang, perfectly clean and in excellent condition. The whole rental process was seamless, and his communication was clear and helpful at every step. Highly recommended for anyone looking for a premium and reliable car rental service in Dubai!",
     avatar: "https://lh3.googleusercontent.com/a/ACg8ocKLCzFj_EE0vvn9m6vyAi17PU3F_LeI-wOSoN5jNUTe8XFQ6g=w48-h48-p-rp-mo-br100",
     link: "https://maps.app.goo.gl/bbYPBjn7YpfdDsn47",
   },
@@ -42,7 +42,7 @@ const testimonials = [
     rating: 5,
     title: "Truly one of the best car rental companies.",
     review:
-      "I had an amazing experience with Luxus Car Rental, the car Range Rover Sport was in excellent condition. Mr. Gulzar was cooperative, supportive, and made the whole process smooth and enjoyable. Truly one of the best car rental companies.Highly recommended!",
+      "I had an amazing experience with " + process.env.NEXT_PUBLIC_SITE_NAME + ", the car Range Rover Sport was in excellent condition. Mr. Gulzar was cooperative, supportive, and made the whole process smooth and enjoyable. Truly one of the best car rental companies.Highly recommended!",
     avatar: "https://lh3.googleusercontent.com/a-/ALV-UjVZ5cHc1zXLCkMZ-cq56pqNbH5bWfujiE_Ds8tIZyphgs0jowuK=w48-h48-p-rp-mo-ba6-br100",
     link: "https://maps.app.goo.gl/bbYPBjn7YpfdDsn47",
   },

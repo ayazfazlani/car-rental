@@ -15,9 +15,16 @@ type Props = {
 };
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-    const { brandId } = await searchParams;
-    const meta = await getMetaData(PAGE_METATAGS.CARS)
-    const metaData = formatMetadata(meta)
+    const { brandId, hasChauffeur } = await searchParams;
+    
+    // Use RENT_WITH_DRIVER metadata when hasChauffeur filter is active
+    const metaPage = hasChauffeur === 'true' ? PAGE_METATAGS.RENT_WITH_DRIVER : PAGE_METATAGS.CARS;
+    const meta = await getMetaData(metaPage)
+    
+    // Fallback to CARS metadata if RENT_WITH_DRIVER metadata not set
+    const finalMeta = meta || (hasChauffeur === 'true' ? await getMetaData(PAGE_METATAGS.CARS) : null);
+    const metaData = formatMetadata(finalMeta)
+    
     let title = metaData.title;
     if (brandId && typeof brandId === 'string') {
         const brand = await getBrand(brandId)
@@ -27,7 +34,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
         }
     }
 
-    metaData.title = title + " | Luxus Car Rental"
+    metaData.title = title
 
     return metaData;
 }

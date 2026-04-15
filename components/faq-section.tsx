@@ -12,7 +12,7 @@ interface FaqSectionProps {
 const defaultFaqItemsLeft: Partial<Faq>[] = [
   {
     id: '1',
-    question: "How do I rent a car through Luxus Car Rental?",
+    question: "How do I rent a car through " + process.env.NEXT_PUBLIC_SITE_NAME + "?",
     answer:
       "Browse our selection of cars, select your preferred vehicle, choose rental dates, and contact the dealer directly via call or WhatsApp.",
     isEnabled: true,
@@ -85,7 +85,7 @@ export function FaqSection({ items = [] }: FaqSectionProps) {
           {/* Left Column */}
           <div>
             <h3 className="font-semibold text-foreground mb-4 text-base">
-              {t("faq.rentalGuide") || "Luxus Car Rental Guide"}
+              {t("faq.rentalGuide") || process.env.NEXT_PUBLIC_SITE_NAME + " Rental Guide"}
             </h3>
             <div className="space-y-3">
               {faqItemsLeft.map((faq) => (
@@ -124,7 +124,7 @@ export function FaqSection({ items = [] }: FaqSectionProps) {
                   </button>
                   {openIndex === faq.id && (
                     <div className="px-4 pb-4 pl-8">
-                      <div 
+                      <div
                         className="text-sm text-muted-foreground prose prose-sm max-w-none"
                         dangerouslySetInnerHTML={{ __html: isAr ? faq.answer_ar || '' : faq.answer || '' }}
                       />
@@ -138,7 +138,7 @@ export function FaqSection({ items = [] }: FaqSectionProps) {
           {/* Right Column */}
           <div>
             <h3 className="font-semibold text-foreground mb-4 text-base">
-              {t("faq.rentalGuide") || "Luxus Car Rental Guide"}
+              {t("faq.rentalGuide") || process.env.NEXT_PUBLIC_SITE_NAME + " Rental Guide"}
             </h3>
             <div className="space-y-3">
               {faqItemsRight.map((faq) => (
@@ -178,7 +178,7 @@ export function FaqSection({ items = [] }: FaqSectionProps) {
                   </button>
                   {openIndex === faq.id && (
                     <div className="px-4 pb-4 pl-8">
-                      <div 
+                      <div
                         className="text-sm text-muted-foreground prose prose-sm max-w-none"
                         dangerouslySetInnerHTML={{ __html: isAr ? faq.answer_ar || '' : faq.answer || '' }}
                       />

@@ -10,7 +10,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 //   subsets: ['latin'],
 // })
 export const metadata: Metadata = {
-  title: "Luxus Car Rental - Premium Car Rentals in Dubai & UAE",
+  title: process.env.NEXT_PUBLIC_SITE_NAME ? `${process.env.NEXT_PUBLIC_SITE_NAME} - Premium Car Rentals in Dubai & UAE` : "Premium Car Rentals in Dubai & UAE",
   description:
     "Premium car rental services in Dubai and across the UAE. Experience luxury with our fleet of prestigious vehicles.",
   icons: {

@@ -38,6 +38,8 @@ NODE_ENV="development"
 PORT=3000
 API_BASE_URL="http://localhost:3000/api"
 NEXT_PUBLIC_API_URL="http://localhost:3000"
+NEXT_PUBLIC_SITE_NAME="Luxus Car Rental"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 # Upload Configuration
 MAX_FILE_SIZE=5242880

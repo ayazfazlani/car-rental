@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         openGraph: {
             title: blog.title,
             description: blog.info,
-            siteName: "Luxus Car Rental",
+            siteName: process.env.NEXT_PUBLIC_SITE_NAME as string,
             locale: 'en_US, ar',
             images: [getImageUrl(blog.cover) || ""],
             type: 'article'

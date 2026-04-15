@@ -23,7 +23,7 @@ export function MobileNav({ brandsPromise, categoriesPromise }: MobileNavProps) 
     useEffect(() => {
         setMounted(true);
     }, []);
-    
+
     // Use the promises
     const brands = use(brandsPromise);
     const categories = use(categoriesPromise);
@@ -147,7 +147,7 @@ export function MobileNav({ brandsPromise, categoriesPromise }: MobileNavProps) 
                     {/* Footer / Copyright */}
                     <div className="p-4 border-t bg-muted/30">
                         <p className="text-xs text-center text-muted-foreground">
-                            © Luxus Car Rental 2026. All rights reserved.
+                            © {process.env.NEXT_PUBLIC_SITE_NAME} {new Date().getFullYear()}. All rights reserved.
                         </p>
                     </div>
                 </div>

@@ -375,7 +375,7 @@ const CARS: (Omit<Car,
 
 const faqs = [
     {
-        question: "How do I rent a car through Luxus Car Rental?",
+        question: "How do I rent a car through " + process.env.NEXT_PUBLIC_SITE_NAME + "?",
         answer:
             "Browse our selection of cars, select your preferred vehicle, choose rental dates, and contact the dealer directly via call or WhatsApp.",
     },
