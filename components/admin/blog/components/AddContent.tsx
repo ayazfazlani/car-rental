@@ -1,19 +1,30 @@
 'use client'
 
 import React from 'react'
-import { ListItem } from '@tiptap/extension-list-item'
+import { BetweenHorizontalStart, Bold, Heading1, Heading2, Heading3, ImageIcon, Italic, List, ListOrdered, MessageSquareQuote, Minus, Pilcrow, Redo, Strikethrough, Type, Undo, Link2, Table as TableIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { Content, EditorEvents, EditorProvider, useCurrentEditor } from '@tiptap/react'
-import { StarterKit } from '@tiptap/starter-kit'
-import { ImagePicker } from './ImagePicker';
-import { Image } from '@tiptap/extension-image'
-import { Link } from '@tiptap/extension-link'
-import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
+import { ImagePicker } from './ImagePicker'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
 import './content.css'
-import { BetweenHorizontalStart, Bold, Heading1, Heading2, Heading3, ImageIcon, Italic, List, ListOrdered, MessageSquareQuote, Minus, Pilcrow, Redo, Strikethrough, Type, Undo, Link2, Table as TableIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import * as StarterKitPkg from '@tiptap/starter-kit'
+import * as ListItemPkg from '@tiptap/extension-list-item'
+import * as ImagePkg from '@tiptap/extension-image'
+import * as LinkPkg from '@tiptap/extension-link'
+import * as TablePkg from '@tiptap/extension-table'
+import * as TableRowPkg from '@tiptap/extension-table-row'
+import * as TableCellPkg from '@tiptap/extension-table-cell'
+import * as TableHeaderPkg from '@tiptap/extension-table-header'
+
+// Helper to resolve extensions that might be nested due to CJS/ESM interop issues
+const resolveExt = (pkg: any, name: string) => {
+    const ext = pkg[name] || pkg.default || (pkg.default && pkg.default[name]) || pkg;
+    if (ext && ext.configure) return ext;
+    if (pkg.name === name || (pkg.default && pkg.default.name === name)) return pkg.default || pkg;
+    return ext;
+}
 
 const toolbarButtonStyles = 'h-9 w-9 p-0'
 
@@ -222,33 +233,44 @@ const MenuBar = ({ onImageTap }: { onImageTap: () => void }) => {
     )
 }
 
-const extensions = [
-    ListItem.configure({
-        HTMLAttributes: {
-            class: 'text-lg font-bold',
-        },
-    }),
-    Image.configure({
-        HTMLAttributes: {
-            class: 'rounded-lg my-2 mx-auto',
-        },
-    }),
-    Link.configure({
-        openOnClick: false,
-        autolink: true,
-        defaultProtocol: 'https',
-    }),
-    Table.configure({
-        resizable: true,
-    }),
-    TableRow,
-    TableHeader,
-    TableCell,
-    StarterKit.configure({
-        listItem: false,
-        link: false,
-    }),
-]
+const extensions = (() => {
+    const starterKit = resolveExt(StarterKitPkg, 'StarterKit');
+    const listItem = resolveExt(ListItemPkg, 'ListItem');
+    const image = resolveExt(ImagePkg, 'Image');
+    const link = resolveExt(LinkPkg, 'Link');
+    const table = resolveExt(TablePkg, 'Table');
+    const tableRow = resolveExt(TableRowPkg, 'TableRow');
+    const tableCell = resolveExt(TableCellPkg, 'TableCell');
+    const tableHeader = resolveExt(TableHeaderPkg, 'TableHeader');
+
+    return [
+        listItem?.configure({
+            HTMLAttributes: {
+                class: 'text-lg font-bold',
+            },
+        }),
+        image?.configure({
+            HTMLAttributes: {
+                class: 'rounded-lg my-2 mx-auto',
+            },
+        }),
+        link?.configure({
+            openOnClick: false,
+            autolink: true,
+            defaultProtocol: 'https',
+        }),
+        table?.configure({
+            resizable: true,
+        }),
+        tableRow,
+        tableHeader,
+        tableCell,
+        starterKit?.configure({
+            listItem: false,
+            link: false,
+        }),
+    ].filter(Boolean);
+})();
 
 export const AddContent = ({ content, updateContent }: { content: Content, updateContent: (content: Content, Object: any, text: string) => void }) => {
     const [modal, setModal] = React.useState<boolean>(false)
