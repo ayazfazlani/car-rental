@@ -346,7 +346,7 @@ export const getContactLink = (contact: Contact) => {
   if (contact.type === ContactType.WHATSAPP) {
     return `https://wa.me/${contact.value}`
   }
-  return null
+  return undefined
 }
 
 export const querify = (params: Record<string, any>) => {
