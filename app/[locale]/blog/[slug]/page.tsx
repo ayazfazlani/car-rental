@@ -2,6 +2,11 @@ import { generateHTML } from '@tiptap/html';
 import StarterKit from '@tiptap/starter-kit'
 import ListItem from '@tiptap/extension-list-item'
 import TipTapImage from '@tiptap/extension-image'
+import { Link } from '@tiptap/extension-link'
+import { Table } from '@tiptap/extension-table'
+import { TableCell } from '@tiptap/extension-table-cell'
+import { TableHeader } from '@tiptap/extension-table-header'
+import { TableRow } from '@tiptap/extension-table-row'
 import Image from 'next/image';
 import './content.css';
 import { notFound } from 'next/navigation';
@@ -97,7 +102,20 @@ export default async function page({ params }: { params: Params }) {
                                                 class: 'rounded-lg my-16 mx-auto',
                                             },
                                         }),
-                                        StarterKit.configure(),
+                                        Link.configure({
+                                            openOnClick: false,
+                                            autolink: true,
+                                            defaultProtocol: 'https',
+                                        }),
+                                        Table.configure({
+                                            resizable: true,
+                                        }),
+                                        TableRow,
+                                        TableHeader,
+                                        TableCell,
+                                        StarterKit.configure({
+                                            listItem: false,
+                                        }),
                                     ])
                             }}
                         />}

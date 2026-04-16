@@ -229,7 +229,9 @@ const extensions = [
             class: 'rounded-lg my-2 mx-auto',
         },
     }),
-    StarterKit.configure(),
+    StarterKit.configure({
+        listItem: false,
+    }),
 ]
 
 interface RteProps {

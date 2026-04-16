@@ -247,7 +247,9 @@ const extensions = [
     TableRow,
     TableHeader,
     TableCell,
-    StarterKit.configure(),
+    StarterKit.configure({
+        listItem: false,
+    }),
 ]
 
 export const AddContent = ({ content, updateContent }: { content: Content, updateContent: (content: Content, Object: any, text: string) => void }) => {

@@ -27,6 +27,22 @@ const nextConfig = {
         hostname: "localhost:3000",
         pathname: "/uploads/**",
       },
+      {
+        protocol: "https",
+        hostname: "oneclickrentcar.com",
+        pathname: "/uploads/**",
+      },
+
+      {
+        protocol: "http",
+        hostname: "localhost:3002",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
+        hostname: "oneclickrentcar.com",
+        pathname: "/uploads/**",
+      },
     ],
   },
   // API routes configuration
