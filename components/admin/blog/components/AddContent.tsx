@@ -1,13 +1,13 @@
 'use client'
 
 import React from 'react'
-import ListItem from '@tiptap/extension-list-item'
+import { ListItem } from '@tiptap/extension-list-item'
 import { Content, EditorEvents, EditorProvider, useCurrentEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import { StarterKit } from '@tiptap/starter-kit'
 import { ImagePicker } from './ImagePicker';
-import Image from '@tiptap/extension-image'
-import Link from '@tiptap/extension-link'
-import { TableKit } from '@tiptap/extension-table'
+import { Image } from '@tiptap/extension-image'
+import { Link } from '@tiptap/extension-link'
+import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
@@ -238,11 +238,12 @@ const extensions = [
         autolink: true,
         defaultProtocol: 'https',
     }),
-    TableKit.configure({
-        table: {
-            resizable: true,
-        },
+    Table.configure({
+        resizable: true,
     }),
+    TableRow,
+    TableHeader,
+    TableCell,
     StarterKit.configure({
         listItem: false,
         link: false,

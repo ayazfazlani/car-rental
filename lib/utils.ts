@@ -368,6 +368,7 @@ export const sentanceCase = (str: string) => {
 export const formatMetadata = (meta?: any) => {
   if (!meta) {
     return {
+      metadataBase: new URL(METADATA_BASE_URL),
       title: process.env.NEXT_PUBLIC_SITE_NAME,
       description: process.env.NEXT_PUBLIC_SITE_NAME + ' is the ultimate car rental platform for luxury cars.',
       applicationName: process.env.NEXT_PUBLIC_SITE_NAME,
@@ -392,6 +393,7 @@ export const formatMetadata = (meta?: any) => {
   }
 
   return {
+    metadataBase: new URL(METADATA_BASE_URL),
     title: meta.title,
     description: meta.description,
     keywords: meta.keywords,
