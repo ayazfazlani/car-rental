@@ -43,7 +43,7 @@ export async function CarFilterdSection({
             <Translated key={subtitleKey} fallback={subtitleFallback} className="text-muted-foreground mt-1 text-sm" />
           </div>
           <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-lg hidden md:flex text-sm px-5 h-10">
-            <Link href={`/cars?${Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&')}`}>
+            <Link href={Object.keys(query).length > 0 ? `/cars?${Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&')}` : '/cars'}>
               <Translated key="carSection.viewAll" fallback="View All" />{" "}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>

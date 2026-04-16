@@ -10,7 +10,7 @@ type BlogContentProps = {
 
 export function SmallBlog({ blog }: { blog: Blog }) {
     return (
-        <Link href={`blog/${blog.slug}`} className='flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
+        <Link href={`/blog/${blog.slug || ''}`} className='flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
             <div className='h-[300px] relative bg-muted'>
                 {getImageUrl(blog?.cover) ? (
                     <Image

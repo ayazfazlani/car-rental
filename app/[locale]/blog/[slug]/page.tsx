@@ -26,9 +26,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     }
 
     return {
-        title: blog.title,
-        description: blog.info,
-        keywords: blog.keywords,
+        title: blog.seo_title || blog.title,
+        description: blog.seo_description || blog.info,
+        keywords: blog.keywords.join(', '),
         alternates: {
             canonical: blog.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/blog/${blog.slug}`,
         },
@@ -38,8 +38,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         },
         assets: [getImageUrl(blog.cover) || ""],
         openGraph: {
-            title: blog.title,
-            description: blog.info,
+            title: blog.seo_title || blog.title,
+            description: blog.seo_description || blog.info,
             siteName: process.env.NEXT_PUBLIC_SITE_NAME as string,
             locale: 'en_US, ar',
             images: [getImageUrl(blog.cover) || ""],

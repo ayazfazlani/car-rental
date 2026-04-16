@@ -22,7 +22,7 @@ export default function HeaderBrands({
             </DropdownMenuTrigger>
             <DropdownMenuContent className='min-w-40' align='start'>
                 {allBrands.map((brand) => (
-                    <Link href={{ pathname: "/brands/[slug]", params: { slug: brand.slug } }} key={brand.id}>
+                    <Link href={brand.slug ? { pathname: "/brands/[slug]", params: { slug: brand.slug } } : "/cars"} key={brand.id}>
                         <DropdownMenuItem key={brand.id}>{brand.name}</DropdownMenuItem>
                     </Link>
                 ))}

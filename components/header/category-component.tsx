@@ -22,7 +22,7 @@ export function CategoriesComponent({
             </DropdownMenuTrigger>
             <DropdownMenuContent className='min-w-40' align='start'>
                 {cateGory.map((cat) => (
-                    <Link href={{ pathname: "/categories/[slug]", params: { slug: cat.slug } }} key={cat.id}>
+                    <Link href={cat.slug ? { pathname: "/categories/[slug]", params: { slug: cat.slug } } : "/cars"} key={cat.id}>
                         <DropdownMenuItem key={cat.id}>{cat.name}</DropdownMenuItem>
                     </Link>
                 ))}

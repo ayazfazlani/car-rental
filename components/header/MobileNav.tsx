@@ -79,7 +79,7 @@ export function MobileNav({ brandsPromise, categoriesPromise }: MobileNavProps) 
                                             {brands.map((brand) => (
                                                 <Link
                                                     key={brand.id}
-                                                    href={{ pathname: "/brands/[slug]", params: { slug: brand.slug } }}
+                                                    href={brand.slug ? { pathname: "/brands/[slug]", params: { slug: brand.slug } } : "/cars"}
                                                     className="px-4 py-2 text-sm text-muted-foreground hover:text-primary transition-colors border-l border-border"
                                                     onClick={() => setOpen(false)}
                                                 >
@@ -105,7 +105,7 @@ export function MobileNav({ brandsPromise, categoriesPromise }: MobileNavProps) 
                                             {categories.map((cat) => (
                                                 <Link
                                                     key={cat.id}
-                                                    href={{ pathname: "/categories/[slug]", params: { slug: cat.slug } }}
+                                                    href={cat.slug ? { pathname: "/categories/[slug]", params: { slug: cat.slug } } : "/cars"}
                                                     className="px-4 py-2 text-sm text-muted-foreground hover:text-primary transition-colors border-l border-border"
                                                     onClick={() => setOpen(false)}
                                                 >

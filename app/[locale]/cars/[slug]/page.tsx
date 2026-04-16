@@ -58,11 +58,11 @@ export async function generateMetadata({ params }: PageProps) {
     },
     assets: [getAbsoluteImageUrl(primaryImage)],
     openGraph: {
-      title: car.brand?.name + " " + car.model,
-      description: car.description,
+      title: car.seo_title || car.brand?.name + " " + car.model,
+      description: car.seo_description || car.description,
       siteName: process.env.NEXT_PUBLIC_SITE_NAME,
       locale: 'en_US, ar',
-      images: [getAbsoluteImageUrl(primaryImage)],
+      images: [getAbsoluteImageUrl(primaryImage)!].filter(Boolean),
       type: 'article'
     },
   }

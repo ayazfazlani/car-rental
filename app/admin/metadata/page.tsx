@@ -65,6 +65,17 @@ export default function AdminCategories() {
         }
     })
 
+    const { mutate: mutateDelete } = useMutation({
+        mutationFn: (page: string) => API.queryDelete({ url: `/api/admin/metadata?page=${page}`, auth: true }),
+        onSuccess: () => {
+            toast.success("Metadata deleted successfully")
+            refetch()
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    })
+
     const form = useForm({
         defaultValues: defaultValues,
         resolver: zodResolver(metaDataSchema),
@@ -234,9 +245,21 @@ export default function AdminCategories() {
                                         onClick={() => {
                                             setEdit(metadata);
                                             form.reset(metadata)
+                                            setShowForm(true)
                                         }}>
                                         <Edit className="h-4 w-4 mr-2" />
                                         {t("admin.edit")}
+                                    </Button>
+                                    <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() => {
+                                            if (window.confirm("Are you sure you want to delete this metadata?")) {
+                                                mutateDelete(metadata.page)
+                                            }
+                                        }}>
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        {t("admin.delete")}
                                     </Button>
                                 </div>
                             </CardContent>

@@ -6,7 +6,8 @@ export default function Translated({
     fallback,
     className,
     withFragment = false,
-}: { key?: string, fallback: string, className?: string, withFragment?: boolean }) {
+    as: Tag = 'span' as any,
+}: { key?: string, fallback: string, className?: string, withFragment?: boolean, as?: any }) {
     const t = useTranslations()
 
     if (withFragment) {
@@ -18,8 +19,8 @@ export default function Translated({
     }
 
     return (
-        <p className={className}>
+        <Tag className={className}>
             {key ? t(key) : fallback}
-        </p>
+        </Tag>
     )
 }

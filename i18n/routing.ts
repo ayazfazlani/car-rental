@@ -36,9 +36,9 @@ export const routing = defineRouting({
       en: "/contact",
       ar: "/contact",
     },
-    "blog/[slug]": {
-      en: "blog/[slug]",
-      ar: "blog/[slug]",
+    "/blog/[slug]": {
+      en: "/blog/[slug]",
+      ar: "/blog/[slug]",
     },
     "/blog": {
       en: "/blog",

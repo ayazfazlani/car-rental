@@ -78,7 +78,7 @@ export function BrandsCardSection({ brands: brandsPromise }: { brands: Promise<(
           >
             {brands.map((brand) => (
               <Link
-                href={{ pathname: "/brands/[slug]", params: { slug: brand.slug } }}
+                href={brand.slug ? { pathname: "/brands/[slug]", params: { slug: brand.slug } } as any : "/brands"}
                 key={brand.id}
                 className="flex-shrink-0 flex flex-col items-center justify-center py-8 px-10 bg-card rounded-xl border border-border hover:border-primary/50 transition-colors min-w-[160px] cursor-pointer"
               >

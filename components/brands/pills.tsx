@@ -927,7 +927,7 @@ export default function BrandPills({ brands: brandsPromise }: { brands: Promise<
 
                 {brands.map((brand, index) => (
                     <Link
-                        href={{ pathname: "/brands/[slug]", params: { slug: brand.slug } }}
+                        href={brand.slug ? { pathname: "/brands/[slug]", params: { slug: brand.slug } } : "/cars"}
                         key={brand.id}
                         className="flex-shrink-0 flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-2 sm:py-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl sm:rounded-2xl text-xs sm:text-sm text-foreground hover:border-primary hover:shadow-md transition-all duration-300 font-medium whitespace-nowrap group min-w-[120px] sm:min-w-[150px]"
                         style={{ 

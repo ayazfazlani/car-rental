@@ -42,7 +42,7 @@ export function CarCard({
     <div
       className={`bg-card rounded-xl overflow-hidden hover:shadow-lg hover:border-2 hover:border-primary border border-border transition-all duration-200`}
     >
-      <Link href={{ pathname: "/cars/[slug]", params: { slug: car.slug } }}>
+      <Link href={car.slug ? { pathname: "/cars/[slug]", params: { slug: car.slug } } as any : "/cars"}>
         {/* Image Container */}
         <div className="relative aspect-[4/3] bg-muted">
           {primaryImage ? (
@@ -72,7 +72,7 @@ export function CarCard({
       </Link>
       {/* Content */}
       <div className="p-4">
-        <Link href={{ pathname: "/cars/[slug]", params: { slug: car.slug } }}>
+        <Link href={car.slug ? { pathname: "/cars/[slug]", params: { slug: car.slug } } as any : "/cars"}>
           <>
             <h3 className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-1 text-[15px]">
               {car.name}

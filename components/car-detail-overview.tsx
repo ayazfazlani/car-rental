@@ -43,9 +43,9 @@ export function CarDetailOverview({
   color,
 }: CarDetailOverviewProps) {
   const specs = [
-    { label: "Body Type", value: bodyType || "-", icon: CarIcon, t: 'bodyType', link: bodySlug ? '/categories/' + bodySlug : '/cars?categoryId=' + bodyId },
+    { label: "Body Type", value: bodyType || "-", icon: CarIcon, t: 'bodyType', link: bodySlug ? '/categories/' + bodySlug : (bodyId ? '/cars?categoryId=' + bodyId : undefined) },
     { label: "Transmission", value: gearbox || "-", icon: Settings, t: 'transmission' },
-    { label: "Make", value: make || "-", icon: CarIcon, t: 'make', link: makeSlug ? '/brands/' + makeSlug : '/cars?brandId=' + makeId },
+    { label: "Make", value: make || "-", icon: CarIcon, t: 'make', link: makeSlug ? '/brands/' + makeSlug : (makeId ? '/cars?brandId=' + makeId : undefined) },
     { label: "Model", value: model || "-", icon: CarIcon, t: 'model' },
     { label: "Gearbox", value: gearbox || "-", icon: Settings, t: 'gearbox' },
     {
