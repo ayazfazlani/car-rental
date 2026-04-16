@@ -2,7 +2,7 @@ import { generateHTML } from '@tiptap/html';
 import StarterKit from '@tiptap/starter-kit'
 import ListItem from '@tiptap/extension-list-item'
 import TipTapImage from '@tiptap/extension-image'
-import { Link } from '@tiptap/extension-link'
+import Link from '@tiptap/extension-link'
 import { Table } from '@tiptap/extension-table'
 import { TableCell } from '@tiptap/extension-table-cell'
 import { TableHeader } from '@tiptap/extension-table-header'
