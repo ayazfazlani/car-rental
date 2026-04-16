@@ -3,10 +3,7 @@ import StarterKit from '@tiptap/starter-kit'
 import ListItem from '@tiptap/extension-list-item'
 import TipTapImage from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
-import { Table } from '@tiptap/extension-table'
-import { TableCell } from '@tiptap/extension-table-cell'
-import { TableHeader } from '@tiptap/extension-table-header'
-import { TableRow } from '@tiptap/extension-table-row'
+import { TableKit } from '@tiptap/extension-table'
 import Image from 'next/image';
 import './content.css';
 import { notFound } from 'next/navigation';
@@ -31,6 +28,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     }
 
     return {
+        metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'),
         title: blog.seo_title || blog.title,
         description: blog.seo_description || blog.info,
         keywords: blog.keywords.join(', '),
@@ -107,14 +105,14 @@ export default async function page({ params }: { params: Params }) {
                                             autolink: true,
                                             defaultProtocol: 'https',
                                         }),
-                                        Table.configure({
-                                            resizable: true,
+                                        TableKit.configure({
+                                            table: {
+                                                resizable: true,
+                                            },
                                         }),
-                                        TableRow,
-                                        TableHeader,
-                                        TableCell,
                                         StarterKit.configure({
                                             listItem: false,
+                                            link: false,
                                         }),
                                     ])
                             }}

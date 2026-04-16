@@ -7,10 +7,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { ImagePicker } from './ImagePicker';
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
-import { Table } from '@tiptap/extension-table'
-import { TableCell } from '@tiptap/extension-table-cell'
-import { TableHeader } from '@tiptap/extension-table-header'
-import { TableRow } from '@tiptap/extension-table-row'
+import { TableKit } from '@tiptap/extension-table'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
@@ -241,14 +238,14 @@ const extensions = [
         autolink: true,
         defaultProtocol: 'https',
     }),
-    Table.configure({
-        resizable: true,
+    TableKit.configure({
+        table: {
+            resizable: true,
+        },
     }),
-    TableRow,
-    TableHeader,
-    TableCell,
     StarterKit.configure({
         listItem: false,
+        link: false,
     }),
 ]
 
