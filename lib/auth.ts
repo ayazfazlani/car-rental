@@ -7,9 +7,9 @@ const JWT_SECRET: string =
 const JWT_REFRESH_SECRET: string =
   process.env.JWT_REFRESH_SECRET ||
   "fallback-refresh-secret-change-in-production";
-const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "15m";
+const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "24h";
 const JWT_REFRESH_EXPIRES_IN: string =
-  process.env.JWT_REFRESH_EXPIRES_IN || "7d";
+  process.env.JWT_REFRESH_EXPIRES_IN || "30d";
 
 export interface JWTPayload {
   userId: string;
