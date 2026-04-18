@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
+import { METADATA_BASE_URL } from '@/lib/utils';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com';
+    const baseUrl = METADATA_BASE_URL;
 
     // Fetch all active cars
     const cars = await prisma.car.findMany({

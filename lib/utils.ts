@@ -278,7 +278,13 @@ export function whatsAppMessage(
   return url
 }
 
-export const METADATA_BASE_URL = MAP[APP].url
+const getBaseUrl = () => {
+  const url = MAP[APP].url
+  if (url.startsWith('http')) return url
+  return `https://${url}`
+}
+
+export const METADATA_BASE_URL = getBaseUrl()
 
 export const getImageUrl = (image: string | null | undefined): string => {
   if (!image) return ""
