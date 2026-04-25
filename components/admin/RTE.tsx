@@ -1,16 +1,19 @@
 'use client'
 
 import React from 'react'
-import ListItem from '@tiptap/extension-list-item'
 import {
     useEditor,
     EditorContent,
-    Content,
-    EditorEvents,
-    // BubbleMenu
+    Editor
 } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
+import * as StarterKitPkg from '@tiptap/starter-kit'
+import * as ListItemPkg from '@tiptap/extension-list-item'
+import * as ImagePkg from '@tiptap/extension-image'
+import * as LinkPkg from '@tiptap/extension-link'
+import * as TablePkg from '@tiptap/extension-table'
+import * as TableRowPkg from '@tiptap/extension-table-row'
+import * as TableCellPkg from '@tiptap/extension-table-cell'
+import * as TableHeaderPkg from '@tiptap/extension-table-header'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
@@ -30,10 +33,20 @@ import {
     Redo,
     Strikethrough,
     Type,
-    Undo
+    Undo,
+    Link2,
+    Table as TableIcon
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Editor } from '@tiptap/react'
+import './RTE.css'
+
+// Helper to resolve extensions that might be nested due to CJS/ESM interop issues
+const resolveExt = (pkg: any, name: string) => {
+    const ext = pkg[name] || pkg.default || (pkg.default && pkg.default[name]) || pkg;
+    if (ext && ext.configure) return ext;
+    if (pkg.name === name || (pkg.default && pkg.default.name === name)) return pkg.default || pkg;
+    return ext;
+}
 
 const toolbarButtonStyles = 'h-9 w-9 p-0'
 
@@ -204,6 +217,28 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
                         title="Redo"
                         ariaLabel="Redo last action"
                     />
+                    <ToolbarButton
+                        isActive={editor.isActive('link')}
+                        onClick={() => {
+                            const previousUrl = editor.getAttributes('link').href;
+                            const url = window.prompt('URL', previousUrl);
+                            if (url === null) return;
+                            if (url === '') {
+                                editor.chain().focus().extendMarkRange('link').unsetLink().run();
+                                return;
+                            }
+                            editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+                        }}
+                        icon={Link2}
+                        title="Link"
+                        ariaLabel="Insert link"
+                    />
+                    <ToolbarButton
+                        onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+                        icon={TableIcon}
+                        title="Insert Table"
+                        ariaLabel="Insert Table"
+                    />
                     {onImageTap && (
                         <ToolbarButton
                             onClick={onImageTap}
@@ -218,47 +253,82 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
     )
 }
 
-const extensions = [
-    ListItem.configure({
-        HTMLAttributes: {
-            class: 'text-lg font-bold',
-        },
-    }),
-    Image.configure({
-        HTMLAttributes: {
-            class: 'rounded-lg my-2 mx-auto',
-        },
-    }),
-    StarterKit.configure({
-        listItem: false,
-    }),
-]
+const getExtensions = () => {
+    const starterKit = resolveExt(StarterKitPkg, 'StarterKit');
+    const listItem = resolveExt(ListItemPkg, 'ListItem');
+    const image = resolveExt(ImagePkg, 'Image');
+    const link = resolveExt(LinkPkg, 'Link');
+    const table = resolveExt(TablePkg, 'Table');
+    const tableRow = resolveExt(TableRowPkg, 'TableRow');
+    const tableCell = resolveExt(TableCellPkg, 'TableCell');
+    const tableHeader = resolveExt(TableHeaderPkg, 'TableHeader');
+
+    return [
+        listItem?.configure({
+            HTMLAttributes: {
+                class: 'text-lg font-bold',
+            },
+        }),
+        image?.configure({
+            HTMLAttributes: {
+                class: 'rounded-lg my-2 mx-auto',
+            },
+        }),
+        link?.configure({
+            openOnClick: false,
+            autolink: true,
+            defaultProtocol: 'https',
+        }),
+        table?.configure({
+            resizable: true,
+        }),
+        tableRow,
+        tableHeader,
+        tableCell,
+        starterKit?.configure({
+            listItem: false,
+            link: false,
+        }),
+    ].filter(Boolean);
+}
 
 interface RteProps {
-    value: string;
-    onChange: (value: string) => void;
+    value: any;
+    onChange?: (value: string) => void;
+    onUpdate?: (html: string, json: any, text: string) => void;
     placeholder?: string;
     minHeight?: string;
     onImageTap?: () => void;
 }
 
-export const RTE = ({ value, onChange, placeholder, minHeight = '300px', onImageTap }: RteProps) => {
+export const RTE = ({ value, onChange, onUpdate, placeholder, minHeight = '300px', onImageTap }: RteProps) => {
     const editor = useEditor({
         immediatelyRender: false,
-        extensions: extensions,
+        extensions: getExtensions(),
         content: value,
         editorProps: {
             attributes: {
                 class: cn(
-                    'prose prose-sm max-w-none overflow-x-hidden overflow-y-auto w-full focus:outline-none p-4 focus:ring-2 focus:ring-blue-500 focus:ring-inset',
+                    'editor prose prose-sm max-w-none overflow-x-hidden overflow-y-auto w-full focus:outline-none p-4 focus:ring-2 focus:ring-blue-500 focus:ring-inset',
                     'min-h-[' + minHeight + ']'
                 ),
                 placeholder: placeholder || ''
+            },
+            transformPastedHTML: (html) => {
+                // Remove all style attributes and generic span tags that might carry unwanted formatting
+                return html
+                    .replace(/ style="[^"]*"/g, '')
+                    .replace(/ class="[^"]*"/g, '')
+                    .replace(/<span[^>]*>/g, '')
+                    .replace(/<\/span>/g, '');
             }
         },
         onUpdate: ({ editor }) => {
             const html = editor.getHTML()
-            onChange(html)
+            const json = editor.getJSON()
+            const text = editor.getText()
+            if (onChange) onChange(html)
+            if (onUpdate) onUpdate(html, json, text)
         },
     })
 
@@ -279,5 +349,6 @@ export const RTE = ({ value, onChange, placeholder, minHeight = '300px', onImage
         </div>
     )
 }
+
 
 
