@@ -107,12 +107,12 @@ class Api {
             const res = await fetch(url, {
                 method: "POST",
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    ...headers,
-                    ...(isMultipart ? {} : {
-                        "Content-Type": "application/json",
-                    }),
-                },
+                        ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
+                        ...headers,
+                        ...(isMultipart ? {} : {
+                            "Content-Type": "application/json",
+                        }),
+                    },
                 body: isMultipart ? payload : JSON.stringify(payload),
             });
 

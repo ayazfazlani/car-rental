@@ -78,6 +78,7 @@ export function CarDetailOverview({
           </WithLink>
         ) : (
           <Item
+            key={spec.label}
             label={spec.label}
             value={spec.value}
             Icon={spec.icon}

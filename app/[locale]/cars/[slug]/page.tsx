@@ -8,6 +8,8 @@ import { CarDetailGallery } from "@/components/car-detail-gallery";
 import { CarDetailPricing } from "@/components/car-detail-pricing";
 import { CarDetailOverview } from "@/components/car-detail-overview";
 import { CarDetailRentalTerms } from "@/components/car-detail-rental-terms";
+import { getSettingsMap } from '@/lib/data/settings';
+import { KEY_VALUE_TYPES } from '@/lib/constants';
 import {
   ChevronRight,
   Calendar,
@@ -78,7 +80,8 @@ export default async function CarDetailPage({ params }: PageProps) {
   if (!car) {
     notFound();
   }
-
+  const settingsMap = await getSettingsMap();
+  const siteLogo = settingsMap[KEY_VALUE_TYPES.SITE_LOGO];
   const phone = contacts?.find(c => c.type === ContactType.PHONE)?.value || "971561234567";
   const whatsapp = contacts?.find(c => c.type === ContactType.WHATSAPP)?.value || "+971561234567";
 
@@ -214,7 +217,7 @@ export default async function CarDetailPage({ params }: PageProps) {
               </h5>
               <div className="w-full flex justify-center">
                 <Image
-                  src={Logo}
+                  src={siteLogo || Logo}
                   alt="Lux Car Rental"
                   width={132}
                   height={66}
