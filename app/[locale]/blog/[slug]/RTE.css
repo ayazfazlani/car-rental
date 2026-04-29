@@ -1,0 +1,194 @@
+.editor {
+  max-width: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* Reset all margins by default */
+.editor * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Add spacing only between adjacent elements */
+.editor > * + * {
+  margin-top: 0.75em;
+}
+
+.editor p {
+  font-size: 1.25rem;
+  color: #121212;
+  margin: 0 0 0.75em 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+.editor ul,
+.editor ol {
+  padding-left: 1rem;
+  margin: 0.75rem 0;
+}
+
+.editor ul {
+  list-style: disc;
+}
+
+.editor ol {
+  list-style: decimal;
+}
+
+.editor li {
+  margin-bottom: 0.45rem;
+  font-weight: 400;
+}
+
+.editor li:last-child {
+  margin-bottom: 0;
+}
+
+.editor blockquote {
+  padding: 55px 70px;
+  text-align: center;
+  font-size: 1.25rem;
+  color: #121212;
+  border-radius: 12px;
+  background: #fafafb;
+  margin: 56px 0;
+}
+
+.editor a {
+  color: #2563eb;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.editor a:hover {
+  color: #1d4ed8;
+}
+
+.editor h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #121212;
+  margin: 0.75em 0 0.5em 0;
+  padding: 0;
+}
+
+.editor h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #121212;
+  margin: 0.75em 0 0.5em 0;
+  padding: 0;
+}
+
+.editor h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #121212;
+  margin: 0.75em 0 0.5em 0;
+  padding: 0;
+}
+
+.editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 0.75rem 0;
+}
+
+.editor hr {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.editor pre {
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.editor code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875em;
+  background-color: #f1f5f9;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}
+
+.editor pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.editor table {
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  width: 100%;
+}
+
+.editor th,
+.editor td {
+  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.editor th {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
+
+/* Add to your RTE.css */
+.editor a {
+  color: #2563eb;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.editor a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Style for links in editor when editing */
+.ProseMirror a {
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ProseMirror a:hover {
+  color: #1d4ed8;
+}
+@media screen and (max-width: 768px) {
+  .editor blockquote {
+    padding: 55px 20px;
+  }
+
+  .editor ul,
+  .editor ol {
+    padding-left: 0.5rem;
+  }
+
+  .editor h1 {
+    font-size: 24px;
+  }
+
+  .editor h2 {
+    font-size: 20px;
+  }
+
+  .editor h3 {
+    font-size: 16px;
+  }
+
+  .editor p {
+    font-size: 1rem;
+  }
+}

@@ -15,7 +15,7 @@ export function CarDetailFeatures({ carFeatures }: CarDetailFeaturesProps) {
   return (
     <div className="mt-8">
       <h2 className="text-xl font-bold text-foreground mb-6">
-        <Translated key="details.features" fallback="Features" withFragment />
+        <Translated translationKey="details.features" fallback="Features" withFragment />
       </h2>
       <div className="space-y-2">
         {carFeatures

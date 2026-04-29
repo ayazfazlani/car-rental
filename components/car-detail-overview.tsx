@@ -63,7 +63,7 @@ export function CarDetailOverview({
   return (
     <div className="mt-8">
       <h2 className="text-lg sm:text-xl font-bold text-foreground mb-4 sm:mb-6">
-        <Translated key="details.overview" fallback="Car Overview" withFragment />
+        <Translated translationKey="details.overview" fallback="Car Overview" withFragment />
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">

@@ -70,9 +70,9 @@ export async function Hero({ locale }: { locale?: string }) {
                     <span className="inline-block">{heading}</span>
                   ) : (
                     <>
-                      <Translated key="hero.title" fallback="Find Your Best" className="inline-block" />
+                      <Translated translationKey="hero.title" fallback="Find Your Best" className="inline-block" />
                       <br />
-                      <Translated key="hero.subtitle" fallback="Dream Car for Rental" className="inline-block" />
+                      <Translated translationKey="hero.subtitle" fallback="Dream Car for Rental" className="inline-block" />
                     </>
                   )}
                 </h1>

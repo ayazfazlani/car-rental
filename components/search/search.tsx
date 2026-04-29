@@ -139,7 +139,7 @@ export default function SearchComponent({ brands: brandsPromise, categories: cat
                 <main>
                     {isLoading && <CarsSkeleton count={PAGE_SIZE} compact={false} />}
                     {error && <div className="text-red-600">
-                        <Translated key="search.errorLoadingCars" fallback="Error loading cars" />
+                        <Translated translationKey="search.errorLoadingCars" fallback="Error loading cars" />
                     </div>}
 
                     {!isLoading && !error && (
@@ -155,8 +155,8 @@ export default function SearchComponent({ brands: brandsPromise, categories: cat
                     )}
                     {!isLoading && cars.length === 0 && (
                         <div className="text-center text-muted-foreground mt-20">
-                            <Translated key="search.noResults" fallback="No results found" className='text-3xl' />
-                            <Translated key="search.noResultsDesc" fallback="Try adjusting your filters" className='text-sm' />
+                            <Translated translationKey="search.noResults" fallback="No results found" className='text-3xl' />
+                            <Translated translationKey="search.noResultsDesc" fallback="Try adjusting your filters" className='text-sm' />
                         </div>
                     )}
                 </main>

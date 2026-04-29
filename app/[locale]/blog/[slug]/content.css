@@ -1,81 +1,121 @@
+/* Same as RTE.css but specifically for blog display */
 .editor {
-  > * + * {
-    margin-top: 0.75em;
-  }
+  max-width: 920px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+}
 
-  ul,
-  ol {
-    padding: 0 1rem;
-  }
+.editor * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  ul {
-    list-style: disc;
-  }
+.editor > * + * {
+  margin-top: 0.75em;
+}
 
-  ol {
-    list-style: decimal;
-  }
+.editor p {
+  font-size: 1.125rem;
+  color: #334155;
+  margin: 0 0 0.75em 0;
+  padding: 0;
+  line-height: 1.7;
+}
 
-  blockquote {
-    padding: 55px 70px 55px 70px;
-    text-align: center;
+.editor h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 1em 0 0.5em 0;
+}
+
+.editor h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 1em 0 0.5em 0;
+}
+
+.editor h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0.75em 0 0.5em 0;
+}
+
+.editor ul, 
+.editor ol {
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+}
+
+.editor li {
+  margin-bottom: 0.5rem;
+}
+.editor a {
+  color: #2563eb;
+  text-decoration: underline;
+  background: transparent;
+    cursor: pointer;
+}
+
+.editor mark {
+  background: transparent;
+  color: inherit;
+}
+
+
+.editor blockquote {
+  padding: 2rem 2.5rem;
+  font-style: italic;
+  border-left: 4px solid #3b82f6;
+  background: #f8fafc;
+  margin: 2rem 0;
+  border-radius: 8px;
+}
+
+.editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 2rem 0;
+}
+
+@media screen and (max-width: 768px) {
+  .editor h1 {
+    font-size: 2rem;
+  }
+  
+  .editor h2 {
+    font-size: 1.5rem;
+  }
+  
+  .editor h3 {
     font-size: 1.25rem;
-    color: #121212;
-    border-radius: 12px;
-    background: #fafafb;
-    margin-top: 56px;
-    margin-bottom: 56px;
   }
-
-  p {
-    font-size: 1.25rem;
-    color: #121212;
-    padding-top: 24px;
-    padding-bottom: 24px;
+  
+  .editor p {
+    font-size: 1rem;
   }
-
-  h1 {
-    font-size: 28px;
-    font-weight: 700;
-    color: #121212;
+  
+  .editor blockquote {
+    padding: 1.5rem;
   }
+}
 
-  h2 {
-    font-size: 22px;
-    font-weight: 600;
-    color: #121212;
-  }
 
-  h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #121212;
-  }
+/* Link styles for blog display */
+.blog-link,
+.editor a {
+  color: #2563eb !important;
+  text-decoration: underline !important;
+  cursor: pointer !important;
+}
 
-  @media screen and (max-width: 768px) {
-    blockquote {
-      padding: 55px 20px 55px 20px;
-    }
-
-    ul,
-    ol {
-      padding: 0 0.5rem;
-    }
-
-    h1 {
-      font-size: 24px;
-    }
-
-    h2 {
-      font-size: 20px;
-    }
-
-    h3 {
-      font-size: 16px;
-    }
-
-    p {
-      font-size: 1rem;
-    }
-  }
+.blog-link:hover,
+.editor a:hover {
+  color: #1d4ed8 !important;
+  text-decoration: underline !important;
 }

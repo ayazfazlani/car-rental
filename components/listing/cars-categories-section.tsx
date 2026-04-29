@@ -36,7 +36,7 @@ export function CarCategoriesSection({
           </div>
           <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg hidden md:flex text-sm px-5 h-10">
             <Link href={slug ? { pathname: "/categories/[slug]", params: { slug } } : ('/cars?categoryId=' + id) as any}>
-              <Translated key="carSection.viewAll" fallback="View All" />{" "}
+              <Translated translationKey="carSection.viewAll" fallback="View All" />{" "}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

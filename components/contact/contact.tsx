@@ -13,7 +13,7 @@ export default async function Contact() {
 
     if (!contacts.length) {
         <div className="text-center text-muted-foreground mt-20">
-            <Translated key="contact.noContacts" fallback="No contacts added yet" />
+            <Translated translationKey="contact.noContacts" fallback="No contacts added yet" />
         </div>
     }
 

@@ -50,10 +50,10 @@ export default function page() {
             <div className="mx-auto px-4 md:pb-8 pt-2">
                 <div className="md:mb-1">
                     <h1 className="text-base md:text-2xl font-bold text-foreground">
-                        <Translated key="search.findYourPerfectCar" fallback="Find Your Perfect Car" />
+                        <Translated translationKey="search.findYourPerfectCar" fallback="Find Your Perfect Car" />
                     </h1>
                     <p className="text-muted-foreground text-base hidden sm:block">
-                        <Translated key="search.browseSelection" fallback="Browse our premium selection of rental vehicles" />
+                        <Translated translationKey="search.browseSelection" fallback="Browse our premium selection of rental vehicles" />
                     </p>
                 </div>
                 <SearchComponent

@@ -64,7 +64,7 @@ export default async function CategoryPage({ params }: Props) {
                         {category.name}
                     </h1>
                     <p className="text-muted-foreground text-base hidden sm:block">
-                        <Translated key="search.browseSelection" fallback="Browse our premium selection of rental vehicles" />
+                        <Translated translationKey="search.browseSelection" fallback="Browse our premium selection of rental vehicles" />
                     </p>
                 </div>
                 <SearchComponent

@@ -2,9 +2,9 @@ import AppProviders from "@/provider/Providers";
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner"
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import "./globals.css";
 // import { Manrope } from "next/font/google";
 // import { Analytics } from "@vercel/analytics/next";
-// import "./globals.css";
 
 // const manrope = Manrope({
 //   subsets: ['latin'],
@@ -29,11 +29,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AppProviders>
-      <NuqsAdapter>
-        {children}
-      </NuqsAdapter>
-      <Toaster />
-    </AppProviders>
+    <html lang="en">
+      <body>
+        <AppProviders>
+          <NuqsAdapter>
+            {children}
+          </NuqsAdapter>
+          <Toaster />
+        </AppProviders>
+      </body>
+    </html>
   )
 }

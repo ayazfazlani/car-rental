@@ -6,14 +6,13 @@ import {
     EditorContent,
     Editor
 } from '@tiptap/react'
-import * as StarterKitPkg from '@tiptap/starter-kit'
-import * as ListItemPkg from '@tiptap/extension-list-item'
-import * as ImagePkg from '@tiptap/extension-image'
-import * as LinkPkg from '@tiptap/extension-link'
-import * as TablePkg from '@tiptap/extension-table'
-import * as TableRowPkg from '@tiptap/extension-table-row'
-import * as TableCellPkg from '@tiptap/extension-table-cell'
-import * as TableHeaderPkg from '@tiptap/extension-table-header'
+import StarterKit from '@tiptap/starter-kit'
+import Link from '@tiptap/extension-link'
+import TipTapImage from '@tiptap/extension-image'
+import { Table } from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
@@ -39,14 +38,6 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import './RTE.css'
-
-// Helper to resolve extensions that might be nested due to CJS/ESM interop issues
-const resolveExt = (pkg: any, name: string) => {
-    const ext = pkg[name] || pkg.default || (pkg.default && pkg.default[name]) || pkg;
-    if (ext && ext.configure) return ext;
-    if (pkg.name === name || (pkg.default && pkg.default.name === name)) return pkg.default || pkg;
-    return ext;
-}
 
 const toolbarButtonStyles = 'h-9 w-9 p-0'
 
@@ -89,10 +80,34 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
         return null
     }
 
+    const setLink = () => {
+        const previousUrl = editor.getAttributes('link').href
+        let url = window.prompt('Enter URL', previousUrl || 'https://')
+        
+        if (url === null) {
+            return
+        }
+        
+        url = url.trim()
+        
+        // Remove empty or invalid links
+        if (url === '' || url === 'https://' || url === 'http://') {
+            editor.chain().focus().extendMarkRange('link').unsetLink().run()
+            return
+        }
+        
+        // Add https:// if no protocol is specified
+        if (!url.startsWith('http://') && !url.startsWith('https://') && 
+            !url.startsWith('mailto:') && !url.startsWith('tel:') && !url.startsWith('/')) {
+            url = 'https://' + url
+        }
+        
+        editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+    }
+
     return (
         <TooltipProvider>
             <div className='flex flex-wrap items-center gap-1 p-3 bg-slate-50 border-b border-slate-200 rounded-t-lg'>
-                {/* Style Group */}
                 <div className='flex items-center gap-1'>
                     <ToolbarButton
                         isActive={editor.isActive('bold')}
@@ -137,7 +152,6 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
                     <Separator orientation="vertical" className="h-6 mx-1" />
                 </div>
 
-                {/* Heading Group */}
                 <div className='flex items-center gap-1'>
                     <ToolbarButton
                         isActive={editor.isActive('heading', { level: 1 })}
@@ -163,7 +177,6 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
                     <Separator orientation="vertical" className="h-6 mx-1" />
                 </div>
 
-                {/* Format Group */}
                 <div className='flex items-center gap-1'>
                     <ToolbarButton
                         isActive={editor.isActive('bulletList')}
@@ -201,7 +214,6 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
                     <Separator orientation="vertical" className="h-6 mx-1" />
                 </div>
 
-                {/* Actions Group */}
                 <div className='flex items-center gap-1'>
                     <ToolbarButton
                         onClick={() => editor.chain().focus().undo().run()}
@@ -219,16 +231,7 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
                     />
                     <ToolbarButton
                         isActive={editor.isActive('link')}
-                        onClick={() => {
-                            const previousUrl = editor.getAttributes('link').href;
-                            const url = window.prompt('URL', previousUrl);
-                            if (url === null) return;
-                            if (url === '') {
-                                editor.chain().focus().extendMarkRange('link').unsetLink().run();
-                                return;
-                            }
-                            editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-                        }}
+                        onClick={setLink}
                         icon={Link2}
                         title="Link"
                         ariaLabel="Insert link"
@@ -254,42 +257,34 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
 }
 
 const getExtensions = () => {
-    const starterKit = resolveExt(StarterKitPkg, 'StarterKit');
-    const listItem = resolveExt(ListItemPkg, 'ListItem');
-    const image = resolveExt(ImagePkg, 'Image');
-    const link = resolveExt(LinkPkg, 'Link');
-    const table = resolveExt(TablePkg, 'Table');
-    const tableRow = resolveExt(TableRowPkg, 'TableRow');
-    const tableCell = resolveExt(TableCellPkg, 'TableCell');
-    const tableHeader = resolveExt(TableHeaderPkg, 'TableHeader');
-
     return [
-        listItem?.configure({
-            HTMLAttributes: {
-                class: 'text-lg font-bold',
+        StarterKit.configure({
+            heading: {
+                levels: [1, 2, 3],
             },
         }),
-        image?.configure({
+        TipTapImage.configure({
             HTMLAttributes: {
                 class: 'rounded-lg my-2 mx-auto',
             },
         }),
-        link?.configure({
-            openOnClick: false,
+        Link.configure({
+            openOnClick: true,
             autolink: true,
             defaultProtocol: 'https',
+            HTMLAttributes: {
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                class: 'tiptap-link',
+            },
         }),
-        table?.configure({
+        Table.configure({
             resizable: true,
         }),
-        tableRow,
-        tableHeader,
-        tableCell,
-        starterKit?.configure({
-            listItem: false,
-            link: false,
-        }),
-    ].filter(Boolean);
+        TableRow,
+        TableHeader,
+        TableCell,
+    ]
 }
 
 interface RteProps {
@@ -309,30 +304,41 @@ export const RTE = ({ value, onChange, onUpdate, placeholder, minHeight = '300px
         editorProps: {
             attributes: {
                 class: cn(
-                    'editor prose prose-sm max-w-none overflow-x-hidden overflow-y-auto w-full focus:outline-none p-4 focus:ring-2 focus:ring-blue-500 focus:ring-inset',
-                    'min-h-[' + minHeight + ']'
+                    'editor max-w-none overflow-x-hidden overflow-y-auto w-full focus:outline-none p-4'
                 ),
+                style: `min-height: ${minHeight};`,
                 placeholder: placeholder || ''
             },
             transformPastedHTML: (html) => {
-                // Remove all style attributes and generic span tags that might carry unwanted formatting
-                return html
+                let cleaned = html
                     .replace(/ style="[^"]*"/g, '')
                     .replace(/ class="[^"]*"/g, '')
-                    .replace(/<span[^>]*>/g, '')
-                    .replace(/<\/span>/g, '');
+                    .replace(/<p>\s*<\/p>/g, '')
+                    .replace(/<p><br><\/p>/g, '')
+                    .trim();
+                return cleaned;
             }
         },
         onUpdate: ({ editor }) => {
-            const html = editor.getHTML()
+            let html = editor.getHTML()
             const json = editor.getJSON()
-            const text = editor.getText()
+            let text = editor.getText()
+            
+            // Clean empty hrefs before saving
+            html = html
+                .replace(/<a\s+[^>]*?href=["']\s*["'][^>]*?>(.*?)<\/a>/gi, '$1')
+                .replace(/<a\s+[^>]*?href=["']#["'][^>]*?>(.*?)<\/a>/gi, '$1')
+                .replace(/<a\s+[^>]*?href=["']javascript:void\(0\)["'][^>]*?>(.*?)<\/a>/gi, '$1')
+                .replace(/<p>\s*<\/p>/g, '')
+                .replace(/<p><br><\/p>/g, '');
+            
+            text = text.replace(/\s+/g, ' ').trim();
+            
             if (onChange) onChange(html)
             if (onUpdate) onUpdate(html, json, text)
         },
     })
 
-    // Carefully synchronize value prop ONLY when not focused
     React.useEffect(() => {
         if (!editor || editor.isFocused) return
         
@@ -349,6 +355,3 @@ export const RTE = ({ value, onChange, onUpdate, placeholder, minHeight = '300px
         </div>
     )
 }
-
-
-

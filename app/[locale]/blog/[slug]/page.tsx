@@ -1,36 +1,41 @@
-import { generateHTML } from '@tiptap/html';
+import { generateHTML } from '@tiptap/html/server';
 import Image from 'next/image';
 import './content.css';
 import { notFound } from 'next/navigation';
 import { getBlog } from '@/lib/data/blog';
-import { formatDate, getImageUrl, } from '@/lib/utils';
+import { formatDate, getImageUrl } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
 import { JSONContent } from '@tiptap/react';
 import { Metadata } from 'next';
 import BlogSchema from '@/components/seo/BlogSchema';
-import * as StarterKitPkg from '@tiptap/starter-kit'
-import * as ListItemPkg from '@tiptap/extension-list-item'
-import * as ImagePkg from '@tiptap/extension-image'
-import * as LinkPkg from '@tiptap/extension-link'
-import * as TablePkg from '@tiptap/extension-table'
-import * as TableRowPkg from '@tiptap/extension-table-row'
-import * as TableCellPkg from '@tiptap/extension-table-cell'
-import * as TableHeaderPkg from '@tiptap/extension-table-header'
-
-// Helper to resolve extensions that might be nested due to CJS/ESM interop issues
-const resolveExt = (pkg: any, name: string) => {
-    const ext = pkg[name] || pkg.default || (pkg.default && pkg.default[name]) || pkg;
-    if (ext && ext.configure) return ext;
-    // If it's the package itself and has a name property matching what we expect
-    if (pkg.name === name || (pkg.default && pkg.default.name === name)) return pkg.default || pkg;
-    return ext;
-}
-
+// Use direct imports like RTE.tsx does
+import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
+import TipTapImage from '@tiptap/extension-image';
+import {Table} from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
 
 type Params = Promise<{
     slug: string;
     locale: string;
 }>
+
+// Helper function to clean ONLY empty hrefs, but preserve valid links
+const cleanEmptyHrefs = (html: string): string => {
+    if (!html) return '<p>No content available</p>';
+    
+    return html
+        // ONLY remove links with completely empty href
+        .replace(/<a\s+[^>]*?href=["']\s*["'][^>]*?>(.*?)<\/a>/gi, '$1')
+        // Remove links with href="#"
+        .replace(/<a\s+[^>]*?href=["']#["'][^>]*?>(.*?)<\/a>/gi, '$1')
+        // Remove empty paragraphs
+        .replace(/<p>\s*<\/p>/g, '')
+        .replace(/<p><br><\/p>/g, '')
+        .trim();
+}
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
     const { slug } = await params;
@@ -42,7 +47,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     return {
         title: blog.seo_title || blog.title,
         description: blog.seo_description || blog.info,
-        keywords: blog.keywords.join(', '),
+        keywords: blog.keywords?.join(', ') || '',
         alternates: {
             canonical: blog.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/blog/${blog.slug}`,
         },
@@ -62,13 +67,62 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     }
 }
 
-export default async function page({ params }: { params: Params }) {
+export default async function Page({ params }: { params: Params }) {
     const { slug, locale } = await params;
     const blog = await getBlog(slug)
+    
     if (!blog) {
         return notFound();
     }
+    
     const tags = blog.tags || [];
+    
+    // Generate HTML from JSON content using the SAME extensions as RTE
+    let htmlContent = '<p>No content available</p>';
+    
+    if (blog.content) {
+        try {
+            // Use the same extension configuration as RTE.tsx
+            const extensions = [
+                StarterKit.configure({
+                    heading: {
+                        levels: [1, 2, 3],
+                    },
+                }),
+                TipTapImage.configure({
+                    HTMLAttributes: {
+                        class: 'rounded-lg my-2 mx-auto',
+                    },
+                }),
+                Link.configure({
+                    openOnClick: true,
+                    autolink: true,
+                    defaultProtocol: 'https',
+                    HTMLAttributes: {
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                        class: 'tiptap-link',
+                    },
+                }),
+                Table.configure({
+                    resizable: true,
+                }),
+                TableRow,
+                TableHeader,
+                TableCell,
+            ];
+            
+            // Generate HTML
+            const rawHtml = generateHTML(blog.content as JSONContent, extensions);
+            // Only clean empty hrefs, preserve valid ones
+            htmlContent = cleanEmptyHrefs(rawHtml);
+            
+        } catch (error) {
+            console.error('[Tiptap Error] Failed to generate HTML:', error);
+            htmlContent = '<p>Error loading content. Please try again later.</p>';
+        }
+    }
+    
     return (
         <div className='w-full'>
             <BlogSchema blog={blog} locale={locale} />
@@ -93,76 +147,16 @@ export default async function page({ params }: { params: Params }) {
                                     src={getImageUrl(blog.cover)!}
                                     alt='cover'
                                     fill
-                                    objectFit='cover'
+                                    style={{ objectFit: 'cover' }}
                                 />
                             </div>
                         )}
-                        {blog.content && (() => {
-                            const starterKit = resolveExt(StarterKitPkg, 'StarterKit');
-                            const listItem = resolveExt(ListItemPkg, 'ListItem');
-                            const tipTapImage = resolveExt(ImagePkg, 'Image');
-                            const link = resolveExt(LinkPkg, 'Link');
-                            const table = resolveExt(TablePkg, 'Table');
-                            const tableRow = resolveExt(TableRowPkg, 'TableRow');
-                            const tableCell = resolveExt(TableCellPkg, 'TableCell');
-                            const tableHeader = resolveExt(TableHeaderPkg, 'TableHeader');
-
-                            const extensions = [
-                                listItem?.configure({
-                                    HTMLAttributes: {
-                                        class: 'text-lg font-bold',
-                                    },
-                                }),
-                                tipTapImage?.configure({
-                                    HTMLAttributes: {
-                                        class: 'rounded-lg my-16 mx-auto',
-                                    },
-                                }),
-                                link?.configure({
-                                    openOnClick: false,
-                                    autolink: true,
-                                    defaultProtocol: 'https',
-                                }),
-                                table?.configure({
-                                    resizable: true,
-                                }),
-                                tableRow,
-                                tableHeader,
-                                tableCell,
-                                starterKit?.configure({
-                                    listItem: false,
-                                    link: false,
-                                }),
-                            ].filter(Boolean);
-
-                            // Diagnostics
-                            if (process.env.NODE_ENV === 'production' || true) {
-                                console.log('[Tiptap Debug] Extension Status:', {
-                                    starterKit: !!starterKit,
-                                    listItem: !!listItem,
-                                    image: !!tipTapImage,
-                                    link: !!link,
-                                    table: !!table,
-                                    tableRow: !!tableRow,
-                                    tableHeader: !!tableHeader,
-                                    tableCell: !!tableCell,
-                                    extensionsCount: extensions.length
-                                });
-                            }
-
-                            // Safety guard: if core extensions are missing, render raw content or nothing to avoid RangeError
-                            if (!starterKit) {
-                                return <div className='editor max-w-[920px] mx-auto py-24'>Error loading content editor extensions. Rendering disabled to prevent crash.</div>;
-                            }
-
-                            return (
-                                <div className='editor max-w-[920px] flex flex-col mx-auto px-0 mob:px-8  md:px-16 py-24 lg:px-0 md:py-32'
-                                    dangerouslySetInnerHTML={{
-                                        __html: generateHTML(blog.content as JSONContent, extensions)
-                                    }}
-                                />
-                            );
-                        })()}
+                        <div 
+                            className='editor max-w-[920px] flex flex-col mx-auto px-0 mob:px-8 md:px-16 py-24 lg:px-0 md:py-32'
+                            dangerouslySetInnerHTML={{
+                                __html: htmlContent
+                            }}
+                        />
                     </>
                 }
             </div>

@@ -9,8 +9,11 @@ type BlogContentProps = {
 }
 
 export function SmallBlog({ blog }: { blog: Blog }) {
-    return (
-        <Link href={`/blog/${blog.slug || ''}`} className='flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
+    // Fix: Only create href if slug exists and is not an empty string
+    const href = blog.slug && blog.slug.trim() !== '' ? `/blog/${blog.slug}` : null;
+
+    const cardContent = (
+        <>
             <div className='h-[300px] relative bg-muted'>
                 {getImageUrl(blog?.cover) ? (
                     <Image
@@ -43,8 +46,19 @@ export function SmallBlog({ blog }: { blog: Blog }) {
                     <p className='text-sm'>{formatDate(blog?.createdAt) || ''}</p>
                 </div>
             </div>
+        </>
+    );
+
+    // Fix: Only render as Link if href is not null, otherwise render as div
+    return href ? (
+        <Link href={href} className='flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
+            {cardContent}
         </Link>
-    )
+    ) : (
+        <div className='flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
+            {cardContent}
+        </div>
+    );
 }
 
 export function BlogContent({ blogs }: BlogContentProps) {
@@ -54,5 +68,5 @@ export function BlogContent({ blogs }: BlogContentProps) {
                 return <SmallBlog key={blog.id} blog={blog} />
             })}
         </div>
-    )
+    );
 }

@@ -26,21 +26,41 @@
 
   ul,
   ol {
-    padding: 0 1rem;
+    padding-left: 1.25rem;
+    margin: 0.75rem 0;
   }
 
   ul {
-    list-style: disc;
+    list-style-type: disc;
   }
 
   ol {
-    list-style: decimal;
+    list-style-type: decimal;
+  }
+
+  li {
+    margin-bottom: 0.45rem;
+    font-weight: 400;
+  }
+
+  li > p {
+    margin: 0;
+  }
+
+  a {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+
+  a:hover {
+    color: #1d4ed8;
   }
 
   blockquote {
-    padding: 55px 70px 55px 70px;
-    text-align: center;
-    font-size: 1.25rem;
+    padding: 1rem 1.25rem;
+    margin: 0;
+    text-align: left;
+    font-size: 1.1rem;
     color: #121212;
     border-radius: 12px;
     background: #fafafb;
@@ -49,6 +69,7 @@
   p {
     font-size: 1.25rem;
     color: #121212;
+    margin: 0;
   }
 
   h1 {
@@ -118,6 +139,13 @@
     font-weight: bold;
     text-align: left;
     background-color: #f1f3f5;
+  }
+
+  mark {
+    background-color: #fce18f;
+    color: inherit;
+    padding: 0.08rem 0.16rem;
+    border-radius: 0.18rem;
   }
 
   .tableWrapper {

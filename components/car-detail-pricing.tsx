@@ -34,7 +34,7 @@ export function CarDetailPricing({
   return (
     <div className="space-y-6">
       <h2 className="text-lg sm:text-xl font-bold text-foreground">
-        <Translated key="details.pricing" fallback="Pricing" withFragment />
+        <Translated translationKey="details.pricing" fallback="Pricing" withFragment />
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
@@ -48,7 +48,7 @@ export function CarDetailPricing({
           <p className="text-xl sm:text-2xl font-bold text-primary">
             {formatPrice(pricePerDay).value}
           </p>
-          <p className="text-xs sm:text-sm text-muted-foreground">/ <Translated key="details.day" fallback="day" withFragment /></p>
+          <p className="text-xs sm:text-sm text-muted-foreground">/ <Translated translationKey="details.day" fallback="day" withFragment /></p>
         </div>
 
         {/* Weekly */}
@@ -61,7 +61,7 @@ export function CarDetailPricing({
           <p className="text-xl sm:text-2xl font-bold text-primary">
             {formatPrice(pricePerWeek || Math.round(pricePerDay * 6)).value}
           </p>
-          <p className="text-xs sm:text-sm text-muted-foreground">/ <Translated key="details.week" fallback="week" withFragment /></p>
+          <p className="text-xs sm:text-sm text-muted-foreground">/ <Translated translationKey="details.week" fallback="week" withFragment /></p>
         </div>
 
         {/* Monthly */}
@@ -74,14 +74,14 @@ export function CarDetailPricing({
           <p className="text-xl sm:text-2xl font-bold text-primary">
             {formatPrice(pricePerMonth).value}
           </p>
-          <p className="text-xs sm:text-sm text-muted-foreground">/ <Translated key="details.month" fallback="month" withFragment /></p>
+          <p className="text-xs sm:text-sm text-muted-foreground">/ <Translated translationKey="details.month" fallback="month" withFragment /></p>
         </div>
       </div>
 
       {/* Mileage Info */}
       <div className="flex items-center justify-between py-3 sm:py-4 border-t border-border">
         <span className="text-xs sm:text-sm text-muted-foreground">
-          <Translated key="details.includedMileage" fallback="Included mileage limit" withFragment />
+          <Translated translationKey="details.includedMileage" fallback="Included mileage limit" withFragment />
         </span>
         <span className="text-xs sm:text-sm text-foreground font-medium">
           {mileageLimit} km
@@ -89,7 +89,7 @@ export function CarDetailPricing({
       </div>
       <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-border">
         <span className="text-xs sm:text-sm text-muted-foreground">
-          <Translated key="details.additionalMileage" fallback="Additional mileage charge" withFragment />
+          <Translated translationKey="details.additionalMileage" fallback="Additional mileage charge" withFragment />
         </span>
         <span className="text-xs sm:text-sm text-foreground font-medium">
           {currency} {additionalMileage} / km
@@ -100,13 +100,13 @@ export function CarDetailPricing({
         {oneDayRental && <div className="flex items-center gap-2">
           <Check className="h-4 w-4 sm:h-5 sm:w-5 text-accent-foreground flex-shrink-0" />
           <span className="text-xs sm:text-sm text-foreground">
-            <Translated key="details.1day" fallback="1 day rental available" withFragment />
+            <Translated translationKey="details.1day" fallback="1 day rental available" withFragment />
           </span>
         </div>}
         {insurance && <div className="flex items-center gap-2">
           <Check className="h-4 w-4 sm:h-5 sm:w-5 text-accent-foreground flex-shrink-0" />
           <span className="text-xs sm:text-sm text-foreground">
-            <Translated key="details.insurance" fallback="Insurance included" withFragment />
+            <Translated translationKey="details.insurance" fallback="Insurance included" withFragment />
           </span>
         </div>}
       </div>}
