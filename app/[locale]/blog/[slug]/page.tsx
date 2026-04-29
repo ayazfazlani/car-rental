@@ -140,13 +140,15 @@ export default async function Page({ params }: { params: Params }) {
 
                         {/* ── Feature / Cover Image ── */}
                         {getImageUrl(blog.cover) && (
-                            <div className='relative w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden'>
+                            <div className='relative w-full rounded-2xl overflow-hidden bg-slate-100'>
                                 <Image
                                     src={getImageUrl(blog.cover)!}
                                     alt={blog.title}
-                                    fill
+                                    width={1288}
+                                    height={700}
                                     priority
-                                    className='object-cover'
+                                    className='w-full h-auto object-contain'
+                                    sizes='(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1288px'
                                 />
                             </div>
                         )}
