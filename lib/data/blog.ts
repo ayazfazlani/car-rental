@@ -48,3 +48,42 @@ export const getBlog = unstable_cache(
         revalidate: 60, // optional TTL
     }
 )
+
+export const getRelatedBlogs = unstable_cache(
+    async (currentSlug: string, tags: string[], limit: number = 3) => {
+        const where: Prisma.BlogWhereInput = {
+            draft: false,
+            slug: { not: currentSlug },
+        }
+        if (tags && tags.length > 0) {
+            where.tags = { hasSome: tags }
+        }
+
+        const blogs = await prisma.blog.findMany({
+            where,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+        })
+
+        // If not enough tag-matched blogs, fill with latest
+        if (blogs.length < limit) {
+            const existingSlugs = [currentSlug, ...blogs.map(b => b.slug)]
+            const extras = await prisma.blog.findMany({
+                where: {
+                    draft: false,
+                    slug: { notIn: existingSlugs },
+                },
+                take: limit - blogs.length,
+                orderBy: { createdAt: 'desc' },
+            })
+            blogs.push(...extras)
+        }
+
+        return blogs
+    },
+    ['related-blogs'],
+    {
+        tags: ['blog'],
+        revalidate: 60,
+    }
+)

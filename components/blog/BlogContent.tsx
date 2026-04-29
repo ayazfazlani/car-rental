@@ -14,14 +14,13 @@ export function SmallBlog({ blog }: { blog: Blog }) {
 
     const cardContent = (
         <>
-            <div className='h-[300px] relative bg-muted'>
+            <div className='h-[240px] relative bg-muted overflow-hidden'>
                 {getImageUrl(blog?.cover) ? (
                     <Image
                         src={getImageUrl(blog?.cover)!}
                         alt={blog?.title || ''}
                         fill={true}
-                        className='rounded-xl overflow-hidden'
-                        style={{ objectFit: "cover" }}
+                        className='object-cover group-hover:scale-105 transition-transform duration-500'
                     />
                 ) : (
                     <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
@@ -51,11 +50,11 @@ export function SmallBlog({ blog }: { blog: Blog }) {
 
     // Fix: Only render as Link if href is not null, otherwise render as div
     return href ? (
-        <Link href={href} className='flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
+        <Link href={href} className='group flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300'>
             {cardContent}
         </Link>
     ) : (
-        <div className='flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
+        <div className='group flex flex-col w-full md:w-[350px] gap-2 border border-border rounded-xl overflow-hidden'>
             {cardContent}
         </div>
     );
