@@ -78,7 +78,7 @@ const nextConfig = {
       },
       {
         source: '/cars/mercedes-benz-maybach-v300-2023-maybach-v300-2023-2023',
-        destination: 'brands/mercedes',
+        destination: '/brands/mercedes',
         permanent: true,
       },
       {
@@ -86,50 +86,61 @@ const nextConfig = {
         destination: '/cars/bentley-continental-gtc-speed-v12-continental-gtc-speed-v12-2024',
         permanent: true,
       },
-    ]
+    ];
   },
+
   experimental: {
     // serverActions is enabled by default in Next.js 16
   },
-  // Turbopack config (empty - using defaults)
-  // Developer Mode is enabled, so symlinks work without issues
+
   turbopack: {},
+
+  // ==================== IMAGE CONFIG ====================
   images: {
+    unoptimized: true,           // ← This fixes your blog image issue
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "oneclickrentcar.com",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "oneclickrentcar.com",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3002",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "https",
         hostname: "luxuscarrental.com",
         pathname: "/uploads/**",
       },
       {
         protocol: "http",
         hostname: "luxuscarrental.com",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost:3000",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "https",
-        hostname: "oneclickrentcar.com",
-        pathname: "/uploads/**",
-      },
-
-      {
-        protocol: "http",
-        hostname: "localhost:3002",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "https",
-        hostname: "oneclickrentcar.com",
         pathname: "/uploads/**",
       },
     ],
   },
-  // API routes configuration
+  // =====================================================
+
+  // Headers
   async headers() {
     return [
       {
@@ -148,9 +159,16 @@ const nextConfig = {
           },
         ],
       },
+      // Add static cache headers for uploads (helps with new images)
+      {
+        source: "/uploads/:all*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=2592000, immutable" }, // 30 days
+          { key: "Access-Control-Allow-Origin", value: "*" },
+        ],
+      },
     ];
   },
 };
 
 module.exports = withNextIntl(nextConfig);
-
