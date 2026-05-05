@@ -83,25 +83,25 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
     const setLink = () => {
         const previousUrl = editor.getAttributes('link').href
         let url = window.prompt('Enter URL', previousUrl || 'https://')
-        
+
         if (url === null) {
             return
         }
-        
+
         url = url.trim()
-        
+
         // Remove empty or invalid links
         if (url === '' || url === 'https://' || url === 'http://') {
             editor.chain().focus().extendMarkRange('link').unsetLink().run()
             return
         }
-        
+
         // Add https:// if no protocol is specified
-        if (!url.startsWith('http://') && !url.startsWith('https://') && 
+        if (!url.startsWith('http://') && !url.startsWith('https://') &&
             !url.startsWith('mailto:') && !url.startsWith('tel:') && !url.startsWith('/')) {
             url = 'https://' + url
         }
-        
+
         editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
     }
 
@@ -320,31 +320,42 @@ export const RTE = ({ value, onChange, onUpdate, placeholder, minHeight = '300px
             }
         },
         onUpdate: ({ editor }) => {
-            let html = editor.getHTML()
+            const html = editor.getHTML()
             const json = editor.getJSON()
-            let text = editor.getText()
-            
-            // Clean empty hrefs before saving
-            html = html
-                .replace(/<a\s+[^>]*?href=["']\s*["'][^>]*?>(.*?)<\/a>/gi, '$1')
-                .replace(/<a\s+[^>]*?href=["']#["'][^>]*?>(.*?)<\/a>/gi, '$1')
-                .replace(/<a\s+[^>]*?href=["']javascript:void\(0\)["'][^>]*?>(.*?)<\/a>/gi, '$1')
-                .replace(/<p>\s*<\/p>/g, '')
-                .replace(/<p><br><\/p>/g, '');
-            
-            text = text.replace(/\s+/g, ' ').trim();
-            
-            if (onChange) onChange(html)
+            const text = editor.getText()
+
+            // Call onUpdate immediately with the current content
             if (onUpdate) onUpdate(html, json, text)
+            if (onChange) onChange(html)
         },
     })
 
+    // FIXED: Use a ref to track if we're setting content from props to avoid loops
+    const isSettingFromProps = React.useRef(false)
+
     React.useEffect(() => {
-        if (!editor || editor.isFocused) return
-        
-        const currentHTML = editor.getHTML()
-        if (value !== currentHTML) {
-            editor.commands.setContent(value)
+        if (!editor) return
+
+        // Check if we should update from props
+        const currentJSON = editor.getJSON()
+        const propJSON = value
+
+        // Compare current content with prop content
+        if (JSON.stringify(currentJSON) !== JSON.stringify(propJSON)) {
+            isSettingFromProps.current = true
+
+            // For JSON content, set directly
+            if (propJSON && typeof propJSON === 'object') {
+                editor.commands.setContent(propJSON)
+            }
+            // For HTML string content
+            else if (propJSON && typeof propJSON === 'string') {
+                editor.commands.setContent(propJSON)
+            }
+
+            setTimeout(() => {
+                isSettingFromProps.current = false
+            }, 100)
         }
     }, [value, editor])
 
