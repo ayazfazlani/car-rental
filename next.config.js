@@ -4,14 +4,16 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Dynamic metadataBase (better for multiple domains)
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://oneclickrentcar.com'),
-
   env: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://oneclickrentcar.com',
   },
+
+  // metadataBase moved here (correct way)
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://oneclickrentcar.com'),
+
   async redirects() {
     return [
+      // ... your existing redirects (keep them all)
       {
         source: '/cars/hyundai-staria-2025-11-s-staria-2025-11-s-2025',
         destination: '/cars/hyundai-staria-11s-staria-11s-2025',
@@ -73,11 +75,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: '/cars/mercedes-benz-maybach-s650-2020-benz-maybach-s650-2020-2020',
-        destination: '/brands/mercedes',
-        permanent: true,
-      },
-      {
         source: '/our-cars',
         destination: '/',
         permanent: true,
@@ -95,58 +92,19 @@ const nextConfig = {
     ];
   },
 
-  experimental: {
-    // serverActions is enabled by default in Next.js 16
-  },
-
-  turbopack: {},
-
-  // ==================== IMAGE CONFIG ====================
   images: {
-    unoptimized: true,           // ← This fixes your blog image issue
+    unoptimized: true,
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "oneclickrentcar.com",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "http",
-        hostname: "oneclickrentcar.com",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "3000",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "3002",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "https",
-        hostname: "luxuscarrental.com",
-        pathname: "/uploads/**",
-      },
-      {
-        protocol: "http",
-        hostname: "luxuscarrental.com",
-        pathname: "/uploads/**",
-      },
+      { protocol: "https", hostname: "oneclickrentcar.com", pathname: "/uploads/**" },
+      { protocol: "http", hostname: "oneclickrentcar.com", pathname: "/uploads/**" },
+      { protocol: "https", hostname: "luxuscarrental.com", pathname: "/uploads/**" },
+      { protocol: "http", hostname: "luxuscarrental.com", pathname: "/uploads/**" },
+      { protocol: "http", hostname: "localhost", pathname: "/uploads/**" },
+      { protocol: "http", hostname: "localhost", port: "3000", pathname: "/uploads/**" },
+      { protocol: "http", hostname: "localhost", port: "3002", pathname: "/uploads/**" },
     ],
   },
-  // =====================================================
 
-  // Headers
   async headers() {
     return [
       {
@@ -154,22 +112,14 @@ const nextConfig = {
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
-          {
-            key: "Access-Control-Allow-Methods",
-            value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-          },
-          {
-            key: "Access-Control-Allow-Headers",
-            value:
-              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization",
-          },
+          { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+          { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" },
         ],
       },
-      // Add static cache headers for uploads (helps with new images)
       {
         source: "/uploads/:all*",
         headers: [
-          { key: "Cache-Control", value: "public, max-age=2592000, immutable" }, // 30 days
+          { key: "Cache-Control", value: "public, max-age=2592000, immutable" },
           { key: "Access-Control-Allow-Origin", value: "*" },
         ],
       },
