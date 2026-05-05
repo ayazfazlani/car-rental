@@ -256,17 +256,15 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
     )
 }
 
+// FIXED: Remove duplicate Link extension
 const getExtensions = () => {
     return [
         StarterKit.configure({
             heading: {
                 levels: [1, 2, 3],
             },
-        }),
-        TipTapImage.configure({
-            HTMLAttributes: {
-                class: 'rounded-lg my-2 mx-auto',
-            },
+            // IMPORTANT: Disable the default link extension from StarterKit
+            link: false,
         }),
         Link.configure({
             openOnClick: true,
@@ -276,6 +274,11 @@ const getExtensions = () => {
                 target: '_blank',
                 rel: 'noopener noreferrer',
                 class: 'tiptap-link',
+            },
+        }),
+        TipTapImage.configure({
+            HTMLAttributes: {
+                class: 'rounded-lg my-2 mx-auto',
             },
         }),
         Table.configure({
@@ -324,37 +327,62 @@ export const RTE = ({ value, onChange, onUpdate, placeholder, minHeight = '300px
             const json = editor.getJSON()
             const text = editor.getText()
 
-            // Call onUpdate immediately with the current content
-            if (onUpdate) onUpdate(html, json, text)
-            if (onChange) onChange(html)
+            // Validate JSON before sending
+            if (json && json.type === 'doc') {
+                if (onUpdate) onUpdate(html, json, text)
+                if (onChange) onChange(html)
+            } else {
+                console.warn('Invalid JSON structure:', json)
+                // Send default structure if invalid
+                const defaultJson = {
+                    type: 'doc',
+                    content: [
+                        {
+                            type: 'paragraph',
+                            content: []
+                        }
+                    ]
+                }
+                if (onUpdate) onUpdate('<p></p>', defaultJson, '')
+            }
         },
     })
 
-    // FIXED: Use a ref to track if we're setting content from props to avoid loops
-    const isSettingFromProps = React.useRef(false)
+    // FIXED: Better content synchronization
+    const isUpdatingFromProps = React.useRef(false)
 
     React.useEffect(() => {
-        if (!editor) return
+        if (!editor || isUpdatingFromProps.current) return
 
-        // Check if we should update from props
-        const currentJSON = editor.getJSON()
-        const propJSON = value
+        const currentJson = editor.getJSON()
+        const propsJson = value
 
-        // Compare current content with prop content
-        if (JSON.stringify(currentJSON) !== JSON.stringify(propJSON)) {
-            isSettingFromProps.current = true
+        if (JSON.stringify(currentJson) !== JSON.stringify(propsJson)) {
+            isUpdatingFromProps.current = true
 
-            // For JSON content, set directly
-            if (propJSON && typeof propJSON === 'object') {
-                editor.commands.setContent(propJSON)
-            }
-            // For HTML string content
-            else if (propJSON && typeof propJSON === 'string') {
-                editor.commands.setContent(propJSON)
+            try {
+                // Validate props JSON before setting
+                if (propsJson && typeof propsJson === 'object' && propsJson.type === 'doc') {
+                    editor.commands.setContent(propsJson)
+                } else if (propsJson && typeof propsJson === 'string') {
+                    // Try to parse string JSON
+                    try {
+                        const parsed = JSON.parse(propsJson)
+                        if (parsed.type === 'doc') {
+                            editor.commands.setContent(parsed)
+                        } else {
+                            editor.commands.setContent(propsJson)
+                        }
+                    } catch {
+                        editor.commands.setContent(propsJson)
+                    }
+                }
+            } catch (error) {
+                console.error('Error setting content:', error)
             }
 
             setTimeout(() => {
-                isSettingFromProps.current = false
+                isUpdatingFromProps.current = false
             }, 100)
         }
     }, [value, editor])
