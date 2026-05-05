@@ -1,11 +1,7 @@
 'use client'
 
 import React from 'react'
-import {
-    useEditor,
-    EditorContent,
-    Editor
-} from '@tiptap/react'
+import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import TipTapImage from '@tiptap/extension-image'
@@ -17,56 +13,56 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Separator } from '@/components/ui/separator'
 import {
-    BetweenHorizontalStart,
-    Bold,
-    Heading1,
-    Heading2,
-    Heading3,
-    ImageIcon,
-    Italic,
-    List,
-    ListOrdered,
-    MessageSquareQuote,
-    Minus,
-    Pilcrow,
-    Redo,
-    Strikethrough,
-    Type,
-    Undo,
-    Link2,
-    Table as TableIcon
+    Bold, Heading1, Heading2, Heading3, ImageIcon, Italic, List, ListOrdered,
+    MessageSquareQuote, Minus, Pilcrow, Redo, Strikethrough, Type, Undo, Link2,
+    Table as TableIcon, BetweenHorizontalStart
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import './RTE.css'
 
-const toolbarButtonStyles = 'h-9 w-9 p-0'
+const getExtensions = () => [
+    StarterKit.configure({
+        heading: { levels: [1, 2, 3] },
+        link: false,
+    }),
+    Link.configure({
+        openOnClick: true,
+        autolink: true,
+        defaultProtocol: 'https',
+        HTMLAttributes: {
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            class: 'tiptap-link',
+        },
+    }),
+    TipTapImage.configure({
+        HTMLAttributes: { class: 'rounded-lg my-2 mx-auto' },
+    }),
+    Table.configure({ resizable: true }),
+    TableRow,
+    TableHeader,
+    TableCell,
+]
 
-const ToolbarButton = ({
-    isActive,
-    onClick,
-    disabled,
-    icon: Icon,
-    title,
-    ariaLabel
-}: {
-    isActive?: boolean
-    onClick: () => void
-    disabled?: boolean
-    icon: React.ComponentType<{ className?: string }>
-    title: string
-    ariaLabel: string
-}) => (
+interface RteProps {
+    value: any
+    onChange?: (value: string) => void          // ← Added for backward compatibility
+    onUpdate?: (html: string, json: any, text: string) => void
+    onImageTap?: () => void
+    minHeight?: string
+    placeholder?: string
+}
+
+const ToolbarButton = ({ isActive, onClick, disabled, icon: Icon, title, ariaLabel }: any) => (
     <Tooltip>
         <TooltipTrigger asChild>
             <Button
                 type="button"
-                variant={isActive ? 'default' : 'ghost'}
+                variant={isActive ? "default" : "ghost"}
                 size="sm"
                 onClick={onClick}
                 disabled={disabled}
-                className={cn(toolbarButtonStyles, isActive && 'bg-blue-600 hover:bg-blue-700')}
-                aria-label={ariaLabel}
-                aria-pressed={isActive}
+                className="h-9 w-9 p-0"
             >
                 <Icon className="h-4 w-4" />
             </Button>
@@ -76,32 +72,18 @@ const ToolbarButton = ({
 )
 
 const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: () => void }) => {
-    if (!editor) {
-        return null
-    }
+    if (!editor) return null
 
     const setLink = () => {
         const previousUrl = editor.getAttributes('link').href
         let url = window.prompt('Enter URL', previousUrl || 'https://')
-
-        if (url === null) {
-            return
-        }
-
+        if (url === null) return
         url = url.trim()
-
-        // Remove empty or invalid links
         if (url === '' || url === 'https://' || url === 'http://') {
             editor.chain().focus().extendMarkRange('link').unsetLink().run()
             return
         }
-
-        // Add https:// if no protocol is specified
-        if (!url.startsWith('http://') && !url.startsWith('https://') &&
-            !url.startsWith('mailto:') && !url.startsWith('tel:') && !url.startsWith('/')) {
-            url = 'https://' + url
-        }
-
+        if (!url.startsWith('http')) url = 'https://' + url
         editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
     }
 
@@ -109,286 +91,63 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
         <TooltipProvider>
             <div className='flex flex-wrap items-center gap-1 p-3 bg-slate-50 border-b border-slate-200 rounded-t-lg'>
                 <div className='flex items-center gap-1'>
-                    <ToolbarButton
-                        isActive={editor.isActive('bold')}
-                        onClick={() => editor.chain().focus().toggleBold().run()}
-                        disabled={!editor.can().chain().focus().toggleBold().run()}
-                        icon={Bold}
-                        title="Bold"
-                        ariaLabel="Toggle bold text"
-                    />
-                    <ToolbarButton
-                        isActive={editor.isActive('italic')}
-                        onClick={() => editor.chain().focus().toggleItalic().run()}
-                        disabled={!editor.can().chain().focus().toggleItalic().run()}
-                        icon={Italic}
-                        title="Italic"
-                        ariaLabel="Toggle italic text"
-                    />
-                    <ToolbarButton
-                        isActive={editor.isActive('strike')}
-                        onClick={() => editor.chain().focus().toggleStrike().run()}
-                        disabled={!editor.can().chain().focus().toggleStrike().run()}
-                        icon={Strikethrough}
-                        title="Strikethrough"
-                        ariaLabel="Toggle strikethrough text"
-                    />
-                    <ToolbarButton
-                        isActive={editor.isActive('paragraph')}
-                        onClick={() => editor.chain().focus().setParagraph().run()}
-                        icon={Pilcrow}
-                        title="Paragraph"
-                        ariaLabel="Convert to paragraph"
-                    />
-                    <ToolbarButton
-                        onClick={() => {
-                            editor.chain().focus().unsetAllMarks().run()
-                            editor.chain().focus().clearNodes().run()
-                        }}
-                        icon={Type}
-                        title="Clear Formatting"
-                        ariaLabel="Clear all formatting"
-                    />
-                    <Separator orientation="vertical" className="h-6 mx-1" />
+                    <ToolbarButton isActive={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} icon={Bold} title="Bold" ariaLabel="Bold" />
+                    <ToolbarButton isActive={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()} icon={Italic} title="Italic" ariaLabel="Italic" />
+                    <ToolbarButton isActive={editor.isActive('strike')} onClick={() => editor.chain().focus().toggleStrike().run()} icon={Strikethrough} title="Strikethrough" ariaLabel="Strike" />
                 </div>
 
-                <div className='flex items-center gap-1'>
-                    <ToolbarButton
-                        isActive={editor.isActive('heading', { level: 1 })}
-                        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                        icon={Heading1}
-                        title="Heading 1"
-                        ariaLabel="Toggle Heading 1"
-                    />
-                    <ToolbarButton
-                        isActive={editor.isActive('heading', { level: 2 })}
-                        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                        icon={Heading2}
-                        title="Heading 2"
-                        ariaLabel="Toggle Heading 2"
-                    />
-                    <ToolbarButton
-                        isActive={editor.isActive('heading', { level: 3 })}
-                        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                        icon={Heading3}
-                        title="Heading 3"
-                        ariaLabel="Toggle Heading 3"
-                    />
-                    <Separator orientation="vertical" className="h-6 mx-1" />
-                </div>
+                <Separator orientation="vertical" className="h-6 mx-1" />
 
                 <div className='flex items-center gap-1'>
-                    <ToolbarButton
-                        isActive={editor.isActive('bulletList')}
-                        onClick={() => editor.chain().focus().toggleBulletList().run()}
-                        icon={List}
-                        title="Bullet List"
-                        ariaLabel="Toggle bullet list"
-                    />
-                    <ToolbarButton
-                        isActive={editor.isActive('orderedList')}
-                        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                        icon={ListOrdered}
-                        title="Ordered List"
-                        ariaLabel="Toggle ordered list"
-                    />
-                    <ToolbarButton
-                        isActive={editor.isActive('blockquote')}
-                        onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                        icon={MessageSquareQuote}
-                        title="Quote"
-                        ariaLabel="Toggle blockquote"
-                    />
-                    <ToolbarButton
-                        onClick={() => editor.chain().focus().setHorizontalRule().run()}
-                        icon={Minus}
-                        title="Horizontal Rule"
-                        ariaLabel="Insert horizontal rule"
-                    />
-                    <ToolbarButton
-                        onClick={() => editor.chain().focus().setHardBreak().run()}
-                        icon={BetweenHorizontalStart}
-                        title="Line Break"
-                        ariaLabel="Insert line break"
-                    />
-                    <Separator orientation="vertical" className="h-6 mx-1" />
+                    <ToolbarButton isActive={editor.isActive('heading', { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} icon={Heading1} title="H1" ariaLabel="Heading 1" />
+                    <ToolbarButton isActive={editor.isActive('heading', { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} icon={Heading2} title="H2" ariaLabel="Heading 2" />
+                    <ToolbarButton isActive={editor.isActive('heading', { level: 3 })} onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} icon={Heading3} title="H3" ariaLabel="Heading 3" />
                 </div>
 
+                <Separator orientation="vertical" className="h-6 mx-1" />
+
                 <div className='flex items-center gap-1'>
-                    <ToolbarButton
-                        onClick={() => editor.chain().focus().undo().run()}
-                        disabled={!editor.can().chain().focus().undo().run()}
-                        icon={Undo}
-                        title="Undo"
-                        ariaLabel="Undo last action"
-                    />
-                    <ToolbarButton
-                        onClick={() => editor.chain().focus().redo().run()}
-                        disabled={!editor.can().chain().focus().redo().run()}
-                        icon={Redo}
-                        title="Redo"
-                        ariaLabel="Redo last action"
-                    />
-                    <ToolbarButton
-                        isActive={editor.isActive('link')}
-                        onClick={setLink}
-                        icon={Link2}
-                        title="Link"
-                        ariaLabel="Insert link"
-                    />
-                    <ToolbarButton
-                        onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
-                        icon={TableIcon}
-                        title="Insert Table"
-                        ariaLabel="Insert Table"
-                    />
-                    {onImageTap && (
-                        <ToolbarButton
-                            onClick={onImageTap}
-                            icon={ImageIcon}
-                            title="Insert Image"
-                            ariaLabel="Insert image"
-                        />
-                    )}
+                    <ToolbarButton isActive={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()} icon={List} title="Bullet List" ariaLabel="Bullet" />
+                    <ToolbarButton isActive={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()} icon={ListOrdered} title="Ordered List" ariaLabel="Ordered" />
+                    <ToolbarButton isActive={editor.isActive('blockquote')} onClick={() => editor.chain().focus().toggleBlockquote().run()} icon={MessageSquareQuote} title="Quote" ariaLabel="Quote" />
+                </div>
+
+                <div className='flex items-center gap-1 ml-auto'>
+                    <ToolbarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} icon={Undo} title="Undo" ariaLabel="Undo" />
+                    <ToolbarButton onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} icon={Redo} title="Redo" ariaLabel="Redo" />
+                    <ToolbarButton isActive={editor.isActive('link')} onClick={setLink} icon={Link2} title="Link" ariaLabel="Link" />
+                    <ToolbarButton onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} icon={TableIcon} title="Table" ariaLabel="Table" />
+                    {onImageTap && <ToolbarButton onClick={onImageTap} icon={ImageIcon} title="Image" ariaLabel="Image" />}
                 </div>
             </div>
         </TooltipProvider>
     )
 }
 
-// FIXED: Remove duplicate Link extension
-const getExtensions = () => {
-    return [
-        StarterKit.configure({
-            heading: {
-                levels: [1, 2, 3],
-            },
-            // IMPORTANT: Disable the default link extension from StarterKit
-            link: false,
-        }),
-        Link.configure({
-            openOnClick: true,
-            autolink: true,
-            defaultProtocol: 'https',
-            HTMLAttributes: {
-                target: '_blank',
-                rel: 'noopener noreferrer',
-                class: 'tiptap-link',
-            },
-        }),
-        TipTapImage.configure({
-            HTMLAttributes: {
-                class: 'rounded-lg my-2 mx-auto',
-            },
-        }),
-        Table.configure({
-            resizable: true,
-        }),
-        TableRow,
-        TableHeader,
-        TableCell,
-    ]
-}
-
-interface RteProps {
-    value: any;
-    onChange?: (value: string) => void;
-    onUpdate?: (html: string, json: any, text: string) => void;
-    placeholder?: string;
-    minHeight?: string;
-    onImageTap?: () => void;
-}
-
-export const RTE = ({ value, onChange, onUpdate, placeholder, minHeight = '300px', onImageTap }: RteProps) => {
+export const RTE = ({ value, onChange, onUpdate, onImageTap, minHeight = '700px', placeholder }: RteProps) => {
     const editor = useEditor({
-        immediatelyRender: false,
         extensions: getExtensions(),
         content: value,
+        immediatelyRender: false,
         editorProps: {
             attributes: {
-                class: cn(
-                    'editor max-w-none overflow-x-hidden overflow-y-auto w-full focus:outline-none p-4'
-                ),
+                class: cn('editor focus:outline-none p-6 prose max-w-none min-h-[400px]'),
                 style: `min-height: ${minHeight};`,
-                placeholder: placeholder || ''
+                placeholder: placeholder || '',
             },
-            transformPastedHTML: (html) => {
-                let cleaned = html
-                    .replace(/ style="[^"]*"/g, '')
-                    .replace(/ class="[^"]*"/g, '')
-                    .replace(/<p>\s*<\/p>/g, '')
-                    .replace(/<p><br><\/p>/g, '')
-                    .trim();
-                return cleaned;
-            }
         },
         onUpdate: ({ editor }) => {
             const html = editor.getHTML()
             const json = editor.getJSON()
             const text = editor.getText()
 
-            // Validate JSON before sending
-            if (json && json.type === 'doc') {
-                if (onUpdate) onUpdate(html, json, text)
-                if (onChange) onChange(html)
-            } else {
-                console.warn('Invalid JSON structure:', json)
-                // Send default structure if invalid
-                const defaultJson = {
-                    type: 'doc',
-                    content: [
-                        {
-                            type: 'paragraph',
-                            content: []
-                        }
-                    ]
-                }
-                if (onUpdate) onUpdate('<p></p>', defaultJson, '')
-            }
+            if (onUpdate) onUpdate(html, json, text)
+            if (onChange) onChange(html)           // Support old onChange prop
         },
     })
 
-    // FIXED: Better content synchronization
-    const isUpdatingFromProps = React.useRef(false)
-
-    React.useEffect(() => {
-        if (!editor || isUpdatingFromProps.current) return
-
-        const currentJson = editor.getJSON()
-        const propsJson = value
-
-        if (JSON.stringify(currentJson) !== JSON.stringify(propsJson)) {
-            isUpdatingFromProps.current = true
-
-            try {
-                // Validate props JSON before setting
-                if (propsJson && typeof propsJson === 'object' && propsJson.type === 'doc') {
-                    editor.commands.setContent(propsJson)
-                } else if (propsJson && typeof propsJson === 'string') {
-                    // Try to parse string JSON
-                    try {
-                        const parsed = JSON.parse(propsJson)
-                        if (parsed.type === 'doc') {
-                            editor.commands.setContent(parsed)
-                        } else {
-                            editor.commands.setContent(propsJson)
-                        }
-                    } catch {
-                        editor.commands.setContent(propsJson)
-                    }
-                }
-            } catch (error) {
-                console.error('Error setting content:', error)
-            }
-
-            setTimeout(() => {
-                isUpdatingFromProps.current = false
-            }, 100)
-        }
-    }, [value, editor])
-
     return (
-        <div className='border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow'>
+        <div className='border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm'>
             <MenuBar editor={editor} onImageTap={onImageTap} />
             <EditorContent editor={editor} />
         </div>

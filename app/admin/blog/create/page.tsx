@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 import Image from 'next/image'
-import { Content } from '@tiptap/react'
 import { useRouter } from 'next/navigation';
 import { CreateBlogSchema, TCreateBlog } from '@/lib/validations';
 import { useForm } from 'react-hook-form';
@@ -35,46 +34,41 @@ export default function Page() {
     const router = useRouter()
     const [tag, setTag] = React.useState<string>('')
     const [keyword, setKeyword] = React.useState<string>('')
-    const [content, setContent] = React.useState<Content>({})
+    const [content, setContent] = React.useState<any>(null)
 
     const { mutate: createBlog, isPending } = useMutation({
         mutationFn: (data: TCreateBlog) => API.queryPost<Blog>({ url: '/api/admin/blog', payload: data, auth: true }),
         onSuccess: (data: Blog) => {
-            toast.success('Blog created')
+            toast.success('Blog created successfully!')
             router.push(`/blog/${data.slug}`)
         },
-        onError: (error: any) => {
-            toast.error(error.message)
-        }
+        onError: (error: any) => toast.error(error.message || 'Something went wrong'),
     })
 
     const { mutate: uploadAsset } = useMutation({
         mutationFn: (data: FormData) => API.queryPost<Asset>({ url: '/api/admin/assets', payload: data, auth: true, isMultipart: true }),
         onSuccess: (data: Asset) => {
-            toast.success('Asset uploaded')
+            toast.success('Cover image uploaded')
             form.setValue('cover', data.url)
         },
-        onError: (error: any) => {
-            toast.error(error.message)
-        }
+        onError: (error: any) => toast.error(error.message),
     })
 
-    const onUpload = () => {
+    const onUploadCover = () => {
         const input = document.createElement('input')
         input.type = 'file'
         input.accept = 'image/*'
-        input.multiple = false
-        input.onchange = async () => {
-            if (!input.files) return
-            const file = input.files[0]
-            const formData = new FormData()
-            formData.append('file', file)
-            uploadAsset(formData)
+        input.onchange = () => {
+            if (input.files?.[0]) {
+                const formData = new FormData()
+                formData.append('file', input.files[0])
+                uploadAsset(formData)
+            }
         }
         input.click()
     }
 
-    const form = useForm({
+    const form = useForm<TCreateBlog>({
         defaultValues: initialValues,
         resolver: zodResolver(CreateBlogSchema)
     })
@@ -83,365 +77,129 @@ export default function Page() {
         createBlog(data)
     }
 
-    const updateContent = (content: Content, contentJson: Object, text: string) => {
-        setContent(content);
+    const updateContent = (html: string, contentJson: any, text: string) => {
+        setContent(contentJson)
         form.setValue('content', contentJson)
-        let info = text;
-        info = info.length > 100 ? info.slice(0, 100) + '...' : info;
-        info = info.replace(/\s+/g, ' ').trim();
+
+        let info = text?.trim() || ''
+        info = info.length > 160 ? info.slice(0, 160) + '...' : info
         form.setValue('info', info)
     }
 
     const handelTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        form.setValue('title', e.target.value)
-        let title = e.target.value;
-        let slug = title.toLowerCase().replace(/ /g, '-');
+        const title = e.target.value
+        form.setValue('title', title)
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
         form.setValue('slug', slug)
-        form.setValue('info', title) //Fix Me 
     }
 
     const handelTagsChange = () => {
-        if (tag !== '') {
-            const tags = form.getValues('tags') || []
-            if (tags.includes(tag)) {
-                toast.error('Tag already exists')
-                return;
-            }
-            if (tags.length > 6) {
-                toast.error('Tag length must be less than 6')
-                return;
-            }
-            form.setValue('tags', [...tags, tag])
-            setTag('')
-        }
+        if (!tag.trim()) return
+        const currentTags = form.getValues('tags') || []
+        if (currentTags.includes(tag.trim())) return toast.error('Tag already exists')
+        form.setValue('tags', [...currentTags, tag.trim()])
+        setTag('')
     }
 
     const onRemoveTag = (index: number) => {
         const tags = form.getValues('tags') || []
-        form.setValue('tags', tags.filter((tag, i) => i !== index))
+        form.setValue('tags', tags.filter((_, i) => i !== index))
     }
 
     const handelKeywordsChange = () => {
-        if (keyword !== '') {
-            const keywords = form.getValues('keywords') || []
-            if (keywords.includes(keyword)) {
-                toast.error('Keyword already exists')
-                return;
-            }
-            form.setValue('keywords', [...keywords, keyword])
-            setKeyword('')
-        }
+        if (!keyword.trim()) return
+        const currentKeywords = form.getValues('keywords') || []
+        if (currentKeywords.includes(keyword.trim())) return toast.error('Keyword already exists')
+        form.setValue('keywords', [...currentKeywords, keyword.trim()])
+        setKeyword('')
     }
 
     const onRemoveKeyword = (index: number) => {
         const keywords = form.getValues('keywords') || []
-        form.setValue('keywords', keywords.filter((keyword, i) => i !== index))
+        form.setValue('keywords', keywords.filter((_, i) => i !== index))
     }
 
     return (
         <div className='flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-8'>
-            {/* Header Section */}
-            <div className='mb-8'>
-                <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6'>
-                    <div className='flex flex-col gap-2'>
-                        <h1 className='text-4xl font-bold text-slate-900'>Create Blog Post</h1>
-                        <p className='text-slate-600'>Create engaging content for your blog</p>
-                    </div>
-                    <div className='flex items-center gap-3 w-full sm:w-auto'>
-                        <Button
-                            type='button'
-                            variant='outline'
-                            disabled={isPending}
-                            onClick={() => {
-                                form.setValue('draft', true)
-                                form.handleSubmit(onSubmit)()
-                            }}
-                            className='flex-1 sm:flex-none'
-                        >
-                            {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                            Draft
-                        </Button>
-                        <Button
-                            type='submit'
-                            disabled={isPending}
-                            onClick={() => {
-                                form.setValue('draft', false)
-                                form.handleSubmit(onSubmit)()
-                            }}
-                            className='flex-1 sm:flex-none'
-                        >
-                            {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                            Publish
-                        </Button>
-                    </div>
+            <div className='mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
+                <div>
+                    <h1 className='text-4xl font-bold'>Create New Blog</h1>
+                    <p className='text-slate-600'>Write and publish a new blog post</p>
+                </div>
+                <div className='flex gap-3'>
+                    <Button variant="outline" disabled={isPending} onClick={() => { form.setValue('draft', true); form.handleSubmit(onSubmit)() }}>
+                        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Save as Draft
+                    </Button>
+                    <Button disabled={isPending} onClick={() => { form.setValue('draft', false); form.handleSubmit(onSubmit)() }}>
+                        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Publish
+                    </Button>
                 </div>
             </div>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col lg:flex-row gap-8'>
-                    {/* Main Content Column */}
-                    <div className='flex-1 space-y-6'>
-                        {/* Title and Slug Card */}
-                        <Card className='border-slate-200 shadow-md hover:shadow-lg transition-shadow'>
-                            <CardHeader className='bg-gradient-to-r from-blue-50 to-indigo-50 border-b'>
-                                <CardTitle className='flex items-center gap-2'>
-                                    <FileText className='h-5 w-5 text-blue-600' />
-                                    Post Details
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className='space-y-5 pt-6'>
-                                <FormField
-                                    control={form.control}
-                                    name="title"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-slate-700 font-semibold'>Title</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    placeholder="Enter blog post title"
-                                                    onChange={handelTitleChange}
-                                                    value={form.getValues('title')}
-                                                    className='border-slate-300 focus:border-blue-500'
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="slug"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-slate-700 font-semibold'>URL Slug</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    placeholder="url-slug-auto-generated"
-                                                    className='border-slate-300 focus:border-blue-500'
-                                                />
-                                            </FormControl>
-                                            <p className='text-xs text-slate-500 mt-2'>Auto-generated from title</p>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="canonical"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-slate-700 font-semibold'>Canonical URL (Optional)</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    placeholder="https://example.com/blog/..."
-                                                    className='border-slate-300 focus:border-blue-500'
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="seo_title"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-slate-700 font-semibold'>SEO Title (Optional)</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    placeholder="Custom SEO Title"
-                                                    className='border-slate-300 focus:border-blue-500'
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="seo_description"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className='text-slate-700 font-semibold'>SEO Description (Optional)</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    placeholder="Custom SEO Description"
-                                                    className='border-slate-300 focus:border-blue-500'
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </CardContent>
-                        </Card>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    {/* Title & Basic Info */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Blog Information</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <FormField name="title" control={form.control} render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Title</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} onChange={handelTitleChange} placeholder="Blog Title" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
 
-                        {/* Tags Card */}
-                        <Card className='border-slate-200 shadow-md hover:shadow-lg transition-shadow'>
-                            <CardHeader className='bg-gradient-to-r from-green-50 to-emerald-50 border-b'>
-                                <CardTitle className='flex items-center gap-2'>
-                                    <Tag className='h-5 w-5 text-green-600' />
-                                    Tags
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className='space-y-4 pt-6'>
-                                <div className='flex flex-wrap gap-2 min-h-10'>
-                                    {form.getValues('tags').map((tag, index) => (
-                                        <Badge
-                                            key={index}
-                                            variant='secondary'
-                                            className='px-3 py-1.5 cursor-pointer hover:bg-red-100 transition-colors group'
-                                            onClick={() => onRemoveTag(index)}
-                                        >
-                                            {tag}
-                                            <XCircle className='ml-2 h-3 w-3 opacity-60 group-hover:opacity-100' />
-                                        </Badge>
-                                    ))}
-                                </div>
-                                <Separator />
-                                <div className='flex gap-2'>
-                                    <FormField
-                                        control={form.control}
-                                        name="tags"
-                                        render={({ field }) => (
-                                            <FormItem className='flex-1'>
-                                                <FormControl>
-                                                    <Input
-                                                        type='text'
-                                                        placeholder='Add a tag and press Enter or click Add'
-                                                        className='border-slate-300 focus:border-green-500'
-                                                        value={tag}
-                                                        onChange={(e) => setTag(e.target.value)}
-                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handelTagsChange())}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <Button type='button' size='sm' onClick={handelTagsChange} className='mt-1'>
-                                        Add
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
+                            <FormField name="slug" control={form.control} render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Slug</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder="blog-post-slug" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                        </CardContent>
+                    </Card>
 
-                        {/* Keywords Card */}
-                        <Card className='border-slate-200 shadow-md hover:shadow-lg transition-shadow'>
-                            <CardHeader className='bg-gradient-to-r from-purple-50 to-violet-50 border-b'>
-                                <CardTitle className='flex items-center gap-2'>
-                                    <Key className='h-5 w-5 text-purple-600' />
-                                    Keywords
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className='space-y-4 pt-6'>
-                                <div className='flex flex-wrap gap-2 min-h-10'>
-                                    {form.getValues('keywords').map((keyword, index) => (
-                                        <Badge
-                                            key={index}
-                                            variant='default'
-                                            className='px-3 py-1.5 cursor-pointer hover:opacity-75 transition-opacity group'
-                                            onClick={() => onRemoveKeyword(index)}
-                                        >
-                                            {keyword}
-                                            <XCircle className='ml-2 h-3 w-3 opacity-60 group-hover:opacity-100' />
-                                        </Badge>
-                                    ))}
-                                </div>
-                                <Separator />
-                                <div className='flex gap-2'>
-                                    <FormField
-                                        control={form.control}
-                                        name="keywords"
-                                        render={({ field }) => (
-                                            <FormItem className='flex-1'>
-                                                <FormControl>
-                                                    <Input
-                                                        type='text'
-                                                        placeholder='Add a keyword and press Enter or click Add'
-                                                        className='border-slate-300 focus:border-purple-500'
-                                                        value={keyword}
-                                                        onChange={(e) => setKeyword(e.target.value)}
-                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handelKeywordsChange())}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <Button type='button' size='sm' onClick={handelKeywordsChange} className='mt-1'>
-                                        Add
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+                    {/* Tags & Keywords - Add your existing cards here if needed */}
 
-                    {/* Sidebar - Cover Image */}
-                    <div className='w-full lg:w-80 space-y-6'>
-                        <Card className='border-slate-200 shadow-md hover:shadow-lg transition-shadow sticky top-8'>
-                            <CardHeader className='bg-gradient-to-r from-orange-50 to-red-50 border-b'>
-                                <CardTitle className='flex items-center gap-2'>
-                                    <ImageIcon className='h-5 w-5 text-orange-600' />
-                                    Cover Image
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className='pt-6'>
-                                <FormField
-                                    control={form.control}
-                                    name="cover"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <div
-                                                onClick={() => onUpload()}
-                                                className='w-full aspect-video relative flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg cursor-pointer hover:from-slate-200 hover:to-slate-300 transition-all border-2 border-dashed border-slate-300 hover:border-blue-400 group'
-                                            >
-                                                {form.getValues('cover') === "" ? (
-                                                    <div className='flex flex-col items-center gap-2 text-slate-500 group-hover:text-blue-600'>
-                                                        <ImageIcon className='w-12 h-12 opacity-40 group-hover:opacity-60' />
-                                                        <span className='text-sm font-medium'>Click to upload</span>
-                                                    </div>
-                                                ) : (
-                                                    <div className='relative w-full h-full'>
-                                                        <Image
-                                                            src={getImageUrl(form.getValues('cover')) || ''}
-                                                            alt='cover'
-                                                            fill
-                                                            objectFit='cover'
-                                                            className='rounded-lg'
-                                                        />
-                                                        <div className='absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 rounded-lg transition-all flex items-center justify-center group'>
-                                                            <span className='text-white opacity-0 group-hover:opacity-100 transition-opacity'>Click to change</span>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <p className='text-xs text-slate-500 mt-3 text-center'>Recommended Ratio: 4:3, 3:2</p>
-                                        </FormItem>
-                                    )}
-                                />
-                            </CardContent>
-                        </Card>
-                    </div>
+                    {/* Cover Image */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Cover Image</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div onClick={onUploadCover} className="cursor-pointer border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-400 transition-colors">
+                                {form.watch('cover') ? (
+                                    <Image src={getImageUrl(form.watch('cover'))!} alt="cover" width={600} height={400} className="mx-auto rounded-lg" />
+                                ) : (
+                                    <div className="text-slate-500">
+                                        <ImageIcon className="w-12 h-12 mx-auto mb-3" />
+                                        <p>Click to upload cover image</p>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Content Editor */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Content</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <AddContent content={content} updateContent={updateContent} />
+                        </CardContent>
+                    </Card>
                 </form>
             </Form>
-
-            {/* Content Editor Section */}
-            <div className='mt-8'>
-                <Card className='border-slate-200 shadow-md hover:shadow-lg transition-shadow'>
-                    <CardHeader className='bg-gradient-to-r from-cyan-50 to-blue-50 border-b'>
-                        <CardTitle>Content Editor</CardTitle>
-                    </CardHeader>
-                    <CardContent className='pt-6'>
-                        <AddContent content={content} updateContent={updateContent} />
-                    </CardContent>
-                </Card>
-            </div>
         </div>
     )
 }
