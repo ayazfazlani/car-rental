@@ -4,6 +4,12 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Dynamic metadataBase (better for multiple domains)
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://oneclickrentcar.com'),
+
+  env: {
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://oneclickrentcar.com',
+  },
   async redirects() {
     return [
       {
