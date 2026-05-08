@@ -29,15 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <AppProviders>
-          <NuqsAdapter>
-            {children}
-          </NuqsAdapter>
-          <Toaster />
-        </AppProviders>
-      </body>
-    </html>
+    <AppProviders>
+      <NuqsAdapter>
+        {children}
+      </NuqsAdapter>
+      <Toaster />
+    </AppProviders>
   )
 }

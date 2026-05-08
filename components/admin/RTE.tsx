@@ -89,7 +89,7 @@ const MenuBar = ({ editor, onImageTap }: { editor: Editor | null, onImageTap?: (
 
     return (
         <TooltipProvider>
-            <div className='flex flex-wrap items-center gap-1 p-3 bg-slate-50 border-b border-slate-200 rounded-t-lg'>
+            <div className='flex flex-wrap items-center gap-1 p-3 bg-slate-50 border-b border-slate-200 rounded-t-lg sticky top-0 z-10'>
                 <div className='flex items-center gap-1'>
                     <ToolbarButton isActive={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} icon={Bold} title="Bold" ariaLabel="Bold" />
                     <ToolbarButton isActive={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()} icon={Italic} title="Italic" ariaLabel="Italic" />

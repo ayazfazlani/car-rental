@@ -29,6 +29,9 @@ const initialValues: TCreateBlog = {
     info: '',
     keywords: [],
     draft: true,
+    canonical: '',
+    seo_title: '',
+    seo_description: '',
 }
 
 type TParams = {
@@ -86,7 +89,12 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
     })
 
     const onSubmit = (data: TCreateBlog) => {
-        createBlog(data)
+        // Merge editor content into payload
+        const payload: TCreateBlog = {
+            ...data,
+            content: content,
+        };
+        createBlog(payload);
     }
 
     useEffect(() => {
@@ -109,9 +117,9 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
             form.setValue('info', data.info)
             form.setValue('keywords', data.keywords)
             form.setValue('draft', data.draft)
-            if (data.canonical) form.setValue('canonical', data.canonical)
-            if (data.seo_title) form.setValue('seo_title', data.seo_title)
-            if (data.seo_description) form.setValue('seo_description', data.seo_description)
+            form.setValue('canonical', data.canonical || '')
+            form.setValue('seo_title', data.seo_title || '')
+            form.setValue('seo_description', data.seo_description || '')
             setBlogToEdit(data)
         }
     }
@@ -125,7 +133,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
         form.setValue('info', info)
     }
 
-    const handelTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         form.setValue('title', e.target.value)
         let title = e.target.value;
         let slug = title.toLowerCase().replace(/ /g, '-');
@@ -133,7 +141,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
         form.setValue('info', title) //Fix Me 
     }
 
-    const handelTagsChange = () => {
+    const handleTagsChange = () => {
         if (tag !== '') {
             const tags = form.getValues('tags') || []
             if (tags.includes(tag)) {
@@ -154,7 +162,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
         form.setValue('tags', tags.filter((tag, i) => i !== index))
     }
 
-    const handelKeywordsChange = () => {
+    const handleKeywordsChange = () => {
         if (keyword !== '') {
             const keywords = form.getValues('keywords') || []
             if (keywords.includes(keyword)) {
@@ -233,8 +241,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                                                 <Input
                                                     {...field}
                                                     placeholder="Enter blog post title"
-                                                    onChange={handelTitleChange}
-                                                    value={form.getValues('title')}
+                                                    onChange={handleTitleChange}
                                                     className='border-slate-300 focus:border-blue-500'
                                                 />
                                             </FormControl>
@@ -324,7 +331,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                             </CardHeader>
                             <CardContent className='space-y-4 pt-6'>
                                 <div className='flex flex-wrap gap-2 min-h-10'>
-                                    {form.getValues('tags').map((tag, index) => (
+                                    {(form.watch('tags') || []).map((tag, index) => (
                                         <Badge
                                             key={index}
                                             variant='secondary'
@@ -350,14 +357,14 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                                                         className='border-slate-300 focus:border-green-500'
                                                         value={tag}
                                                         onChange={(e) => setTag(e.target.value)}
-                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handelTagsChange())}
+                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagsChange())}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-                                    <Button type='button' size='sm' onClick={handelTagsChange} className='mt-1'>
+                                    <Button type='button' size='sm' onClick={handleTagsChange} className='mt-1'>
                                         Add
                                     </Button>
                                 </div>
@@ -374,7 +381,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                             </CardHeader>
                             <CardContent className='space-y-4 pt-6'>
                                 <div className='flex flex-wrap gap-2 min-h-10'>
-                                    {form.getValues('keywords').map((keyword, index) => (
+                                    {(form.watch('keywords') || []).map((keyword, index) => (
                                         <Badge
                                             key={index}
                                             variant='default'
@@ -400,14 +407,14 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                                                         className='border-slate-300 focus:border-purple-500'
                                                         value={keyword}
                                                         onChange={(e) => setKeyword(e.target.value)}
-                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handelKeywordsChange())}
+                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleKeywordsChange())}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-                                    <Button type='button' size='sm' onClick={handelKeywordsChange} className='mt-1'>
+                                    <Button type='button' size='sm' onClick={handleKeywordsChange} className='mt-1'>
                                         Add
                                     </Button>
                                 </div>
@@ -434,7 +441,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                                                 onClick={() => onUpload()}
                                                 className='w-full aspect-video relative flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg cursor-pointer hover:from-slate-200 hover:to-slate-300 transition-all border-2 border-dashed border-slate-300 hover:border-blue-400 group'
                                             >
-                                                {form.getValues('cover') === "" ? (
+                                                {!form.watch('cover') ? (
                                                     <div className='flex flex-col items-center gap-2 text-slate-500 group-hover:text-blue-600'>
                                                         <ImageIcon className='w-12 h-12 opacity-40 group-hover:opacity-60' />
                                                         <span className='text-sm font-medium'>Click to upload</span>
@@ -442,7 +449,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                                                 ) : (
                                                     <div className='relative w-full h-full'>
                                                         <Image
-                                                            src={getImageUrl(form.getValues('cover')) || ''}
+                                                            src={getImageUrl(form.watch('cover')) || ''}
                                                             alt='cover'
                                                             fill
                                                             objectFit='cover'

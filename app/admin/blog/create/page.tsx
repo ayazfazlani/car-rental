@@ -2,13 +2,13 @@
 import React from 'react'
 import Image from 'next/image'
 import { Content } from '@tiptap/react'
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { CreateBlogSchema, TCreateBlog } from '@/lib/validations';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { AddContent } from '@/components/admin/blog/components';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { API } from '@/lib/api';
 import { Asset, Blog } from '@prisma/client';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -20,36 +20,99 @@ import { Separator } from '@/components/ui/separator';
 import { ImageIcon, XCircle, Loader2, FileText, Tag, Key } from 'lucide-react';
 import { getImageUrl } from '@/lib/utils';
 
-const initialValues: TCreateBlog = {
-    title: '',
-    slug: '',
-    content: {},
-    tags: [],
-    cover: '',
-    info: '',
-    keywords: [],
-    draft: true,
-}
+// Helper function to get initial values based on edit mode
+const getInitialValues = (blog?: Blog): TCreateBlog => ({
+    title: blog?.title || '',
+    slug: blog?.slug || '',
+    content: blog?.content || {},
+    tags: blog?.tags || [],
+    cover: blog?.cover || '',
+    info: blog?.info || '',
+    keywords: blog?.keywords || [],
+    draft: blog?.draft ?? true,
+    canonical: blog?.canonical || '',
+    seo_title: blog?.seo_title || '',
+    seo_description: blog?.seo_description || '',
+})
 
 export default function Page() {
     const router = useRouter()
+    const params = useParams()
+    const blogId = params?.id as string // Assuming route is /admin/blog/edit/[id]
+    const isEditMode = !!blogId
+
     const [tag, setTag] = React.useState<string>('')
     const [keyword, setKeyword] = React.useState<string>('')
     const [content, setContent] = React.useState<Content>({})
 
-    const { mutate: createBlog, isPending } = useMutation({
-        mutationFn: (data: TCreateBlog) => API.queryPost<Blog>({ url: '/api/admin/blog', payload: data, auth: true }),
+    // Fetch blog data if in edit mode
+    const { data: existingBlog, isLoading: isLoadingBlog } = useQuery({
+        queryKey: ['blog', blogId],
+        queryFn: () => API.queryGet<Blog>({ url: `/api/admin/blog/${blogId}`, auth: true }),
+        enabled: isEditMode,
+    })
+
+    const form = useForm({
+        defaultValues: getInitialValues(),
+        resolver: zodResolver(CreateBlogSchema)
+    })
+
+    // Populate form and editor when existing blog data is loaded
+    React.useEffect(() => {
+        if (isEditMode && existingBlog) {
+            // Reset form with existing blog data
+            form.reset({
+                title: existingBlog.title || '',
+                slug: existingBlog.slug || '',
+                content: existingBlog.content || {},
+                tags: existingBlog.tags || [],
+                cover: existingBlog.cover || '',
+                info: existingBlog.info || '',
+                keywords: existingBlog.keywords || [],
+                draft: existingBlog.draft ?? true,
+                canonical: existingBlog.canonical || '',
+                seo_title: existingBlog.seo_title || '',
+                seo_description: existingBlog.seo_description || '',
+            })
+
+            // Set content for the rich text editor
+            if (existingBlog.content) {
+                setContent(existingBlog.content as Content)
+            }
+        }
+    }, [isEditMode, existingBlog, form])
+
+    const { mutate: saveBlog, isPending } = useMutation({
+        mutationFn: (data: TCreateBlog) => {
+            if (isEditMode) {
+                return API.queryPut<Blog>({
+                    url: `/api/admin/blog/${blogId}`,
+                    payload: data,
+                    auth: true
+                })
+            }
+            return API.queryPost<Blog>({
+                url: '/api/admin/blog',
+                payload: data,
+                auth: true
+            })
+        },
         onSuccess: (data: Blog) => {
-            toast.success('Blog created')
+            toast.success(isEditMode ? 'Blog updated successfully' : 'Blog created successfully')
             router.push(`/blog/${data.slug}`)
         },
         onError: (error: any) => {
-            toast.error(error.message)
+            toast.error(error.message || 'Something went wrong')
         }
     })
 
     const { mutate: uploadAsset } = useMutation({
-        mutationFn: (data: FormData) => API.queryPost<Asset>({ url: '/api/admin/assets', payload: data, auth: true, isMultipart: true }),
+        mutationFn: (data: FormData) => API.queryPost<Asset>({
+            url: '/api/admin/assets',
+            payload: data,
+            auth: true,
+            isMultipart: true
+        }),
         onSuccess: (data: Asset) => {
             toast.success('Asset uploaded')
             form.setValue('cover', data.url)
@@ -74,13 +137,14 @@ export default function Page() {
         input.click()
     }
 
-    const form = useForm({
-        defaultValues: initialValues,
-        resolver: zodResolver(CreateBlogSchema)
-    })
-
-    const onSubmit = (data: TCreateBlog) => {
-        createBlog(data)
+    const onSubmit = (formData: TCreateBlog) => {
+        // Merge the rich text editor content into the submission payload
+        const payload: TCreateBlog = {
+            ...formData,
+            // Ensure we always send the latest editor content (JSON format)
+            content: content,
+        };
+        saveBlog(payload);
     }
 
     const updateContent = (content: Content, contentJson: Object, text: string) => {
@@ -92,15 +156,18 @@ export default function Page() {
         form.setValue('info', info)
     }
 
-    const handelTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        form.setValue('title', e.target.value)
-        let title = e.target.value;
-        let slug = title.toLowerCase().replace(/ /g, '-');
-        form.setValue('slug', slug)
-        form.setValue('info', title) //Fix Me 
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const title = e.target.value
+        form.setValue('title', title)
+        // Only auto-generate slug if not in edit mode OR if slug is empty/auto-generated
+        if (!isEditMode || !form.getValues('slug') || form.getValues('slug') === form.getValues('title')?.toLowerCase().replace(/ /g, '-')) {
+            let slug = title.toLowerCase().replace(/ /g, '-')
+            form.setValue('slug', slug)
+        }
+        form.setValue('info', title) // Fix Me - This should be separate from title
     }
 
-    const handelTagsChange = () => {
+    const handleTagsChange = () => {
         if (tag !== '') {
             const tags = form.getValues('tags') || []
             if (tags.includes(tag)) {
@@ -118,10 +185,10 @@ export default function Page() {
 
     const onRemoveTag = (index: number) => {
         const tags = form.getValues('tags') || []
-        form.setValue('tags', tags.filter((tag, i) => i !== index))
+        form.setValue('tags', tags.filter((_, i) => i !== index))
     }
 
-    const handelKeywordsChange = () => {
+    const handleKeywordsChange = () => {
         if (keyword !== '') {
             const keywords = form.getValues('keywords') || []
             if (keywords.includes(keyword)) {
@@ -135,8 +202,29 @@ export default function Page() {
 
     const onRemoveKeyword = (index: number) => {
         const keywords = form.getValues('keywords') || []
-        form.setValue('keywords', keywords.filter((keyword, i) => i !== index))
+        form.setValue('keywords', keywords.filter((_, i) => i !== index))
     }
+
+    // Show loading state while fetching existing blog
+    if (isEditMode && isLoadingBlog) {
+        return (
+            <div className='flex items-center justify-center min-h-screen'>
+                <Loader2 className='h-8 w-8 animate-spin text-blue-500' />
+            </div>
+        )
+    }
+
+    const handleSaveAsDraft = () => {
+        // Explicitly set draft flag before submitting
+        form.setValue('draft', true);
+        form.handleSubmit(onSubmit)();
+    };
+
+    const handlePublish = () => {
+        // Ensure draft flag is false for publishing
+        form.setValue('draft', false);
+        form.handleSubmit(onSubmit)();
+    };
 
     return (
         <div className='flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-8'>
@@ -144,34 +232,32 @@ export default function Page() {
             <div className='mb-8'>
                 <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6'>
                     <div className='flex flex-col gap-2'>
-                        <h1 className='text-4xl font-bold text-slate-900'>Create Blog Post</h1>
-                        <p className='text-slate-600'>Create engaging content for your blog</p>
+                        <h1 className='text-4xl font-bold text-slate-900'>
+                            {isEditMode ? 'Edit Blog Post' : 'Create Blog Post'}
+                        </h1>
+                        <p className='text-slate-600'>
+                            {isEditMode ? 'Edit your existing blog content' : 'Create engaging content for your blog'}
+                        </p>
                     </div>
                     <div className='flex items-center gap-3 w-full sm:w-auto'>
                         <Button
                             type='button'
                             variant='outline'
                             disabled={isPending}
-                            onClick={() => {
-                                form.setValue('draft', true)
-                                form.handleSubmit(onSubmit)()
-                            }}
+                            onClick={handleSaveAsDraft}
                             className='flex-1 sm:flex-none'
                         >
                             {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                            Draft
+                            Save as Draft
                         </Button>
                         <Button
-                            type='submit'
+                            type='button'
                             disabled={isPending}
-                            onClick={() => {
-                                form.setValue('draft', false)
-                                form.handleSubmit(onSubmit)()
-                            }}
+                            onClick={handlePublish}
                             className='flex-1 sm:flex-none'
                         >
                             {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                            Publish
+                            {isEditMode ? 'Update & Publish' : 'Publish'}
                         </Button>
                     </div>
                 </div>
@@ -200,8 +286,8 @@ export default function Page() {
                                                 <Input
                                                     {...field}
                                                     placeholder="Enter blog post title"
-                                                    onChange={handelTitleChange}
-                                                    value={form.getValues('title')}
+                                                    onChange={handleTitleChange}
+                                                    value={field.value}
                                                     className='border-slate-300 focus:border-blue-500'
                                                 />
                                             </FormControl>
@@ -238,6 +324,7 @@ export default function Page() {
                                                     {...field}
                                                     placeholder="https://example.com/blog/..."
                                                     className='border-slate-300 focus:border-blue-500'
+                                                    value={field.value || ''}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -255,6 +342,7 @@ export default function Page() {
                                                     {...field}
                                                     placeholder="Custom SEO Title"
                                                     className='border-slate-300 focus:border-blue-500'
+                                                    value={field.value || ''}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -272,6 +360,7 @@ export default function Page() {
                                                     {...field}
                                                     placeholder="Custom SEO Description"
                                                     className='border-slate-300 focus:border-blue-500'
+                                                    value={field.value || ''}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -291,14 +380,14 @@ export default function Page() {
                             </CardHeader>
                             <CardContent className='space-y-4 pt-6'>
                                 <div className='flex flex-wrap gap-2 min-h-10'>
-                                    {form.getValues('tags').map((tag, index) => (
+                                    {form.watch('tags')?.map((tagItem, index) => (
                                         <Badge
                                             key={index}
                                             variant='secondary'
                                             className='px-3 py-1.5 cursor-pointer hover:bg-red-100 transition-colors group'
                                             onClick={() => onRemoveTag(index)}
                                         >
-                                            {tag}
+                                            {tagItem}
                                             <XCircle className='ml-2 h-3 w-3 opacity-60 group-hover:opacity-100' />
                                         </Badge>
                                     ))}
@@ -308,7 +397,7 @@ export default function Page() {
                                     <FormField
                                         control={form.control}
                                         name="tags"
-                                        render={({ field }) => (
+                                        render={() => (
                                             <FormItem className='flex-1'>
                                                 <FormControl>
                                                     <Input
@@ -317,14 +406,14 @@ export default function Page() {
                                                         className='border-slate-300 focus:border-green-500'
                                                         value={tag}
                                                         onChange={(e) => setTag(e.target.value)}
-                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handelTagsChange())}
+                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagsChange())}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-                                    <Button type='button' size='sm' onClick={handelTagsChange} className='mt-1'>
+                                    <Button type='button' size='sm' onClick={handleTagsChange} className='mt-1'>
                                         Add
                                     </Button>
                                 </div>
@@ -341,14 +430,14 @@ export default function Page() {
                             </CardHeader>
                             <CardContent className='space-y-4 pt-6'>
                                 <div className='flex flex-wrap gap-2 min-h-10'>
-                                    {form.getValues('keywords').map((keyword, index) => (
+                                    {form.watch('keywords')?.map((keywordItem, index) => (
                                         <Badge
                                             key={index}
                                             variant='default'
                                             className='px-3 py-1.5 cursor-pointer hover:opacity-75 transition-opacity group'
                                             onClick={() => onRemoveKeyword(index)}
                                         >
-                                            {keyword}
+                                            {keywordItem}
                                             <XCircle className='ml-2 h-3 w-3 opacity-60 group-hover:opacity-100' />
                                         </Badge>
                                     ))}
@@ -358,7 +447,7 @@ export default function Page() {
                                     <FormField
                                         control={form.control}
                                         name="keywords"
-                                        render={({ field }) => (
+                                        render={() => (
                                             <FormItem className='flex-1'>
                                                 <FormControl>
                                                     <Input
@@ -367,14 +456,14 @@ export default function Page() {
                                                         className='border-slate-300 focus:border-purple-500'
                                                         value={keyword}
                                                         onChange={(e) => setKeyword(e.target.value)}
-                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handelKeywordsChange())}
+                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleKeywordsChange())}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-                                    <Button type='button' size='sm' onClick={handelKeywordsChange} className='mt-1'>
+                                    <Button type='button' size='sm' onClick={handleKeywordsChange} className='mt-1'>
                                         Add
                                     </Button>
                                 </div>
@@ -398,10 +487,10 @@ export default function Page() {
                                     render={({ field }) => (
                                         <FormItem>
                                             <div
-                                                onClick={() => onUpload()}
+                                                onClick={onUpload}
                                                 className='w-full aspect-video relative flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg cursor-pointer hover:from-slate-200 hover:to-slate-300 transition-all border-2 border-dashed border-slate-300 hover:border-blue-400 group'
                                             >
-                                                {form.getValues('cover') === "" ? (
+                                                {!field.value ? (
                                                     <div className='flex flex-col items-center gap-2 text-slate-500 group-hover:text-blue-600'>
                                                         <ImageIcon className='w-12 h-12 opacity-40 group-hover:opacity-60' />
                                                         <span className='text-sm font-medium'>Click to upload</span>
@@ -409,14 +498,15 @@ export default function Page() {
                                                 ) : (
                                                     <div className='relative w-full h-full'>
                                                         <Image
-                                                            src={getImageUrl(form.getValues('cover')) || ''}
+                                                            src={getImageUrl(field.value) || ''}
                                                             alt='cover'
                                                             fill
-                                                            objectFit='cover'
-                                                            className='rounded-lg'
+                                                            className='object-cover rounded-lg'
                                                         />
-                                                        <div className='absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 rounded-lg transition-all flex items-center justify-center group'>
-                                                            <span className='text-white opacity-0 group-hover:opacity-100 transition-opacity'>Click to change</span>
+                                                        <div className='absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 rounded-lg transition-all flex items-center justify-center'>
+                                                            <span className='text-white opacity-0 hover:opacity-100 transition-opacity bg-black bg-opacity-50 px-2 py-1 rounded'>
+                                                                Click to change
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 )}

@@ -20,7 +20,7 @@ export default function LocaleNotFound({ params }: Props) {
         <p className="mt-4 text-base leading-7 text-slate-600">{t('pageNotFoundDescription')}</p>
         <div className="mt-8">
           <Link
-            href={`/${params.locale}`}
+            href={`/${params?.locale ?? ''}`}
             className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
           >
             {t('backToHome')}
