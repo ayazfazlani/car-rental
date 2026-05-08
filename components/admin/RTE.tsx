@@ -147,9 +147,11 @@ export const RTE = ({ value, onChange, onUpdate, onImageTap, minHeight = '700px'
     })
 
     return (
-        <div className='border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm'>
+        <div className='border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm flex flex-col' style={{ maxHeight: 'calc(100vh - 200px)' }}>
             <MenuBar editor={editor} onImageTap={onImageTap} />
-            <EditorContent editor={editor} />
+            <div className='flex-1 overflow-y-auto custom-scrollbar bg-white'>
+                <EditorContent editor={editor} />
+            </div>
         </div>
     )
 }
