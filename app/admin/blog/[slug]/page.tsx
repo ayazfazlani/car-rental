@@ -200,7 +200,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                             className='flex-1 sm:flex-none'
                         >
                             {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                            Draft
+                            Update as Draft
                         </Button>
                         <Button
                             type='submit'
@@ -212,7 +212,7 @@ export default function Page({ params: paramsPromise }: { params: Promise<TParam
                             className='flex-1 sm:flex-none'
                         >
                             {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                            Update
+                            Update & Publish
                         </Button>
                     </div>
                 </div>
