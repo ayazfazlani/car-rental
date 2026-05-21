@@ -19,12 +19,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified,
             changeFrequency,
             priority,
-            alternates: {
-                languages: {
-                    en: `${baseUrl}/en${normalizedPath}`,
-                    ar: `${baseUrl}/ar${normalizedPath}`,
-                }
-            }
         }));
     };
 
