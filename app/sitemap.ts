@@ -5,6 +5,29 @@ import { METADATA_BASE_URL } from '@/lib/utils';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = METADATA_BASE_URL;
 
+    // Helper to generate alternate links for a given path
+    const getSitemapEntry = (path: string, lastModified: Date, changeFrequency: any, priority: number) => {
+        const normalizedPath = path === '/' ? '' : path.startsWith('/') ? path : `/${path}`;
+        const locales = ['en', 'ar'];
+        
+        // Return an array of entries, one for each locale.
+        // Google supports single url with alternates, or multiple. Next-intl recommends
+        // outputting the main URL for the default locale, and defining alternates.
+        
+        return locales.map(locale => ({
+            url: `${baseUrl}/${locale}${normalizedPath}`,
+            lastModified,
+            changeFrequency,
+            priority,
+            alternates: {
+                languages: {
+                    en: `${baseUrl}/en${normalizedPath}`,
+                    ar: `${baseUrl}/ar${normalizedPath}`,
+                }
+            }
+        }));
+    };
+
     // Fetch all active cars
     const cars = await prisma.car.findMany({
         where: {
@@ -57,99 +80,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Static routes
     const staticRoutes = [
-        {
-            url: baseUrl,
-            lastModified: new Date(),
-            changeFrequency: 'daily' as const,
-            priority: 1,
-        },
-        {
-            url: `${baseUrl}/cars`,
-            lastModified: new Date(),
-            changeFrequency: 'daily' as const,
-            priority: 0.9,
-        },
-        {
-            url: `${baseUrl}/brands`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/categories`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.8,
-        },
-        {
-            url: `${baseUrl}/blog`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/company/about`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly' as const,
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/company/contact`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly' as const,
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/legal/privacy-policy`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly' as const,
-            priority: 0.5,
-        },
-        {
-            url: `${baseUrl}/legal/terms-conditions`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly' as const,
-            priority: 0.5,
-        },
-        {
-            url: `${baseUrl}/legal/terms-of-use`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly' as const,
-            priority: 0.5,
-        },
+        ...getSitemapEntry('/', new Date(), 'daily', 1),
+        ...getSitemapEntry('/cars', new Date(), 'daily', 0.9),
+        ...getSitemapEntry('/brands', new Date(), 'weekly', 0.8),
+        ...getSitemapEntry('/categories', new Date(), 'weekly', 0.8),
+        ...getSitemapEntry('/blog', new Date(), 'weekly', 0.7),
+        ...getSitemapEntry('/company/about', new Date(), 'monthly', 0.7),
+        ...getSitemapEntry('/company/contact', new Date(), 'monthly', 0.7),
+        ...getSitemapEntry('/legal/privacy-policy', new Date(), 'yearly', 0.5),
+        ...getSitemapEntry('/legal/terms-conditions', new Date(), 'yearly', 0.5),
+        ...getSitemapEntry('/legal/terms-of-use', new Date(), 'yearly', 0.5),
     ];
 
     // Car URLs
-    const carUrls = cars.map((car) => ({
-        url: `${baseUrl}/cars/${car.slug}`,
-        lastModified: car.updatedAt,
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-    }));
+    const carUrls = cars.flatMap((car) => 
+        getSitemapEntry(`/cars/${car.slug}`, car.updatedAt, 'weekly', 0.8)
+    );
 
     // Category URLs
-    const categoryUrls = categories.map((category) => ({
-        url: `${baseUrl}/categories/${category.slug}`,
-        lastModified: category.updatedAt,
-        changeFrequency: 'weekly' as const,
-        priority: 0.7,
-    }));
+    const categoryUrls = categories.flatMap((category) => 
+        getSitemapEntry(`/categories/${category.slug}`, category.updatedAt, 'weekly', 0.7)
+    );
 
     // Brand URLs
-    const brandUrls = brands.map((brand) => ({
-        url: `${baseUrl}/brands/${brand.slug}`,
-        lastModified: brand.updatedAt,
-        changeFrequency: 'weekly' as const,
-        priority: 0.7,
-    }));
+    const brandUrls = brands.flatMap((brand) => 
+        getSitemapEntry(`/brands/${brand.slug}`, brand.updatedAt, 'weekly', 0.7)
+    );
 
     // Blog URLs
-    const blogUrls = blogs.map((blog) => ({
-        url: `${baseUrl}/blog/${blog.slug}`,
-        lastModified: blog.updatedAt,
-        changeFrequency: 'weekly' as const,
-        priority: 0.6,
-    }));
+    const blogUrls = blogs.flatMap((blog) => 
+        getSitemapEntry(`/blog/${blog.slug}`, blog.updatedAt, 'weekly', 0.6)
+    );
 
     return [...staticRoutes, ...carUrls, ...categoryUrls, ...brandUrls, ...blogUrls];
 }

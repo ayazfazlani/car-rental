@@ -38,19 +38,26 @@ const cleanEmptyHrefs = (html: string): string => {
 };
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-    const { slug } = await params;
+    const { slug, locale } = await params;
     const blog = await getBlog(slug);
 
     if (!blog) {
         return { title: 'Blog Not Found' };
     }
 
+    const currentPath = `/blog/${blog.slug}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com';
+
     return {
         title: blog.seo_title || blog.title,
         description: blog.seo_description || blog.info,
         keywords: blog.keywords?.join(', ') || '',
         alternates: {
-            canonical: blog.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://oneclickrentcar.com'}/blog/${blog.slug}`,
+            canonical: blog.canonical || `${baseUrl}/${locale}${currentPath}`,
+            languages: {
+                en: `${baseUrl}/en${currentPath}`,
+                ar: `${baseUrl}/ar${currentPath}`,
+            }
         },
         openGraph: {
             title: blog.seo_title || blog.title,

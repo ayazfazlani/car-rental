@@ -4,6 +4,7 @@ import { Car, Contact } from "@prisma/client";
 import Translated from "../translated";
 import { Link } from "@/i18n/routing";
 import HorizontalListing from "./horizontal-listing";
+import { removeAllDecimal } from "@/lib/utils";
 
 interface CarSectionProps {
   id: string;
@@ -41,7 +42,7 @@ export function CarCategoriesSection({
             </Link>
           </Button>
         </div>
-        <HorizontalListing cars={cars} contacts={contacts} />
+        <HorizontalListing cars={removeAllDecimal(cars)} contacts={contacts} />
       </div>
     </section>
   );

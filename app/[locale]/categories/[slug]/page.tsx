@@ -16,7 +16,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { slug } = await params;
+    const { slug, locale } = await params;
     const category = await getCategoryBySlug(slug);
 
     if (!category) {
@@ -30,7 +30,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: category.seo_description || stripHtml(category.description || '') || `Browse our ${category.name} rental vehicles`,
         keywords: category.seo_keywords || category.name,
         alternates: {
-            canonical: category.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/categories/${category.slug}`,
+            canonical: category.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/${locale}/categories/${category.slug}`,
+            languages: {
+                en: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/en/categories/${category.slug}`,
+                ar: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/ar/categories/${category.slug}`,
+            }
         },
         robots: {
             index: true,

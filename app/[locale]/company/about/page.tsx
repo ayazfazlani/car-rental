@@ -6,9 +6,10 @@ import { PAGE_METATAGS } from '@/lib/constants';
 import { getMetaData } from '@/lib/data/meta-data';
 import { formatMetadata } from '@/lib/utils';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
     const meta = await getMetaData(PAGE_METATAGS.ABOUT)
-    return formatMetadata(meta)
+    return formatMetadata(meta, '/company/about', locale)
 }
 
 export default async function AboutPage() {

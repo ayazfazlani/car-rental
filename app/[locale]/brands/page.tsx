@@ -12,9 +12,10 @@ import { formatMetadata } from '@/lib/utils';
 import { PAGE_METATAGS } from "@/lib/constants";
 import { Metadata } from 'next';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
     const meta = await getMetaData(PAGE_METATAGS.BRANDS)
-    return formatMetadata(meta)
+    return formatMetadata(meta, '/brands', locale)
 }
 
 export default async function BrandsPage({

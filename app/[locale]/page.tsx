@@ -8,9 +8,10 @@ import { getMetaData } from '@/lib/data/meta-data';
 import { formatMetadata } from '@/lib/utils';
 
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
   const meta = await getMetaData(PAGE_METATAGS.HOME)
-  return formatMetadata(meta)
+  return formatMetadata(meta, '/', locale)
 }
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {

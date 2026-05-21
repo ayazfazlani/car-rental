@@ -371,7 +371,41 @@ export const sentanceCase = (str: string) => {
   return sanatized.charAt(0).toUpperCase() + sanatized.slice(1);
 }
 
-export const formatMetadata = (meta?: any) => {
+export const getSitemapAlternates = (path: string) => {
+  const normalizedPath = path === '/' ? '' : path.startsWith('/') ? path : `/${path}`;
+  const baseUrlClean = METADATA_BASE_URL.endsWith('/') ? METADATA_BASE_URL.slice(0, -1) : METADATA_BASE_URL;
+  return {
+    languages: {
+      en: `${baseUrlClean}/en${normalizedPath}`,
+      ar: `${baseUrlClean}/ar${normalizedPath}`,
+    }
+  };
+};
+
+export const formatMetadata = (meta?: any, currentPath?: string, locale?: string) => {
+  const normalizedPath = currentPath === '/' ? '' : currentPath?.startsWith('/') ? currentPath : `/${currentPath || ''}`;
+  const getCanonical = () => {
+    if (locale && currentPath !== undefined) {
+      const baseUrlClean = METADATA_BASE_URL.endsWith('/') ? METADATA_BASE_URL.slice(0, -1) : METADATA_BASE_URL;
+      return `${baseUrlClean}/${locale}${normalizedPath}`;
+    }
+    
+    let base = meta?.canonical;
+    if (base && base !== "/" && base !== METADATA_BASE_URL && base !== METADATA_BASE_URL + "/") {
+      return base;
+    }
+    return METADATA_BASE_URL;
+  }
+
+  const baseAlternates = {
+    canonical: getCanonical(),
+  };
+
+  const alternates = currentPath !== undefined ? {
+    ...baseAlternates,
+    languages: getSitemapAlternates(normalizedPath || '/').languages,
+  } : baseAlternates;
+
   if (!meta) {
     return {
       metadataBase: new URL(METADATA_BASE_URL),
@@ -380,9 +414,7 @@ export const formatMetadata = (meta?: any) => {
       applicationName: process.env.NEXT_PUBLIC_SITE_NAME,
       keywords: 'Car Rental, Luxury Car Rental, ' + process.env.NEXT_PUBLIC_SITE_NAME + ', ' + process.env.NEXT_PUBLIC_SITE_NAME,
       assets: ['/images/luxuslogo.png'],
-      alternates: {
-        canonical: METADATA_BASE_URL
-      },
+      alternates,
       robots: {
         index: true,
         follow: true,
@@ -405,9 +437,7 @@ export const formatMetadata = (meta?: any) => {
     keywords: meta.keywords,
     assets: ['/images/luxuslogo.png'],
     applicationName: process.env.NEXT_PUBLIC_SITE_NAME,
-    alternates: {
-      canonical: meta.canonical || METADATA_BASE_URL
-    },
+    alternates,
     robots: {
       index: true,
       follow: true,

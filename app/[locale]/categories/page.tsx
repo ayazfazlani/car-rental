@@ -14,9 +14,10 @@ type Props = {
     params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { locale } = await params;
     const meta = await getMetaData(PAGE_METATAGS.CATEGORIES)
-    return formatMetadata(meta)
+    return formatMetadata(meta, '/categories', locale)
 }
 
 export default async function CategoriesPage({ params }: Props) {

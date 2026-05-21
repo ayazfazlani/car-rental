@@ -14,7 +14,7 @@ type Props = {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { slug } = await params;
+    const { slug, locale } = await params;
     const brand = await getBrandBySlug(slug);
     
     if (!brand) return {};
@@ -27,7 +27,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description,
         keywords: brand.seo_keywords || brand.name,
         alternates: {
-            canonical: brand.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/brands/${brand.slug}`,
+            canonical: brand.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/${locale}/brands/${brand.slug}`,
+            languages: {
+                en: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/en/brands/${brand.slug}`,
+                ar: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/ar/brands/${brand.slug}`,
+            }
         },
         robots: {
             index: true,

@@ -39,7 +39,7 @@ import Logo from "@/public/images/luxuslogo.png";
 
 
 export async function generateMetadata({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const car = await getCarDetails(slug);
   if (!car) return {
     title: 'Car Not Found',
@@ -47,12 +47,20 @@ export async function generateMetadata({ params }: PageProps) {
   const primaryImage =
     car.images?.find((img) => img.isPrimary)?.url || car.images?.[0]?.url;
 
+  const currentPath = `/cars/${car.slug}`;
+  const canonical = car.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/${locale}${currentPath}`;
+  const languages = {
+    en: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/en${currentPath}`,
+    ar: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/ar${currentPath}`,
+  };
+
   return {
     title: car.seo_title || car.brand?.name + " " + car.model,
     description: car.seo_description || car.description,
     keywords: car.seo_keywords || car.brand?.name + ", " + car.model,
     alternates: {
-      canonical: car.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/cars/${car.slug}`,
+      canonical,
+      languages,
     },
     robots: {
       index: true,

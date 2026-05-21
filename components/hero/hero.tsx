@@ -90,14 +90,12 @@ export async function Hero({ locale }: { locale?: string }) {
             </div>
           </div>
 
-          <Link className="max-h-[285px] w-full relative hidden md:block" href={imageSrc ? imageSrc : "/"}>
+          <Link className="h-[285px] w-full relative hidden md:block" href={imageSrc ? imageSrc : "/"}>
             <Image
               src={imageUrl ? getImageUrl(imageUrl) : Logo}
               alt="Lux Car Rental"
               fill
-              className="hidden md:block"
-              objectFit="contain"
-              objectPosition="right"
+              className="hidden md:block object-contain object-right"
               quality={100}
               unoptimized
             />

@@ -11,10 +11,12 @@ import { getMetaData } from '@/lib/data/meta-data';
 import { formatMetadata } from '@/lib/utils';
 
 type Props = {
+    params: Promise<{ locale: string }>,
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 };
 
-export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+    const { locale } = await params;
     const { brandId, hasChauffeur } = await searchParams;
     
     // Use RENT_WITH_DRIVER metadata when hasChauffeur filter is active
@@ -23,7 +25,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     
     // Fallback to CARS metadata if RENT_WITH_DRIVER metadata not set
     const finalMeta = meta || (hasChauffeur === 'true' ? await getMetaData(PAGE_METATAGS.CARS) : null);
-    const metaData = formatMetadata(finalMeta)
+    const metaData = formatMetadata(finalMeta, '/cars', locale)
     
     let title = metaData.title;
     if (brandId && typeof brandId === 'string') {
