@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: PageProps) {
     car.images?.find((img) => img.isPrimary)?.url || car.images?.[0]?.url;
 
   const currentPath = `/cars/${car.slug}`;
-  const canonical = car.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/${locale}${currentPath}`;
+  const canonical = car.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}${currentPath}`;
   const languages = {
     en: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/en${currentPath}`,
     ar: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/ar${currentPath}`,

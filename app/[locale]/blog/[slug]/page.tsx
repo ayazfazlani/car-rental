@@ -1,6 +1,6 @@
 import { generateHTML } from '@tiptap/html/server';
 import Image from 'next/image';
-import './content.css';
+import '../../../rich-text.css';
 import { notFound } from 'next/navigation';
 import { getBlog, getRelatedBlogs } from '@/lib/data/blog';
 import { formatDate, getImageUrl } from '@/lib/utils';
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         description: blog.seo_description || blog.info,
         keywords: blog.keywords?.join(', ') || '',
         alternates: {
-            canonical: blog.canonical || `${baseUrl}/${locale}${currentPath}`,
+            canonical: blog.canonical || `${baseUrl}${currentPath}`,
             languages: {
                 en: `${baseUrl}/en${currentPath}`,
                 ar: `${baseUrl}/ar${currentPath}`,

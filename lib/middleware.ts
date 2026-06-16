@@ -29,13 +29,13 @@ export function authenticate(request: NextRequest): JWTPayload {
  * Middleware wrapper for authenticated routes
  */
 export function withAuth(
-  handler: (req: AuthenticatedRequest) => Promise<NextResponse>
+  handler: (req: AuthenticatedRequest, context?: any) => Promise<NextResponse>
 ) {
-  return async (req: NextRequest) => {
+  return async (req: NextRequest, context?: any) => {
     try {
       const user = authenticate(req);
       (req as AuthenticatedRequest).user = user;
-      return await handler(req as AuthenticatedRequest);
+      return await handler(req as AuthenticatedRequest, context);
     } catch (error: any) {
       return NextResponse.json(
         errorResponse(
@@ -52,9 +52,9 @@ export function withAuth(
  * Middleware wrapper for admin-only routes
  */
 export function withAdmin(
-  handler: (req: AuthenticatedRequest) => Promise<NextResponse>
+  handler: (req: AuthenticatedRequest, context?: any) => Promise<NextResponse>
 ) {
-  return async (req: NextRequest) => {
+  return async (req: NextRequest, context?: any) => {
     try {
       const user = authenticate(req);
 
@@ -66,7 +66,7 @@ export function withAdmin(
       }
 
       (req as AuthenticatedRequest).user = user;
-      return await handler(req as AuthenticatedRequest);
+      return await handler(req as AuthenticatedRequest, context);
     } catch (error: any) {
       return NextResponse.json(
         errorResponse(
@@ -83,9 +83,9 @@ export function withAdmin(
  * Middleware wrapper for super admin-only routes
  */
 export function withSuperAdmin(
-  handler: (req: AuthenticatedRequest) => Promise<NextResponse>
+  handler: (req: AuthenticatedRequest, context?: any) => Promise<NextResponse>
 ) {
-  return async (req: NextRequest) => {
+  return async (req: NextRequest, context?: any) => {
     try {
       const user = authenticate(req);
 
@@ -97,7 +97,7 @@ export function withSuperAdmin(
       }
 
       (req as AuthenticatedRequest).user = user;
-      return await handler(req as AuthenticatedRequest);
+      return await handler(req as AuthenticatedRequest, context);
     } catch (error: any) {
       return NextResponse.json(
         errorResponse(

@@ -8,6 +8,7 @@ import { Footer } from '@/components/Footer'
 import Translated from '@/components/translated'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
+import '../../../rich-text.css';
 
 type Props = {
     params: Promise<{ locale: string; slug: string }>
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description,
         keywords: brand.seo_keywords || brand.name,
         alternates: {
-            canonical: brand.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/${locale}/brands/${brand.slug}`,
+            canonical: brand.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/brands/${brand.slug}`,
             languages: {
                 en: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/en/brands/${brand.slug}`,
                 ar: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/ar/brands/${brand.slug}`,
@@ -76,7 +77,7 @@ export default async function BrandSlugPage({ params }: Props) {
                     defaultFilters={{ brandId: brand.id }}
                 />
                 {brand.description && (
-                    <div className="mt-8 prose prose-sm sm:prose max-w-none text-muted-foreground">
+                    <div className="mt-8 prose prose-sm sm:prose max-w-none text-muted-foreground editor">
                         <div dangerouslySetInnerHTML={{ __html: brand.description }} />
                     </div>
                 )}

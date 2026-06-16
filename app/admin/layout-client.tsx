@@ -114,6 +114,7 @@ export default function AdminLayoutClient({
       { href: "/admin/settings", label: t("admin.settings.title") || "Settings", icon: Settings },
       { href: "/admin/faq", label: t("admin.faqTitle") || "FAQ", icon: Tag }, { href: "/admin/contacts", label: t("admin.contact.name"), icon: Globe },
       { href: "/admin/metadata", label: t("admin.metaData.title"), icon: SearchCheck },
+      { href: "/admin/pages", label: "Pages", icon: Newspaper },
       { href: "/admin/change-password", label: t("admin.changePassword"), icon: Lock },
     ];
 

@@ -72,6 +72,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
     });
 
+    // Fetch all active custom pages
+    const pages = await prisma.page.findMany({
+        where: {
+            isPublished: true,
+            deletedAt: null,
+        },
+        select: {
+            slug: true,
+            updatedAt: true,
+        },
+    });
+
     // Static routes
     const staticRoutes = [
         ...getSitemapEntry('/', new Date(), 'daily', 1),
@@ -106,5 +118,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         getSitemapEntry(`/blog/${blog.slug}`, blog.updatedAt, 'weekly', 0.6)
     );
 
-    return [...staticRoutes, ...carUrls, ...categoryUrls, ...brandUrls, ...blogUrls];
+    // Custom Page URLs
+    const customPageUrls = pages.flatMap((page: any) =>
+        getSitemapEntry(`/${page.slug}`, page.updatedAt, 'monthly', 0.5)
+    );
+
+    return [...staticRoutes, ...carUrls, ...categoryUrls, ...brandUrls, ...blogUrls, ...customPageUrls];
 }
