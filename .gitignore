@@ -27,7 +27,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # local env files
-.env
 .env*.local
 .env.development.local
 .env.test.local
@@ -52,7 +51,6 @@ lerna-debug.log*
 # /prisma/migrations
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -71,3 +69,4 @@ logs
 # yarn.lock
 
 # service-account.json
+config.bat

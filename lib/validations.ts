@@ -378,4 +378,23 @@ export const metaDataSchema = z.object({
   canonical: z.string().optional(),
 })
 
+
+export const createPageSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be in lowercase and hyphen separated'),
+  content: z.union([z.string(), z.record(z.any()), z.array(z.any())]),
+  excerpt: z.string().nullable().optional(),
+  isPublished: z.boolean().default(false),
+  seo_title: z.string().optional(),
+  seo_description: z.string().optional(),
+  seo_keywords: z.string().optional(),
+  canonical: z.string().optional(),
+});
+
+export type TCreatePage = z.infer<typeof createPageSchema>;
+
+export const updatePageSchema = createPageSchema.partial();
+
+export type TUpdatePage = z.infer<typeof updatePageSchema>;
+
 export type TMetaData = z.infer<typeof metaDataSchema>;

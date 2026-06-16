@@ -10,6 +10,7 @@ import { getCategory, getCategoryBySlug } from '@/lib/data/category';
 import { getActiveContacts } from '@/lib/data/contact';
 import Translated from '@/components/translated';
 import { stripHtml } from '@/lib/utils';
+import '../../../rich-text.css';
 
 type Props = {
     params: Promise<{ locale: string; slug: string }>;
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: category.seo_description || stripHtml(category.description || '') || `Browse our ${category.name} rental vehicles`,
         keywords: category.seo_keywords || category.name,
         alternates: {
-            canonical: category.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/${locale}/categories/${category.slug}`,
+            canonical: category.canonical || `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/categories/${category.slug}`,
             languages: {
                 en: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/en/categories/${category.slug}`,
                 ar: `${process.env.NEXT_PUBLIC_APP_URL || 'https://luxuscarrental.com'}/ar/categories/${category.slug}`,
@@ -78,7 +79,7 @@ export default async function CategoryPage({ params }: Props) {
                     defaultFilters={{ categoryId: category.id }}
                 />
                 {category.description && (
-                    <div className="mt-8 prose prose-sm sm:prose max-w-none text-muted-foreground">
+                    <div className="mt-8 prose prose-sm sm:prose max-w-none text-muted-foreground editor">
                         <div dangerouslySetInnerHTML={{ __html: category.description }} />
                     </div>
                 )}
